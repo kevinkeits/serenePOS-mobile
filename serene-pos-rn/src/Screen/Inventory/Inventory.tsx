@@ -2,14 +2,14 @@ import React from 'react'
 import { StyleSheet, Text, View } from 'react-native';
 import CommonLayout from '../../components/CommonLayout/CommonLayout';
 
-const Profile = () => {
+const Inventory = () => {
   return (
     <CommonLayout>
       <View >
-      <Text>Profile</Text>
+      <Text>Inventory</Text>
     </View>
     </CommonLayout>
   )
 }
 
-export default Profile
+export default Inventory
