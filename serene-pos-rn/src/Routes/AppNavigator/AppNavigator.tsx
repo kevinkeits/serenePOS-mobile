@@ -10,10 +10,16 @@ import Home from '../../Screen/Home/Home';
 import Profile from '../../Screen/Profile/Profile';
 import Categories from '../../Screen/Categories/Categories';
 import Inventory from '../../Screen/Inventory/Inventory';
+import Sales from '../../Screen/Sales/Sales';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+
+
 
 const Stack = createStackNavigator();
 
 const AppNavigator: React.FC = () => {
+
   return (
     <NavigationContainer>
       {/* <Stack.Navigator initialRouteName="Splash">
@@ -21,11 +27,17 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={BottomTabNavigator} options={{ headerShown: false }} />
       </Stack.Navigator> */}
-      <Stack.Navigator>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
       <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}  />
       <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}  />
       <Stack.Screen name="Categories" component={Categories} options={{ headerShown: false }}  />
       <Stack.Screen name="Inventory" component={Inventory} options={{ headerShown: false }}  />
+      <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }}  />
       </Stack.Navigator>
     </NavigationContainer>
   );

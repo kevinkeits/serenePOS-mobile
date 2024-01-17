@@ -31,6 +31,17 @@ const Sidebar: React.FC = () => {
       <TouchableOpacity
         style={[
           styles.menuItemContainer,
+          isActive('Sales') && styles.activeMenuItemContainer,
+        ]}
+        onPress={() => navigateToScreen('Sales')}
+      >
+        <Ionicons name="home" size={24} color={isActive('Sales') ? 'white' : 'black'} style={{ marginVertical: 'auto', marginHorizontal: 10 }} />
+        <Text style={[styles.menuItem, isActive('Sales') && styles.activeMenuItemText]}>Sales</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.menuItemContainer,
           isActive('Profile') && styles.activeMenuItemContainer,
         ]}
         onPress={() => navigateToScreen('Profile')}

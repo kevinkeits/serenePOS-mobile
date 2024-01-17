@@ -1,6 +1,7 @@
 // CommonLayout.tsx
 import React, { ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
+import CustomBackButton from '../CustomBackButton/CustomBackButton';
 import CustomHeader from '../CustomHeader/CustomHeader';
 import Sidebar from '../Sidebar/Sidebar';
 
@@ -14,7 +15,9 @@ const CommonLayout: React.FC<CommonLayoutProps> = ({ children }) => {
     <CustomHeader />
     <View style={styles.containerRow}>
       <Sidebar />
-      <View style={styles.content}>{children}</View>
+      <View style={styles.content}>
+        {children}
+        </View>
     </View>
     </View>
   );
