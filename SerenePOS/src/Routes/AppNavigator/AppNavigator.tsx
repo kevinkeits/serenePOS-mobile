@@ -6,6 +6,7 @@ import Profile from '../../Screens/Profile/Profile';
 import Sales from '../../Screens/Sales/Sales';
 import Splash from '../../Screens/Splash/Splash';
 import Login from '../../Screens/Login/Login';
+import Products from '../../Screens/Products/Products';
 
 
 
@@ -24,6 +25,8 @@ const AppNavigator= () => {
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}  />
         <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }}  />
+        <Stack.Screen name="Products" component={Products} options={{ headerShown: false }}  />
+
       </Stack.Navigator>
       {/* <Stack.Navigator
         initialRouteName="Home"

@@ -2,6 +2,9 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import SalesSVG from '../../assets/svgs/SalesSVG';
+import ProductSVG from '../../assets/svgs/ProductSVG';
+import DashboardSVG from '../../assets/svgs/DashboardSVG';
 
 // import { Ionicons } from '@expo/vector-icons';
 
@@ -25,7 +28,7 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('Home')}
       >
-        {/* <Ionicons name="home" size={24} color={isActive('Home') ? 'white' : 'black'} style={{ marginVertical: 'auto', marginHorizontal: 10 }} /> */}
+        {/* <DashboardSVG width='12' heigth='12' color={isActive('Home') ? 'white' : 'black'}  /> */}
         <Text style={[styles.menuItem, isActive('Home') && styles.activeMenuItemText]}>Dashboard</Text>
       </TouchableOpacity>
 
@@ -36,19 +39,19 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('Sales')}
       >
-        {/* <Ionicons name="home" size={24} color={isActive('Home') ? 'white' : 'black'} style={{ marginVertical: 'auto', marginHorizontal: 10 }} /> */}
+        <SalesSVG width='12' heigth='12' color={isActive('Sales') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Sales') && styles.activeMenuItemText]}>Sales</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[
           styles.menuItemContainer,
-          isActive('Profile') && styles.activeMenuItemContainer,
+          isActive('Products') && styles.activeMenuItemContainer,
         ]}
-        onPress={() => navigateToScreen('Profile')}
+        onPress={() => navigateToScreen('Products')}
       >
-        {/* <Ionicons name="person" size={24} color={isActive('Profile') ? 'white' : 'black'} style={{ marginVertical: 'auto', marginHorizontal: 10 }} /> */}
-        <Text style={[styles.menuItem, isActive('Profile') && styles.activeMenuItemText]}>Profile</Text>
+        <ProductSVG width='12' heigth='12' color={isActive('Products') ? 'white' : 'black'}  />
+        <Text style={[styles.menuItem, isActive('Products') && styles.activeMenuItemText]}>Products</Text>
       </TouchableOpacity>
 
       
@@ -64,8 +67,8 @@ const Sidebar: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: 6,
+    paddingHorizontal: 2,
     width: '20%',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -79,7 +82,7 @@ const styles = StyleSheet.create({
     // borderRadius: 5,
     marginBottom: 2,
     flexDirection: 'row',
-    padding: 1
+    paddingLeft: 10
   },
   activeMenuItemContainer: {
     backgroundColor: '#2563EB',
@@ -87,7 +90,8 @@ const styles = StyleSheet.create({
   menuItem: {
     color: 'black',
     fontSize: 10,
-    padding: 8,
+    paddingVertical: 6,
+    paddingHorizontal:8
   },
   activeMenuItemText: {
     color: 'white',

@@ -6,6 +6,10 @@ import axios from 'axios';
 import CommonLayout from '../../Components/CommonLayout/CommonLayout';
 import EditItemModal from './components/EditItemModal/EditItemModal';
 import PaymentMethodModal from './components/PaymentMethodModal/PaymentMethodModal';
+import EditOrderModal from './components/EditOrderModal/EditOrderModal';
+import DiscountModal from './components/DiscountModal/DiscountModal';
+import PencilSVG from '../../assets/svgs/PencilSVG';
+import DiscountSVG from '../../assets/svgs/DiscountSVG';
 
 export interface Coffee {
     id: number;
@@ -22,10 +26,27 @@ const Sales = () => {
     const [selectedItemForEdit, setSelectedItemForEdit] = React.useState<Coffee | null>(null);
     const [totalPriceState, setTotalPriceState] = React.useState(0);
     const [isOpenPayment, setIsOpenPayment] = React.useState(false);
+    const [isOpenOrder, setIsOpenOrder] = React.useState(false);
+    const [isOpenDiscount, setIsOpenDiscount] = React.useState(false);
+
+    const [customerName, setCustomerName] = React.useState('Aulia');
 
 
 
 
+    const getCurrentDate = () => {
+      const currentDate = new Date();
+      const options: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false,
+      };
+    
+      return currentDate.toLocaleDateString(undefined, options);
+    };
 
     const fetchData = async () => {
         try {
@@ -54,6 +75,28 @@ const Sales = () => {
     
       const onClosePayment = () => {
         setIsOpenPayment(false);
+      };
+
+      const onOpenOrder= () => {
+        setIsOpenOrder(true);
+      };
+    
+      const onCloseOrder = () => {
+        setIsOpenOrder(false);
+      };
+
+      const onSaveOrder = (name: string) => {
+        setCustomerName(name)
+        onCloseOrder()
+      }
+
+      const onOpenDiscount= () => {
+        setIsOpenDiscount(true);
+
+      };
+    
+      const onCloseDiscount = () => {
+        setIsOpenDiscount(false);
       };
   
       const addToSelectedItems = (item: Coffee) => {
@@ -164,8 +207,19 @@ React.useEffect(() => {
 
     <View style={styles.selectedItemsContainer}>
       <View>
-        <View style={{flexDirection:'row', justifyContent: 'space-between', marginHorizontal:5, marginTop:10}}>
-          <Text style={{fontSize:10, fontWeight:'bold'}}>#01</Text>
+      <Text style={{fontSize:7, marginTop:3, marginHorizontal:10, marginBottom:5, color:'black'}}>{getCurrentDate()}</Text>
+        <View style={{flexDirection:'row', justifyContent: 'space-between', marginHorizontal:8}}>
+          <Text style={{fontSize:10, fontWeight:'bold', color:'black'}}>#{customerName}</Text>
+          <View style={{flexDirection:'row', gap:2}}>
+            <TouchableOpacity>
+              <Text style={{fontSize:6}} onPress={()=> onOpenDiscount()}>
+                <DiscountSVG width='16' heigth='16'/>
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=> onOpenOrder()}>
+              <PencilSVG width='16' heigth='11' color='white' />
+            </TouchableOpacity>
+          </View>
         </View>
         {selectedItems.map((item) => (
           <View key={item.id} style={styles.selectedItem}>
@@ -175,18 +229,21 @@ React.useEffect(() => {
           </View>
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ fontSize: 8,  maxWidth: 150  }}>Price</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp.{item.price}</Text>
+            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {item.price}</Text>
           </View>
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp.0</Text>
+            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp 0</Text>
           </View>
-          {/* <TouchableOpacity onPress={() => removeFromSelectedItems(item.id)} style={styles.deleteButton}>
+
+          <View style={{flexDirection:'row'}}>
+          <TouchableOpacity onPress={() => removeFromSelectedItems(item.id)} style={styles.deleteButton}>
             <Text style={styles.deleteButtonText}>Delete</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
             <TouchableOpacity onPress={() => openEditModal(item)} style={styles.editButton}>
                 <Text style={styles.editButtonText}>Edit</Text>
               </TouchableOpacity>
+              </View>
         </View>
         ))}
         </View>
@@ -195,20 +252,20 @@ React.useEffect(() => {
           <View style={styles.underline}/>
         <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>Subtotal:</Text>
-            <Text style={styles.totalPriceAmount}>${calculateTotalPrice().subtotal}</Text>
+            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().subtotal}</Text>
           </View>
           <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>Tax (10%):</Text>
-            <Text style={styles.totalPriceAmount}>${calculateTotalPrice().tax}</Text>
+            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().tax}</Text>
           </View>
           <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>Discount:</Text>
-            <Text style={styles.totalPriceAmount}>-${calculateTotalPrice().discount}</Text>
+            <Text style={styles.totalPriceAmount}>-Rp {calculateTotalPrice().discount}</Text>
           </View>
           <View style={styles.dottedUnderline} />
           <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>Total Price:</Text>
-            <Text style={styles.totalPriceAmount}>${calculateTotalPrice().totalPrice}</Text>
+            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().totalPrice}</Text>
           </View>
           
           <TouchableOpacity style={styles.payNowButton} onPress={()=> onOpenPayment()}>
@@ -225,6 +282,8 @@ React.useEffect(() => {
     </View>
     <EditItemModal isVisible={isEditModalVisible} selectedItem={selectedItemForEdit} onClose={closeEditModal} />
     <PaymentMethodModal isVisible={isOpenPayment} totalPrice={totalPriceState} onClose={onClosePayment}/>
+    <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
+    <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.id)} />
 
     </CommonLayout>
   )
@@ -236,27 +295,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     width:100, 
     height:100, 
-    borderRadius:15, 
+    borderRadius:10, 
     shadowColor: '#000', 
     shadowOffset: { width: 0, height: 8 }, 
     shadowOpacity: 0.3,  
     shadowRadius: 4,  
     elevation: 4,
     margin: 5,
-  },
-  otherRowsItem: {
-    backgroundColor:"blue", 
-    width:350, 
-    height:200, 
-    borderRadius:15, 
-    justifyContent: 'flex-end',
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 8 }, 
-    shadowOpacity: 0.3,  
-    shadowRadius: 4,  
-    elevation: 4,
-    marginTop: 15, 
-    marginHorizontal: 5,
   },
   scrollView: {
     flexDirection: 'row',
@@ -321,7 +366,8 @@ justifyContent: 'space-between'
   deleteButtonText: {
     color: 'white',
     textAlign: 'center',
-    fontSize:10
+    fontSize: 8,
+    fontWeight: 'bold',
   },
   selectedItemImage: {
     width: 50,
@@ -393,12 +439,12 @@ justifyContent: 'space-between'
     backgroundColor: 'orange',
     padding: 8,
     borderRadius: 5,
-    marginTop: 5,
+    //marginTop: 5,
   },
   editButtonText: {
     color: 'white',
     textAlign: 'center',
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: 'bold',
   },
 });

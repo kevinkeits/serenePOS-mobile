@@ -16,7 +16,13 @@ interface EditItemModalProps {
 
 const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selectedItem }) => {
 
-    const [quantity, setQuantity] = React.useState(1); // Initial quantity
+    const [quantity, setQuantity] = React.useState(1);
+    const [options, setOptions] = React.useState({
+        option1: false,
+        option2: false,
+      });
+    
+    
 
     const incrementQuantity = () => {
         setQuantity((prevQuantity) => prevQuantity + 1);
@@ -26,6 +32,13 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
         if (quantity > 1) {
           setQuantity((prevQuantity) => prevQuantity - 1);
         }
+      };
+
+      const handleOptionToggle = (option: keyof typeof options) => {
+        setOptions((prevOptions) => ({
+          ...prevOptions,
+          [option]: !prevOptions[option],
+        }));
       };
 
   return (
