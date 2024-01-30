@@ -5,7 +5,8 @@ import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet } from 'rea
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
-import ConfirmationModal from '../Categories/components/ConfirmationModal/ConfirmationModal'
+import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal'
+import DetailModal from './components/DetailModal/DetailModal'
 
 export interface Coffee {
     id: number;
@@ -14,23 +15,41 @@ export interface Coffee {
     image: string;
   }
 
-const Products = () => {
+  export interface Categories {
+    id: string;
+    name: string;
+    totalItem: string;
+  }
+
+const Categories = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
-    const [selectedItems, setSelectedItems] = React.useState<number[]>([]);
+    const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [deleteMode, setDeleteMode] = React.useState(false);
+    const [isOpenDetail, setIsOpenDetail] = React.useState(false);
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
+    const [selectedItemForEdit, setSelectedItemForEdit] = React.useState<Categories | null>(null);
+
 
 
     const navigation = useNavigation();
 
-    const onOpenConfirmation= () => {
-      setIsOpenConfirmation(true);
-    };
-  
-    const onCloseConfirmation = () => {
-      setIsOpenConfirmation(false);
-    };
+    const onOpenDetail = (item?: Categories) => {
+        setSelectedItemForEdit(item ?? null);
+        setIsOpenDetail(true);
+      };
+    
+      const onCloseDetail = () => {
+        setIsOpenDetail(false);
+      };
+
+      const onOpenConfirmation= () => {
+        setIsOpenConfirmation(true);
+      };
+    
+      const onCloseConfirmation = () => {
+        setIsOpenConfirmation(false);
+      };
 
 
     const fetchData = async () => {
@@ -48,7 +67,7 @@ const Products = () => {
         navigation.navigate('ProductDetail' as never);
       };
     
-      const handleCheckboxPress = (itemId: number) => {
+      const handleCheckboxPress = (itemId: string) => {
         // Toggle the selection status of the item
         setSelectedItems((prevSelectedItems) => {
           if (prevSelectedItems.includes(itemId)) {
@@ -115,12 +134,12 @@ const Products = () => {
     <CommonLayout>
       <View style={{}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center'}}>Products</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center'}}>Categories</Text>
       {deleteMode ? (
         <View/>
       ):(
         <View style={{flexDirection:'row', gap:4}}>
-        <TouchableOpacity onPress={() => navigation.navigate('ProductDetail' as never)} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
+        <TouchableOpacity onPress={() => onOpenDetail()} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
             <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
@@ -139,19 +158,10 @@ const Products = () => {
             </View>
       )}
       <View>
-      <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
-        {data.map((x, index) => (
-            <TouchableOpacity key={index} style={styles.firstRowItem}>
-            <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Items</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+
 
       <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', justifyContent:'center', marginVertical:3}}>
-        {coffeeData.map((x, index)=>(
+        {data.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
                   <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
@@ -162,24 +172,18 @@ const Products = () => {
                     )}
                   </TouchableOpacity>
                 )}
-            <TouchableOpacity 
-            key={index}
-            onPress={() => handleProductPress(x)} 
-            style={styles.cardRow}>
-                <View style={{width:'50%'}}>
-                    <Image source={{ uri: x.image }} style={{width:'100%', height:'100%'}} />
-                </View>
-                <View style={{width:'50%'}}>
-                    <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.title}</Text>
-                    <Text style={{fontSize:8, color: 'black' }}>Rp {x.price}</Text>
-                </View>
-            </TouchableOpacity>
+            <TouchableOpacity onPress={() => onOpenDetail(x)}  key={index} style={styles.firstRowItem}>
+            <View style={{marginBottom:10, marginLeft: 10}}>
+            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
+            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Items</Text>
+            </View>
+          </TouchableOpacity>
             </View>
         ))}
       </View>
 
       {deleteMode && (
-        <View style={{  flexDirection: 'row', gap:10, justifyContent: 'flex-end', width: '100%', padding: 4, }}>
+        <View style={{  flexDirection: 'row', justifyContent:'flex-end', gap:10, width: '100%', padding: 4, }}>
           <TouchableOpacity onPress={()=> onOpenConfirmation()}  style={{ backgroundColor: '#EF4444', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete</Text>
           </TouchableOpacity>
@@ -191,10 +195,8 @@ const Products = () => {
       )}
       
       </View>
-
-      
-
       </View>
+      <DetailModal isVisible={isOpenDetail} selectedItem={selectedItemForEdit} onClose={onCloseDetail} />
       <ConfirmationModal isVisible={isOpenConfirmation} totalItems={selectedItems.length} onClose={onCloseConfirmation} />
 
       
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
       backgroundColor:"blue",
       justifyContent: 'flex-end',
       width:130, 
-      height:60,
+      height:90, 
       borderRadius:7, 
       shadowColor: '#000', 
       shadowOffset: { width: 0, height: 8 }, 
@@ -216,23 +218,10 @@ const styles = StyleSheet.create({
       elevation: 4,
       margin: 4,
     },
-    cardRow: {
-      flexDirection:'row', 
-      padding:10, 
-      gap:5,
-      borderWidth:0.5, 
-      borderRadius:7,  
-      height:100, 
-      justifyContent:'center', 
-      alignItems:'center',
-      borderColor:'#D2D2D2',
-      width:130, 
-      margin: 4,
-    },
     scrollView: {
       flexDirection: 'row',
       //marginTop:10
     },
   });
 
-export default Products
+export default Categories

@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import SalesSVG from '../../assets/svgs/SalesSVG';
 import ProductSVG from '../../assets/svgs/ProductSVG';
 import DashboardSVG from '../../assets/svgs/DashboardSVG';
+import CategoriesSVG from '../../assets/svgs/CategoriesSVG';
 
 // import { Ionicons } from '@expo/vector-icons';
 
@@ -54,10 +55,21 @@ const Sidebar: React.FC = () => {
         <Text style={[styles.menuItem, isActive('Products') && styles.activeMenuItemText]}>Products</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={[
+          styles.menuItemContainer,
+          isActive('Categories') && styles.activeMenuItemContainer,
+        ]}
+        onPress={() => navigateToScreen('Categories')}
+      >
+        <CategoriesSVG width='12' height='12' color={isActive('Categories') ? 'white' : 'black'}  />
+        <Text style={[styles.menuItem, isActive('Categories') && styles.activeMenuItemText]}>Categories</Text>
+      </TouchableOpacity>
+
       
       </View>
       <View>
-        <Text style={{marginBottom:20, fontSize:10}}>serenePOS v1.00</Text>
+        <Text style={{marginBottom:20, fontSize:10, marginLeft:15}}>serenePOS v1.00</Text>
       </View>
 
       {/* Add more menu items as needed */}

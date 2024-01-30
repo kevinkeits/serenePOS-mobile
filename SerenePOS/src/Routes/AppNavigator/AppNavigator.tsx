@@ -7,6 +7,9 @@ import Sales from '../../Screens/Sales/Sales';
 import Splash from '../../Screens/Splash/Splash';
 import Login from '../../Screens/Login/Login';
 import Products from '../../Screens/Products/Products';
+import ProductDetail from '../../Screens/ProductDetail/ProductDetail';
+import DetailProduct from '../../Screens/ProductDetail/DetailProduct';
+import Categories from '../../Screens/Categories/Categories';
 
 
 
@@ -26,6 +29,8 @@ const AppNavigator= () => {
         <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}  />
         <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }}  />
         <Stack.Screen name="Products" component={Products} options={{ headerShown: false }}  />
+        <Stack.Screen name="ProductDetail" component={DetailProduct} options={{ headerShown: false }}  />
+        <Stack.Screen name="Categories" component={Categories} options={{ headerShown: false }}  />
 
       </Stack.Navigator>
       {/* <Stack.Navigator
