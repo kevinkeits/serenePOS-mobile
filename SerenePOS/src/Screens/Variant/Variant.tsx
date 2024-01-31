@@ -5,8 +5,6 @@ import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet } from 'rea
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
-import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal'
-import DetailModal from './components/DetailModal/DetailModal'
 
 export interface Coffee {
     id: number;
@@ -21,7 +19,7 @@ export interface Coffee {
     totalItem: string;
   }
 
-const Categories = () => {
+const Variant = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
@@ -134,12 +132,12 @@ const Categories = () => {
     <CommonLayout>
       <View style={{}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Categories</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Variants</Text>
       {deleteMode ? (
         <View/>
       ):(
         <View style={{flexDirection:'row', gap:4}}>
-        <TouchableOpacity onPress={() => onOpenDetail()} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
+        <TouchableOpacity onPress={() => navigation.navigate('VariantDetail' as never)} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
             <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
@@ -172,12 +170,15 @@ const Categories = () => {
                     )}
                   </TouchableOpacity>
                 )}
-            <TouchableOpacity onPress={() => onOpenDetail(x)}  key={index} style={styles.firstRowItem}>
-            <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Items</Text>
-            </View>
-          </TouchableOpacity>
+            <TouchableOpacity key={index} style={styles.firstRowItem}>
+                <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                <View>
+                    <Text style={{fontWeight: "bold", color: "black", fontSize: 12}}>{x.name}</Text>
+                    <Text style={{ color: "black", fontSize: 9}}>{x.totalItem} Items</Text>
+                </View>
+                    <Text style={{ color: "#2563EB", fontSize: 7, padding:3, borderWidth:0.5, borderColor:'#2563EB', borderRadius:3, width:50, height:18, textAlign:'center'}}>{x.name}</Text>
+                </View>
+            </TouchableOpacity>
             </View>
         ))}
       </View>
@@ -196,8 +197,6 @@ const Categories = () => {
       
       </View>
       </View>
-      <DetailModal isVisible={isOpenDetail} selectedItem={selectedItemForEdit} onClose={onCloseDetail} />
-      <ConfirmationModal isVisible={isOpenConfirmation} totalItems={selectedItems.length} onClose={onCloseConfirmation} />
 
       
     </CommonLayout>
@@ -206,17 +205,23 @@ const Categories = () => {
 
 const styles = StyleSheet.create({
     firstRowItem: {
-      backgroundColor:"blue",
-      justifyContent: 'flex-end',
-      width:130, 
+      borderWidth:0.5,
+      width:220, 
       height:90, 
       borderRadius:7, 
-      shadowColor: '#000', 
-      shadowOffset: { width: 0, height: 8 }, 
-      shadowOpacity: 0.3,  
-      shadowRadius: 4,  
-      elevation: 4,
+      borderColor: '#D2D2D2',
+      backgroundColor: '#FFF',
+      shadowColor: '#9C9C9C',
+      shadowOffset: {
+        width: 4,
+        height: 4,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 2,
       margin: 4,
+      paddingHorizontal:10,
+      paddingVertical:5,
     },
     scrollView: {
       flexDirection: 'row',
@@ -224,4 +229,4 @@ const styles = StyleSheet.create({
     },
   });
 
-export default Categories
+export default Variant

@@ -5,8 +5,6 @@ import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet } from 'rea
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
-import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal'
-import DetailModal from './components/DetailModal/DetailModal'
 
 export interface Coffee {
     id: number;
@@ -21,7 +19,7 @@ export interface Coffee {
     totalItem: string;
   }
 
-const Categories = () => {
+const Setting = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
@@ -134,70 +132,56 @@ const Categories = () => {
     <CommonLayout>
       <View style={{}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Categories</Text>
-      {deleteMode ? (
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Setting</Text>
         <View/>
-      ):(
-        <View style={{flexDirection:'row', gap:4}}>
-        <TouchableOpacity onPress={() => onOpenDetail()} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
-            <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
-            <TrashSVG width='12' height='12' color='red'/>
-        </TouchableOpacity>
-      </View>
-      )}
+   
       
       </View>
-      {deleteMode && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20 }}>
-              <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text>
-              <TouchableOpacity onPress={() => setSelectedItems([])}>
-                <Text style={{ fontSize: 12, color: 'red' }}>Clear</Text>
-              </TouchableOpacity>
-            </View>
-      )}
+
       <View>
 
 
       <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', justifyContent:'center', marginVertical:3}}>
-        {data.map((x, index)=>(
-          <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
-            {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.id) ? (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
-                    ) : (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
-                    )}
-                  </TouchableOpacity>
-                )}
-            <TouchableOpacity onPress={() => onOpenDetail(x)}  key={index} style={styles.firstRowItem}>
-            <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Items</Text>
+          <View  style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', flexWrap:'wrap', alignItems:'center'}}>
+
+        <TouchableOpacity    style={styles.firstRowItem}>
+            <View style={{ marginHorizontal: 10}}>
+                <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>Bussiness Information</Text>
             </View>
-          </TouchableOpacity>
+        </TouchableOpacity>
+
+        <TouchableOpacity    style={styles.firstRowItem}>
+            <View style={{ marginHorizontal: 10}}>
+                <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>Account</Text>
             </View>
-        ))}
+        </TouchableOpacity>
+
+        <TouchableOpacity    style={styles.firstRowItem}>
+            <View style={{ marginHorizontal: 10}}>
+                <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>Receipt & Printing</Text>
+            </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity    style={styles.firstRowItem}>
+            <View style={{ marginHorizontal: 10}}>
+                <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>Payment Method</Text>
+            </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity    style={styles.firstRowItem}>
+            <View style={{ marginHorizontal: 10}}>
+                <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>Backup & Data Management</Text>
+            </View>
+        </TouchableOpacity>
+
+
+            </View>
       </View>
 
-      {deleteMode && (
-        <View style={{  flexDirection: 'row', justifyContent:'flex-end', gap:10, width: '100%', padding: 4, }}>
-          <TouchableOpacity onPress={()=> onOpenConfirmation()}  style={{ backgroundColor: '#EF4444', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#2563EB', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
-            <Text style={{ color: 'black', fontWeight: 'bold', fontSize:8 }}>Cancel</Text>
-          </TouchableOpacity>
-          
-        </View>
-      )}
+
       
       </View>
       </View>
-      <DetailModal isVisible={isOpenDetail} selectedItem={selectedItemForEdit} onClose={onCloseDetail} />
-      <ConfirmationModal isVisible={isOpenConfirmation} totalItems={selectedItems.length} onClose={onCloseConfirmation} />
 
       
     </CommonLayout>
@@ -207,7 +191,8 @@ const Categories = () => {
 const styles = StyleSheet.create({
     firstRowItem: {
       backgroundColor:"blue",
-      justifyContent: 'flex-end',
+      justifyContent: 'center',
+      alignItems:'center',
       width:130, 
       height:90, 
       borderRadius:7, 
@@ -224,4 +209,4 @@ const styles = StyleSheet.create({
     },
   });
 
-export default Categories
+export default Setting

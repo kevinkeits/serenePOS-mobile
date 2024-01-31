@@ -10,6 +10,9 @@ import Products from '../../Screens/Products/Products';
 import ProductDetail from '../../Screens/ProductDetail/ProductDetail';
 import DetailProduct from '../../Screens/ProductDetail/DetailProduct';
 import Categories from '../../Screens/Categories/Categories';
+import Variant from '../../Screens/Variant/Variant';
+import VariantDetail from '../../Screens/VariantDetail/VariantDetail';
+import Setting from '../../Screens/Setting/Setting';
 
 
 
@@ -31,6 +34,10 @@ const AppNavigator= () => {
         <Stack.Screen name="Products" component={Products} options={{ headerShown: false }}  />
         <Stack.Screen name="ProductDetail" component={DetailProduct} options={{ headerShown: false }}  />
         <Stack.Screen name="Categories" component={Categories} options={{ headerShown: false }}  />
+        <Stack.Screen name="Variants" component={Variant} options={{ headerShown: false }}  />
+        <Stack.Screen name="VariantDetail" component={VariantDetail} options={{ headerShown: false }}  />
+        <Stack.Screen name="Setting" component={Setting} options={{ headerShown: false }}  />
+
 
       </Stack.Navigator>
       {/* <Stack.Navigator

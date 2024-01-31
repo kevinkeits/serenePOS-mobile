@@ -66,6 +66,28 @@ const Sidebar: React.FC = () => {
         <Text style={[styles.menuItem, isActive('Categories') && styles.activeMenuItemText]}>Categories</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={[
+          styles.menuItemContainer,
+          isActive('Variants') && styles.activeMenuItemContainer,
+        ]}
+        onPress={() => navigateToScreen('Variants')}
+      >
+        <CategoriesSVG width='12' height='12' color={isActive('Variants') ? 'white' : 'black'}  />
+        <Text style={[styles.menuItem, isActive('Variants') && styles.activeMenuItemText]}>Variants</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.menuItemContainer,
+          isActive('Setting') && styles.activeMenuItemContainer,
+        ]}
+        onPress={() => navigateToScreen('Setting')}
+      >
+        <CategoriesSVG width='12' height='12' color={isActive('Setting') ? 'white' : 'black'}  />
+        <Text style={[styles.menuItem, isActive('Setting') && styles.activeMenuItemText]}>Settings</Text>
+      </TouchableOpacity>
+
       
       </View>
       <View>
