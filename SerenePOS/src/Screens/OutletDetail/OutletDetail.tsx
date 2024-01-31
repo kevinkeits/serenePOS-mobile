@@ -53,7 +53,7 @@ export interface Coffee {
     // Add more options as needed
   ];
 
-const BussinessInfoSetting = () => {
+const OutletDetail = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [textProductSKU, setTextProductSKU] = React.useState('');
@@ -217,8 +217,8 @@ const BussinessInfoSetting = () => {
   return (
     <CommonLayout>
       <View style={{}}>
-          <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
-          <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Bussiness Information</Text>
+      <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Edit Outlet</Text>
       </View>
       <View style={{ gap:6, justifyContent:'center', alignItems:'center'}}>
 
@@ -242,32 +242,33 @@ const BussinessInfoSetting = () => {
         </View>
 
         <View style={{width:'100%'}}>
-          <Text style={{fontSize:10, fontWeight:'bold',  marginBottom:5, color:'black'}}>Bussiness Information</Text>
-          <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                      <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Store Name</Text>
-                      <View
-                          style={{
-                              backgroundColor: textName,
-                              borderColor: '#D2D2D2',
-                              borderWidth: 0.5,
-                              borderRadius:5,
-                              width:'80%'
-                          }}>
-                          <TextInput
-                              editable
-                              // multiline
-                              // numberOfLines={4}
-                              placeholder='Type here'
-                              maxLength={40}
-                              onChangeText={text => setTextName(text)}
-                              value={textName}
-                              style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
-                          />
-                      </View>          
-          </View>
+        <Text style={{fontSize:12, fontWeight:'bold',  marginBottom:5, color:'black'}}>Outlet Detail</Text>
+        <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+
+                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Outlet Name</Text>
+                    <View
+                        style={{
+                            backgroundColor: textName,
+                            borderColor: '#D2D2D2',
+                            borderWidth: 0.5,
+                            borderRadius:5,
+                            width:'80%'
+                        }}>
+                        <TextInput
+                            editable
+                            // multiline
+                            // numberOfLines={4}
+                            placeholder='Type here'
+                            maxLength={40}
+                            onChangeText={text => setTextName(text)}
+                            value={textName}
+                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                        />
+                    </View>          
+        </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Address</Text>
+                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Phone Number</Text>
                     <View
                         style={{
                             backgroundColor: textPrice,
@@ -278,91 +279,22 @@ const BussinessInfoSetting = () => {
                         }}>
                         <TextInput
                             editable
-                            multiline
-                            numberOfLines={6}
+                            // multiline
+                            // numberOfLines={4}
                             placeholder='Type here'
                             maxLength={40}
                             onChangeText={text => setTextPrice(text)}
                             value={textPrice}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%'}}
+                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
                         />
                     </View>          
         </View>
 
-        <Text style={{fontSize:10, fontWeight:'bold',  marginBottom:5, color:'black'}}>Contact Information</Text>
-          <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        <Text style={{fontSize:12, fontWeight:'bold',  marginBottom:5, color:'black'}}>Address Detail</Text>
 
-                      <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Name</Text>
-                      <View
-                          style={{
-                              backgroundColor: textName,
-                              borderColor: '#D2D2D2',
-                              borderWidth: 0.5,
-                              borderRadius:5,
-                              width:'80%'
-                          }}>
-                          <TextInput
-                              editable
-                              // multiline
-                              // numberOfLines={4}
-                              placeholder='Type here'
-                              maxLength={40}
-                              onChangeText={text => setTextName(text)}
-                              value={textName}
-                              style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
-                          />
-                      </View>          
-          </View>
-          <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-
-                      <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Phone Number</Text>
-                      <View
-                          style={{
-                              backgroundColor: textName,
-                              borderColor: '#D2D2D2',
-                              borderWidth: 0.5,
-                              borderRadius:5,
-                              width:'80%'
-                          }}>
-                          <TextInput
-                              editable
-                              // multiline
-                              // numberOfLines={4}
-                              placeholder='Type here'
-                              maxLength={40}
-                              onChangeText={text => setTextName(text)}
-                              value={textName}
-                              style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
-                          />
-                      </View>          
-          </View>
-
-          <Text style={{fontSize:10, fontWeight:'bold',  marginBottom:5, color:'black'}}>Basic Setting</Text>
-          <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                      <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Additional Description</Text>
-                      <View
-                          style={{
-                              backgroundColor: textName,
-                              borderColor: '#D2D2D2',
-                              borderWidth: 0.5,
-                              borderRadius:5,
-                              width:'80%'
-                          }}>
-                          <TextInput
-                              editable
-                              // multiline
-                              // numberOfLines={4}
-                              placeholder='Type here'
-                              maxLength={40}
-                              onChangeText={text => setTextName(text)}
-                              value={textName}
-                              style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
-                          />
-                      </View>          
-          </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Message</Text>
+                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Detail Address</Text>
                     <View
                         style={{
                             backgroundColor: textPrice,
@@ -373,29 +305,63 @@ const BussinessInfoSetting = () => {
                         }}>
                         <TextInput
                             editable
-                            multiline
-                            numberOfLines={4}
+                            // multiline
+                            // numberOfLines={4}
                             placeholder='Type here'
                             maxLength={40}
                             onChangeText={text => setTextPrice(text)}
                             value={textPrice}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%'}}
+                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
                         />
                     </View>          
         </View>
-        
-        <Text style={{fontSize:10, fontWeight:'bold',  marginBottom:5, color:'black'}}>Additional Setting</Text>
-          <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                      <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Printer</Text>
-                      <View
-                          style={{
-                              width:'80%'
-                          }}>
-                          <TouchableOpacity style={{justifyContent:'center', width:'25%', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-                              <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
-                          </TouchableOpacity> 
-                      </View>          
-          </View>
+
+        <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Sub-district</Text>
+                    <View
+                        style={{
+                            backgroundColor: textPrice,
+                            borderColor: '#D2D2D2',
+                            borderWidth: 0.5,
+                            borderRadius:5,
+                            width:'80%'
+                        }}>
+                        <TextInput
+                            editable
+                            // multiline
+                            // numberOfLines={4}
+                            placeholder='Type here'
+                            maxLength={40}
+                            onChangeText={text => setTextPrice(text)}
+                            value={textPrice}
+                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                        />
+                    </View>          
+        </View>
+
+        <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Postal Code</Text>
+                    <View
+                        style={{
+                            backgroundColor: textPrice,
+                            borderColor: '#D2D2D2',
+                            borderWidth: 0.5,
+                            borderRadius:5,
+                            width:'80%'
+                        }}>
+                        <TextInput
+                            editable
+                            // multiline
+                            // numberOfLines={4}
+                            placeholder='Type here'
+                            maxLength={40}
+                            onChangeText={text => setTextPrice(text)}
+                            value={textPrice}
+                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                        />
+                    </View>          
+        </View>
+
        
 
         
@@ -524,4 +490,4 @@ const styles = StyleSheet.create({
     
   });
 
-export default BussinessInfoSetting
+export default OutletDetail

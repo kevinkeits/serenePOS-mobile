@@ -14,7 +14,7 @@ const Home = () => {
     <CommonLayout>
       <View style={{}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:10}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center'}}>Dashboard</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Dashboard</Text>
       {/* <Text style={{fontWeight:"bold", fontSize:8, borderWidth:2, padding:7, borderColor:"#ECEDF3", borderRadius:20, margin: "auto", textAlign: 'center'}}>{getCurrentDate()}</Text> */}
       </View>
 
@@ -84,16 +84,11 @@ const Home = () => {
           <Text style={{ color: "black", fontSize: 10}}>Total: 150</Text>
          </View>
         </View>
-
-  
-
-       
-
         </ScrollView>
 
       </View>
       <View style={{backgroundColor:"ffffff", borderWidth:0.5, borderColor:"#D2D2D2", width:280, height:170, borderRadius:10}}>
-      <SalesChart/>
+        <SalesChart/>
       </View>
       </View>
 

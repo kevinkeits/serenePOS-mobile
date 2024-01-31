@@ -1,14 +1,14 @@
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
-import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput, Switch } from 'react-native'
+import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput, Switch, Button } from 'react-native'
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
-import RNFS from 'react-native-fs';
 
 import { Picker } from '@react-native-picker/picker'
 import RNPickerSelect from "react-native-picker-select";
-import ImagePicker, { ImageLibraryOptions, ImagePickerResponse  } from 'react-native-image-picker';
+import RNFS from 'react-native-fs';
+import DocumentPicker from 'react-native-document-picker';
 
 
 
@@ -21,10 +21,7 @@ export interface Coffee {
     image: string;
   }
 
-  interface CustomImagePickerResponse extends ImagePickerResponse {
-    uri?: string;
-    error?: string;
-  }
+
 
   interface CategoryOption {
     label: string;
@@ -63,9 +60,6 @@ const DetailProduct = () => {
     const [quantity, setQuantity] = React.useState(1);
     const [selectedCategory, setSelectedCategory] =  React.useState<CategoryOption | null>(null);
     const [ language, setLanguage ] = React.useState("");
-    const [selectedImage, setSelectedImage] = React.useState<ImagePickerResponse | null>(null);
-
-
   const [selectedOptionIds, setSelectedOptionIds] = React.useState<string[]>([]);
   const [servingInputValues, setServingInputValues] = React.useState<string[]>(temperatureOptions.map(() => ''));
   const [isServingSubmitting, setIsServingSubmitting] = React.useState(false); 
@@ -78,6 +72,11 @@ const DetailProduct = () => {
   const [addOnInputValues, setAddOnInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
   const [isAddOnSubmitting, setIsAddOnSubmitting] = React.useState(false); 
 
+  const [form, setForm] = React.useState({
+    // Your other form fields
+    paymentConfirmationFileName: '',
+    paymentConfirmationFileData: '',
+  });
   
 
   const handleTextInputChange = (id: string, text: string) => {
@@ -156,7 +155,32 @@ const DetailProduct = () => {
         }
       };
     
- 
+
+      
+    
+      const handleUpload = async () => {
+        try {
+          const res = await DocumentPicker.pickSingle({
+            type: [DocumentPicker.types.images],
+          });
+    
+          const fs = await RNFS.readFile(res.uri, 'base64');
+    
+          setForm((prev) => ({
+            ...prev,
+            paymentConfirmationFileName: res.name || '',
+            paymentConfirmationFileData: `data:${res.type};base64,${fs}`,
+          }));
+        } catch (err) {
+          if (DocumentPicker.isCancel(err)) {
+            console.log('Document picking was cancelled.');
+          } else {
+            console.error('Error while picking document:', err);
+            // You can handle the error as per your application's requirements
+          }
+        }
+      };
+    
     
 
     const navigation = useNavigation();
@@ -195,18 +219,31 @@ const DetailProduct = () => {
         {/* <TouchableOpacity onPress={()=> navigation.goBack()}>
             <Text style={{fontSize:12, fontWeight:'bold', color:'black'}}>&lt;--</Text>
         </TouchableOpacity> */}
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center'}}>Add Products</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Add Products</Text>
       </View>
       <View style={{flexDirection:'row', gap:6}}>
-        <View style={{width:'25%', gap:5,  alignItems:'center'}}>
-            <View style={{borderWidth:0.5, width:'100%', height:100, borderColor:'grey', borderRadius:8}}>
+        <View style={{width:'25%',  alignItems:'center'}}>
+
+        <View style={{paddingLeft:8}}>
+
+
+          {form.paymentConfirmationFileData ? (
+            <Image
+              source={{ uri: form.paymentConfirmationFileData }}
+              style={{ width: 130, height: 100, borderRadius:7 }}
+            />
+          ) : (
+            <View style={{ width: 130, height: 100, borderWidth:0.5, borderColor:'grey', borderRadius:7 }}>
 
             </View>
-            <View style={{backgroundColor:'blue', justifyContent:'center', alignItems:'center',  width:'100%', borderRadius:5}}>
-                <TouchableOpacity style={{width:'100%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:8, paddingVertical:7, color:'white', fontWeight:'bold', }}>Upload Image</Text>
-                </TouchableOpacity>
-            </View>
+          )}
+
+          <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 130, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
+                            <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
+          </TouchableOpacity>   
+                {/* <Text>File Name: {form.paymentConfirmationFileName}</Text> */}
+        </View>
+
         </View>
         <View style={{width:'85%',}}>
         <View style={{marginHorizontal:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
@@ -460,7 +497,7 @@ const DetailProduct = () => {
         </View>
 
         <View style={{margin:10, width:'80%',  }}>
-                    <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'grey', padding:4, borderRadius:5}}>
+                    <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 

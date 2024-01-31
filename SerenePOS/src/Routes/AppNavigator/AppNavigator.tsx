@@ -16,6 +16,9 @@ import Setting from '../../Screens/Setting/Setting';
 import PaymentMethodSetting from '../../Screens/PaymentMethodSetting/PaymentMethodSetting';
 import BussinessInfoSetting from '../../Screens/BussinessInfoSetting/BussinessInfoSetting';
 import TransactionHistory from '../../Screens/TransactionHistory/TransactionHistory';
+import Outlet from '../../Screens/Outlet/Outlet';
+import OutletDetail from '../../Screens/OutletDetail/OutletDetail';
+import TransactionHistoryDetail from '../../Screens/TransactionHistoryDetail/TransactionHistoryDetail';
 
 
 
@@ -32,7 +35,7 @@ const AppNavigator= () => {
         <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
         {/* <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} /> */}
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}  />
+        <Stack.Screen name="Account" component={Profile} options={{ headerShown: false }}  />
         <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }}  />
         <Stack.Screen name="Products" component={Products} options={{ headerShown: false }}  />
         <Stack.Screen name="ProductDetail" component={DetailProduct} options={{ headerShown: false }}  />
@@ -40,7 +43,9 @@ const AppNavigator= () => {
         <Stack.Screen name="Variants" component={Variant} options={{ headerShown: false }}  />
         <Stack.Screen name="VariantDetail" component={VariantDetail} options={{ headerShown: false }}  />
         <Stack.Screen name="TransactionHistory" component={TransactionHistory} options={{ headerShown: false }}  />
-
+        <Stack.Screen name="TransactionHistoryDetail" component={TransactionHistoryDetail} options={{ headerShown: false }}  />
+        <Stack.Screen name="Outlet" component={Outlet} options={{ headerShown: false }}  />
+        <Stack.Screen name="OutletDetail" component={OutletDetail} options={{ headerShown: false }}  />
         <Stack.Screen name="Setting" component={Setting} options={{ headerShown: false }}  />
         <Stack.Screen name="PaymentMethod" component={PaymentMethodSetting} options={{ headerShown: false }}  />
         <Stack.Screen name="BussinessInformation" component={BussinessInfoSetting} options={{ headerShown: false }}  />

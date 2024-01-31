@@ -13,14 +13,9 @@ import { useNavigation } from '@react-navigation/native';
 
 
 // Define TransactionHistory component
-const TransactionHistory: React.FC = () => {
-  const navigation = useNavigation();
+const Outlet: React.FC = () => {
+    const navigation = useNavigation();
 
-  const outlets = [
-    { label: 'Outlet A', value: 'outletA' },
-    { label: 'Outlet B', value: 'outletB' },
-    // Add more outlets as needed
-  ];
 
   const paymentMethods = [
     { label: 'Credit Card', value: 'creditCard' },
@@ -52,12 +47,6 @@ const TransactionHistory: React.FC = () => {
   // State variable for search
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Function to filter transaction history based on selected filters
-  const filterTransactions = () => {
-    // Implement filtering logic based on selected filters
-    // Update the filtered transactions state
-    // You can use a state variable for filtered transactions
-  };
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     if (Platform.OS === 'android') {
@@ -78,14 +67,14 @@ const TransactionHistory: React.FC = () => {
     // You can perform additional actions here, such as navigating to a detailed view
   };
 
-  const tableHeaders = ['Outlet', 'Payment Method', 'Payment Status', 'Date', 'Action']; 
+  const tableHeaders = ['Outlet', 'Payment Method', 'Payment Status', 'Date', 'Action']; // Added 'Action'
   const tableData = transactionHistoryData.map(item => [
     item.outlet,
     item.paymentMethod,
     item.paymentStatus,
     item.date,
-    <TouchableOpacity key={`view_${item.id}`} onPress={() => navigation.navigate('TransactionHistoryDetail' as never)} >
-      <Text style={{ color: 'blue', fontSize: 10, textDecorationLine: 'underline', textAlign:'center' }}>View</Text>
+    <TouchableOpacity key={`view_${item.id}`} onPress={() => onViewPress(item.outlet)}>
+      <Text style={{ color: 'blue', fontSize: 10, textDecorationLine: 'underline' }}>View</Text>
     </TouchableOpacity>,
   ]);
 
@@ -93,23 +82,9 @@ const TransactionHistory: React.FC = () => {
     <CommonLayout>
     <View style={{width:'100%'}}>
     <View style={{flexDirection: 'row', gap:10,  marginRight:30, marginVertical:10, alignItems:'center'}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Transaction History</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Outlet</Text>
       </View>
         <View style={{width:'40%'}}>
-    {/* Outlet filter */}
-      <View style={{ marginBottom: 10, height: 20, justifyContent: 'center' }}>
-      <RNPickerSelect
-          items={outlets}
-          onValueChange={(value) => setSelectedOutlet(value)}
-          value={selectedOutlet}
-        placeholder={{ label: 'Select Outlet', value: null }}
-        style={pickerSelectStyles}
-        useNativeAndroidPickerStyle={false}
-        Icon={() => {
-          return <View style={{marginTop:0}}><DropdownSVG width='11' height='11' color='black' /></View>;
-        }}
-      />
-    </View>
 
       {/* Payment Method filter */}
       <View style={{ marginBottom: 10, height: 20, justifyContent: 'center' }}>
@@ -117,7 +92,7 @@ const TransactionHistory: React.FC = () => {
           items={paymentMethods}
           onValueChange={(value) => setSelectedPaymentMethod(value)}
           value={selectedPaymentMethod}
-          placeholder={{ label: 'Select Payment Method', value: null }}
+          placeholder={{ label: 'Outlet', value: null }}
           style={pickerSelectStyles}
             useNativeAndroidPickerStyle={false}
             Icon={() => {
@@ -132,7 +107,7 @@ const TransactionHistory: React.FC = () => {
           items={paymentStatuses}
           onValueChange={(value) => setSelectedPaymentStatus(value)}
           value={selectedPaymentStatus}
-          placeholder={{ label: 'Select Payment Status', value: null }}
+          placeholder={{ label: 'Outlet Status', value: null }}
           style={pickerSelectStyles}
           useNativeAndroidPickerStyle={false}
           Icon={() => {
@@ -141,8 +116,8 @@ const TransactionHistory: React.FC = () => {
       </View>
 
 
-      <TouchableOpacity style={{backgroundColor:'blue', paddingVertical:5, justifyContent:'center', alignItems:'center', borderRadius: 6, height:20}}>
-        <Text style={{fontSize:8, color:'white'}}>Show</Text>
+      <TouchableOpacity onPress={()=> navigation.navigate('OutletDetail' as never)} style={{backgroundColor:'blue', paddingVertical:5, justifyContent:'center', alignItems:'center', borderRadius: 6, height:20}}>
+        <Text style={{fontSize:8, color:'white'}}>Add Outlet</Text>
       </TouchableOpacity>
 
       </View>
@@ -197,4 +172,4 @@ const pickerSelectStyles = StyleSheet.create({
       },
 });
 
-export default TransactionHistory
+export default Outlet

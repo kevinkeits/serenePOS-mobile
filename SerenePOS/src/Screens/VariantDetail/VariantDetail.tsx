@@ -9,6 +9,7 @@ import RNFS from 'react-native-fs';
 import { Picker } from '@react-native-picker/picker'
 import RNPickerSelect from "react-native-picker-select";
 import ImagePicker, { ImageLibraryOptions, ImagePickerResponse  } from 'react-native-image-picker';
+import DropdownSVG from '../../assets/svgs/DropdownSVG'
 
 
 
@@ -232,15 +233,7 @@ const VariantDetail = () => {
 
         <View style={{margin:10, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Type</Text>
-            <View style={{flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderColor: '#D2D2D2',
-            borderWidth:0.5,
-            borderRadius:5,
-            height:25
-            }}>
-
+            <View style={{marginBottom: 10, height: 25, justifyContent: 'center', width:'80%',}}>
             <RNPickerSelect
                 onValueChange={(language) => setLanguage(language)}
                 items={[
@@ -251,17 +244,12 @@ const VariantDetail = () => {
                     { label: "C++", value: "C++" },
                     { label: "C", value: "C" },
                 ]}
-                style={{
-                    inputAndroid: {
-                      fontSize: 8, // Adjust the font size as needed
-                      color: 'black', // Set the text color
-                    },
-                    inputIOS: {
-                      fontSize: 8,
-                      color: 'black',
-                    },
+
+                  useNativeAndroidPickerStyle={false}
+                  Icon={() => {
+                    return <View style={{marginTop:2}}><DropdownSVG width='11' height='11' color='black' /></View>;
                   }}
-            //   style={pickerSelectStyles}
+               style={pickerSelectStyles}
             
             />
 
@@ -422,11 +410,11 @@ const styles = StyleSheet.create({
       },
       addButton: {
         backgroundColor: '#2563EB',
-        padding: 4,
         borderRadius: 5,
         marginBottom: 10,
-        width:50,
-        height:30
+        justifyContent:'center',
+        width:25,
+        height:25
       },
       optionRow: {
         flexDirection: 'row',
@@ -444,5 +432,32 @@ const styles = StyleSheet.create({
         textAlign: 'center',
       },
   });
+
+  const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        fontSize: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderWidth: 0.5,
+        borderColor: '#D2D2D2',
+        borderRadius: 6,
+        color: 'black',
+        paddingRight: 30 // to ensure the text is never behind the icon
+    },
+    inputAndroid: {
+        fontSize: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderWidth: 0.5,
+        borderColor: '#D2D2D2',
+        borderRadius: 6,
+        color: 'black',
+        paddingRight: 30 // to ensure the text is never behind the icon
+    },
+    iconContainer: {
+        top: 5,
+        right: 15,
+      },
+});
 
 export default VariantDetail

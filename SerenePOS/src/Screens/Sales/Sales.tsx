@@ -172,7 +172,7 @@ React.useEffect(() => {
         <View style={{width: '70%'}}>
 
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, }}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto"}}>Sales</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Sales</Text>
       <Text style={{fontWeight:"bold", fontSize:17, }}></Text>
       </View>
 

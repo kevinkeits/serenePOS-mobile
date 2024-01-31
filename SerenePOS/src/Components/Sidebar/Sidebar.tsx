@@ -81,6 +81,17 @@ const Sidebar: React.FC = () => {
       <TouchableOpacity
         style={[
           styles.menuItemContainer,
+          isActive('Outlet') && styles.activeMenuItemContainer,
+        ]}
+        onPress={() => navigateToScreen('Outlet')}
+      >
+        <CategoriesSVG width='12' height='12' color={isActive('Outlet') ? 'white' : 'black'}  />
+        <Text style={[styles.menuItem, isActive('Outlet') && styles.activeMenuItemText]}>Outlets</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.menuItemContainer,
           isActive('TransactionHistory') && styles.activeMenuItemContainer,
         ]}
         onPress={() => navigateToScreen('TransactionHistory')}
@@ -98,6 +109,17 @@ const Sidebar: React.FC = () => {
       >
         <CategoriesSVG width='12' height='12' color={isActive('Setting') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Setting') && styles.activeMenuItemText]}>Settings</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.menuItemContainer,
+          isActive('Account') && styles.activeMenuItemContainer,
+        ]}
+        onPress={() => navigateToScreen('Account')}
+      >
+        <CategoriesSVG width='12' height='12' color={isActive('Account') ? 'white' : 'black'}  />
+        <Text style={[styles.menuItem, isActive('Account') && styles.activeMenuItemText]}>Account</Text>
       </TouchableOpacity>
 
       
