@@ -13,6 +13,9 @@ import Categories from '../../Screens/Categories/Categories';
 import Variant from '../../Screens/Variant/Variant';
 import VariantDetail from '../../Screens/VariantDetail/VariantDetail';
 import Setting from '../../Screens/Setting/Setting';
+import PaymentMethodSetting from '../../Screens/PaymentMethodSetting/PaymentMethodSetting';
+import BussinessInfoSetting from '../../Screens/BussinessInfoSetting/BussinessInfoSetting';
+import TransactionHistory from '../../Screens/TransactionHistory/TransactionHistory';
 
 
 
@@ -36,7 +39,11 @@ const AppNavigator= () => {
         <Stack.Screen name="Categories" component={Categories} options={{ headerShown: false }}  />
         <Stack.Screen name="Variants" component={Variant} options={{ headerShown: false }}  />
         <Stack.Screen name="VariantDetail" component={VariantDetail} options={{ headerShown: false }}  />
+        <Stack.Screen name="TransactionHistory" component={TransactionHistory} options={{ headerShown: false }}  />
+
         <Stack.Screen name="Setting" component={Setting} options={{ headerShown: false }}  />
+        <Stack.Screen name="PaymentMethod" component={PaymentMethodSetting} options={{ headerShown: false }}  />
+        <Stack.Screen name="BussinessInformation" component={BussinessInfoSetting} options={{ headerShown: false }}  />
 
 
       </Stack.Navigator>

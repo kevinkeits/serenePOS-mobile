@@ -32,21 +32,12 @@ const Setting = () => {
 
     const navigation = useNavigation();
 
-    const onOpenDetail = (item?: Categories) => {
-        setSelectedItemForEdit(item ?? null);
+    const onOpenDetail = () => {
         setIsOpenDetail(true);
       };
     
       const onCloseDetail = () => {
         setIsOpenDetail(false);
-      };
-
-      const onOpenConfirmation= () => {
-        setIsOpenConfirmation(true);
-      };
-    
-      const onCloseConfirmation = () => {
-        setIsOpenConfirmation(false);
       };
 
 
@@ -60,69 +51,6 @@ const Setting = () => {
         }
       };
 
-      const handleProductPress = (selectedItem: Coffee) => {
-        // Handle the press action for each product
-        navigation.navigate('ProductDetail' as never);
-      };
-    
-      const handleCheckboxPress = (itemId: string) => {
-        // Toggle the selection status of the item
-        setSelectedItems((prevSelectedItems) => {
-          if (prevSelectedItems.includes(itemId)) {
-            // If the item is already selected, remove it from the list
-            return prevSelectedItems.filter((id) => id !== itemId);
-          } else {
-            // If the item is not selected, add it to the list
-            return [...prevSelectedItems, itemId];
-          }
-        });
-      };
-    
-      const handleDeleteModeToggle = () => {
-        setDeleteMode((prevDeleteMode) => !prevDeleteMode);
-        // Clear the selected items when exiting delete mode
-        if (!deleteMode) {
-          setSelectedItems([]);
-        }
-      };
-
-      const handleCancelPress = () => {
-        setDeleteMode(false);
-        setSelectedItems([]);
-      };
-
-    const data = [
-        {
-        id: '1',
-        name: 'Coffee',
-        totalItem: '3'
-      },
-      {
-        id: '2',
-        name: 'Non Coffee',
-        totalItem: '5'
-      },
-      {
-        id: '3',
-        name: 'Food',
-        totalItem: '10'
-      },
-      {
-        id: '4',
-        name: 'Main Course',
-        totalItem: '8'
-      },
-      {
-        id: '5',
-        name: 'Signature',
-        totalItem: '8'
-      },
-      {
-        id: '6',
-        name: 'Dessert',
-        totalItem: '9'
-      },
-    ];
 
     React.useEffect(() => {
         fetchData();
@@ -144,7 +72,7 @@ const Setting = () => {
       <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', justifyContent:'center', marginVertical:3}}>
           <View  style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', flexWrap:'wrap', alignItems:'center'}}>
 
-        <TouchableOpacity    style={styles.firstRowItem}>
+        <TouchableOpacity onPress={()=> navigation.navigate('BussinessInformation' as never)}     style={styles.firstRowItem}>
             <View style={{ marginHorizontal: 10}}>
                 <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>Bussiness Information</Text>
             </View>
@@ -162,7 +90,7 @@ const Setting = () => {
             </View>
         </TouchableOpacity>
 
-        <TouchableOpacity    style={styles.firstRowItem}>
+        <TouchableOpacity onPress={()=> navigation.navigate('PaymentMethod' as never)}   style={styles.firstRowItem}>
             <View style={{ marginHorizontal: 10}}>
                 <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>Payment Method</Text>
             </View>
@@ -190,7 +118,7 @@ const Setting = () => {
 
 const styles = StyleSheet.create({
     firstRowItem: {
-      backgroundColor:"blue",
+      backgroundColor:"#2563EB",
       justifyContent: 'center',
       alignItems:'center',
       width:130, 

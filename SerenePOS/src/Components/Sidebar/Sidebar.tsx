@@ -6,6 +6,7 @@ import SalesSVG from '../../assets/svgs/SalesSVG';
 import ProductSVG from '../../assets/svgs/ProductSVG';
 import DashboardSVG from '../../assets/svgs/DashboardSVG';
 import CategoriesSVG from '../../assets/svgs/CategoriesSVG';
+import TransactionHistorySVG from '../../assets/svgs/TransactionHistorySVG';
 
 // import { Ionicons } from '@expo/vector-icons';
 
@@ -75,6 +76,17 @@ const Sidebar: React.FC = () => {
       >
         <CategoriesSVG width='12' height='12' color={isActive('Variants') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Variants') && styles.activeMenuItemText]}>Variants</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.menuItemContainer,
+          isActive('TransactionHistory') && styles.activeMenuItemContainer,
+        ]}
+        onPress={() => navigateToScreen('TransactionHistory')}
+      >
+        <TransactionHistorySVG width='12' height='12' color={isActive('TransactionHistory') ? 'white' : 'black'}  />
+        <Text style={[styles.menuItem, isActive('TransactionHistory') && styles.activeMenuItemText]}>Transaction History</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
