@@ -240,7 +240,11 @@ const Profile = () => {
 
           <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 130, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
                             <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
-          </TouchableOpacity>   
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{justifyContent:'center',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
+                            <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Logout</Text>
+          </TouchableOpacity>    
                 {/* <Text>File Name: {form.paymentConfirmationFileName}</Text> */}
         </View>
 

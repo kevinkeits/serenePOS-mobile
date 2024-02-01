@@ -10,6 +10,7 @@ import { Picker } from '@react-native-picker/picker'
 import RNPickerSelect from "react-native-picker-select";
 import ImagePicker, { ImageLibraryOptions, ImagePickerResponse  } from 'react-native-image-picker';
 import DropdownSVG from '../../assets/svgs/DropdownSVG'
+import ProductModal from './ProductModal/ProductModal'
 
 
 
@@ -63,9 +64,14 @@ const VariantDetail = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [textName, setTextName] = React.useState('');
-    const [quantity, setQuantity] = React.useState(1);
-    const [ language, setLanguage ] = React.useState("");
+    const [ selectedType, setSelectedType] = React.useState("");
+    const [ selectedCategory, setSelectedCategory] = React.useState("");
     const [options, setOptions] = React.useState<Option[]>([]);
+    const [isOpenProduct, setIsOpenProduct] = React.useState(false);
+    const [selectedProducts, setSelectedProducts] = React.useState<Coffee[]>([]);
+
+
+
 
 
   const [selectedOptionIds, setSelectedOptionIds] = React.useState<string[]>([]);
@@ -81,6 +87,15 @@ const VariantDetail = () => {
   const [isAddOnSubmitting, setIsAddOnSubmitting] = React.useState(false); 
 
   
+
+  const onOpenProduct = () => {
+    setIsOpenProduct(true);
+  };
+
+  const onCloseProduct = () => {
+    setIsOpenProduct(false);
+  };
+ 
 
   const handleTextInputChange = (id: string, text: string) => {
     setServingInputValues((prevValues) => {
@@ -158,11 +173,16 @@ const VariantDetail = () => {
     setOptions(newOptions);
   };
 
-  const handleOption= (index: number, field: keyof Option, value: string) => {
+  const handleOption = (index: number, field: keyof Option, value: string) => {
     const newOptions = [...options];
     newOptions[index][field] = value;
     setOptions(newOptions);
   };
+
+  const onSaveProducts = (selectedData: Coffee[]) => {
+    setSelectedProducts(selectedData)
+    setIsOpenProduct(false);
+  }
  
     
 
@@ -208,7 +228,7 @@ const VariantDetail = () => {
        
         <View style={{width:'100%',}}>
 
-        <View style={{margin:10, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
+        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Name</Text>
                     <View
                         style={{
@@ -231,18 +251,14 @@ const VariantDetail = () => {
                     </View>          
         </View>
 
-        <View style={{margin:10, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
+        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Type</Text>
             <View style={{marginBottom: 10, height: 25, justifyContent: 'center', width:'80%',}}>
             <RNPickerSelect
-                onValueChange={(language) => setLanguage(language)}
+                onValueChange={(x) => setSelectedType(x)}
                 items={[
-                    { label: "JavaScript", value: "JavaScript" },
-                    { label: "TypeScript", value: "TypeScript" },
-                    { label: "Python", value: "Python" },
-                    { label: "Java", value: "Java" },
-                    { label: "C++", value: "C++" },
-                    { label: "C", value: "C" },
+                    { label: "Single Selection", value: "1" },
+                    { label: "Multi Selection", value: "2" },
                 ]}
 
                   useNativeAndroidPickerStyle={false}
@@ -257,7 +273,9 @@ const VariantDetail = () => {
             </View>        
         </View>
 
-        <View style={{margin:10, flexDirection:'row', width:'90%', justifyContent:'center'}}>
+{(selectedType == '1' || selectedType == '2') && (
+  <View>
+        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Options</Text>
                     <View style={{width:'80%'}}>
                         <TouchableOpacity onPress={handleAddOption} style={styles.addButton}>
@@ -284,8 +302,36 @@ const VariantDetail = () => {
                             </TouchableOpacity>             
                         </View>
                      ))}
-    </View>       
+                    </View>       
         </View>
+
+        <View style={{borderBottomWidth:0.5, borderBottomColor:'grey', marginVertical:10}}/>
+
+        <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Choose Product</Text>
+        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
+                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Category</Text>
+            <View style={{ height: 25, justifyContent: 'center', width:'60%',}}>
+
+            </View>
+            <View style={{width:'20%', alignSelf:'center', backgroundColor:'#2563EB', justifyContent:'center', alignItems:'center', height:25, borderRadius:6, marginLeft:5}}>
+                    <TouchableOpacity onPress={()=> onOpenProduct()} style={{width:'100%' }}>
+                      <Text style={{fontSize:8, color:'white', textAlign:'center'}}>Select Product</Text>
+                    </TouchableOpacity>
+            </View>
+
+        </View>
+        <View style={{flexDirection:'row', gap:10, flexWrap:'wrap'}}>
+          {selectedProducts.map((x, index)=> (
+            <View key={index} style={{width:60, height:100}}>
+              <View style={{width:60, height:60}}>
+                    <Image source={{ uri: x.image }} style={{width:'100%', height:'100%'}} />
+              </View>
+              <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}} numberOfLines={1} ellipsizeMode="tail">{x.title}</Text>
+            </View>
+          ))}
+        </View>
+    </View>
+        )}
 
         <View style={{margin:10, width:'90%',  }}>
                     <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
@@ -303,6 +349,7 @@ const VariantDetail = () => {
       
 
       </View>
+      <ProductModal isVisible={isOpenProduct} data={coffeeData} onClose={onCloseProduct} onSave={onSaveProducts}/>
 
       
     </CommonLayout>

@@ -19,6 +19,7 @@ import TransactionHistory from '../../Screens/TransactionHistory/TransactionHist
 import Outlet from '../../Screens/Outlet/Outlet';
 import OutletDetail from '../../Screens/OutletDetail/OutletDetail';
 import TransactionHistoryDetail from '../../Screens/TransactionHistoryDetail/TransactionHistoryDetail';
+import SignUp from '../../Screens/SignUp/SignUp';
 
 
 
@@ -33,7 +34,8 @@ const AppNavigator= () => {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Splash">
         <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
-        {/* <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} /> */}
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+        <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="Account" component={Profile} options={{ headerShown: false }}  />
         <Stack.Screen name="Sales" component={Sales} options={{ headerShown: false }}  />

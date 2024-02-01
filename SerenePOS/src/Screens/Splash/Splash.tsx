@@ -7,7 +7,7 @@ const Splash: React.FC = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('Home' as never);
+      navigation.navigate('Login' as never);
     }, 2000);
   }, []);
 

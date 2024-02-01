@@ -5,6 +5,7 @@ import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet } from 'rea
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
+import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
 
 export interface Coffee {
     id: number;
@@ -197,6 +198,7 @@ const Variant = () => {
       
       </View>
       </View>
+      <ConfirmationModal isVisible={isOpenConfirmation} totalItems={selectedItems.length} onClose={onCloseConfirmation} />
 
       
     </CommonLayout>
