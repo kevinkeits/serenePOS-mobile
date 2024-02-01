@@ -20,6 +20,15 @@ const Sidebar: React.FC = () => {
     navigation.navigate(screenName as never);
   };
 
+  const CircleAvatar = (accountName: string) => {
+    const initials = accountName.split(' ').map(word => word[0]).join('').toUpperCase();
+    return (
+      <Text style={styles.circleAvatar}>
+        {initials}
+      </Text>
+    );
+  };
+
   return (
     <View style={styles.container}>
         <View>
@@ -78,7 +87,7 @@ const Sidebar: React.FC = () => {
         <Text style={[styles.menuItem, isActive('Variants') && styles.activeMenuItemText]}>Variants</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={[
           styles.menuItemContainer,
           isActive('Outlet') && styles.activeMenuItemContainer,
@@ -87,7 +96,7 @@ const Sidebar: React.FC = () => {
       >
         <CategoriesSVG width='12' height='12' color={isActive('Outlet') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Outlet') && styles.activeMenuItemText]}>Outlets</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <TouchableOpacity
         style={[
@@ -110,7 +119,7 @@ const Sidebar: React.FC = () => {
         <CategoriesSVG width='12' height='12' color={isActive('Setting') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Setting') && styles.activeMenuItemText]}>Settings</Text>
       </TouchableOpacity>
-
+{/* 
       <TouchableOpacity
         style={[
           styles.menuItemContainer,
@@ -120,12 +129,25 @@ const Sidebar: React.FC = () => {
       >
         <CategoriesSVG width='12' height='12' color={isActive('Account') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Account') && styles.activeMenuItemText]}>Account</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       
       </View>
       <View>
-        <Text style={{marginBottom:20, fontSize:10, marginLeft:15}}>serenePOS v1.00</Text>
+
+      <TouchableOpacity
+        style={[
+          styles.menuAccountContainer,
+          isActive('Account') && styles.activeMenuItemContainer,
+        ]}
+        onPress={() => navigateToScreen('Account')}
+      >
+        {CircleAvatar('Lovi M.')}
+        <Text style={styles.menuAccountItem}>Lovi M.</Text>
+      </TouchableOpacity>
+
+
+        <Text style={{marginBottom:10, fontSize:8, marginLeft:6}}>serenePOS v1.00</Text>
       </View>
 
       {/* Add more menu items as needed */}
@@ -135,7 +157,7 @@ const Sidebar: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 6,
+    paddingVertical: 3,
     paddingHorizontal: 2,
     width: '20%',
     flexDirection: 'column',
@@ -152,6 +174,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingLeft: 10
   },
+  menuAccountContainer: {
+    // backgroundColor: '#ffffff',
+    borderRadius: 20,
+    borderWidth:0.5,
+    borderColor:'#D2D2D2',
+    paddingVertical:4,
+    // borderRadius: 5,
+    marginBottom: 10,
+    flexDirection: 'row',
+    paddingLeft: 10
+  },
   activeMenuItemContainer: {
     backgroundColor: '#2563EB',
   },
@@ -161,8 +194,26 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal:8
   },
+  menuAccountItem: {
+    color: 'black',
+    fontSize: 8,
+    paddingVertical: 6,
+    paddingHorizontal:8
+  },
   activeMenuItemText: {
     color: 'white',
+  },
+  circleAvatar: {
+    width: 20,
+    height: 20,
+    fontSize:8,
+    padding:4,
+    borderRadius: 20,
+    fontWeight:'bold',
+    backgroundColor: '#E1F0DA', // Change this to your desired background color
+    color: 'black', // Change this to your desired text color
+    textAlign: 'center',
+    alignSelf:'center'
   },
 });
 

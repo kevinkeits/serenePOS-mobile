@@ -42,7 +42,7 @@ const Home = () => {
       </View>
       </View>
 
-      <View style={{flexDirection:"row", gap:10, marginHorizontal:"auto", marginVertical:30, justifyContent: 'center', alignItems:'center'}}>
+      <View style={{flexDirection:"row", gap:10, marginHorizontal:"auto", marginVertical:10, justifyContent: 'center', alignItems:'center'}}>
       <View style={{ width:180, height:170, borderRadius:10, borderWidth:0.5, borderColor:'#D2D2D2'}}>
       <Text style={{fontWeight: "bold", color: "black", fontSize: 13, marginVertical:10, marginLeft:20}}>Top Selling Product</Text>
       <ScrollView>

@@ -10,6 +10,7 @@ import EditOrderModal from './components/EditOrderModal/EditOrderModal';
 import DiscountModal from './components/DiscountModal/DiscountModal';
 import PencilSVG from '../../assets/svgs/PencilSVG';
 import DiscountSVG from '../../assets/svgs/DiscountSVG';
+import OtherPaymentModal from './components/OtherPayment/OtherPayment';
 
 export interface Coffee {
     id: number;
@@ -28,7 +29,6 @@ const Sales = () => {
     const [isOpenPayment, setIsOpenPayment] = React.useState(false);
     const [isOpenOrder, setIsOpenOrder] = React.useState(false);
     const [isOpenDiscount, setIsOpenDiscount] = React.useState(false);
-
     const [customerName, setCustomerName] = React.useState('Aulia');
 
 
@@ -191,12 +191,12 @@ React.useEffect(() => {
       <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto"}}>Coffee</Text>
       <Text style={{fontWeight:"bold", fontSize:17}}></Text>
       </View>
-    <View style={{justifyContent:'center', alignItems: 'center', marginBottom:20}}>
+    <View style={{justifyContent:'center', alignItems: 'center', marginBottom:20, width:'95%'}}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollView}>
       {coffeeData.map((x) => (
         <TouchableOpacity key={x.id} style={styles.card} onPress={() => addToSelectedItems(x)}>
           <Image source={{ uri: x.image }} style={styles.image} />
-          <Text style={styles.title}>{x.title}</Text>
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{x.title}</Text>
           <Text style={styles.price}>${x.price}</Text>
         </TouchableOpacity>
       ))}
@@ -285,6 +285,7 @@ React.useEffect(() => {
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
     <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.id)} />
 
+
     </CommonLayout>
   )
 }
@@ -309,10 +310,10 @@ const styles = StyleSheet.create({
   },
   card: {
     marginRight: 10,
-    borderWidth: 1,
+    borderWidth: 0.5,
     width:90, 
     height:120, 
-    borderRadius:15, 
+    borderRadius:10, 
   },
   image: {
     width: '100%',
@@ -324,6 +325,7 @@ const styles = StyleSheet.create({
     padding: 10,
     textAlign: 'center',
     fontSize: 8,
+
   },
   price: {
     paddingVertical: 5,

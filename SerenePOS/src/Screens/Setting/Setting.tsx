@@ -413,7 +413,7 @@ const Setting = () => {
                           style={{
                               width:'80%'
                           }}>
-                              <Text style={{fontSize:8, color:'grey',  width:'30%'}}>Last Sinc  27 Jan 2024 </Text>
+                              <Text style={{fontSize:8, color:'grey',  width:'30%'}}>Last Sync  27 Jan 2024 </Text>
                       </View>          
           </View>
 
