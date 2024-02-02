@@ -39,7 +39,7 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('Home')}
       >
-        {/* <DashboardSVG width='12' heigth='12' color={isActive('Home') ? 'white' : 'black'}  /> */}
+        <SalesSVG width='12' heigth='12' color={isActive('Home') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Home') && styles.activeMenuItemText]}>Dashboard</Text>
       </TouchableOpacity>
 
@@ -109,7 +109,7 @@ const Sidebar: React.FC = () => {
         <Text style={[styles.menuItem, isActive('TransactionHistory') && styles.activeMenuItemText]}>Transaction History</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={[
           styles.menuItemContainer,
           isActive('Setting') && styles.activeMenuItemContainer,
@@ -118,7 +118,7 @@ const Sidebar: React.FC = () => {
       >
         <CategoriesSVG width='12' height='12' color={isActive('Setting') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Setting') && styles.activeMenuItemText]}>Settings</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 {/* 
       <TouchableOpacity
         style={[

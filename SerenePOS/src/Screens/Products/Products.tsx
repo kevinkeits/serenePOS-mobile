@@ -27,6 +27,8 @@ const Products = () => {
     const [selectedItems, setSelectedItems] = React.useState<number[]>([]);
     const [deleteMode, setDeleteMode] = React.useState(false);
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
+
 
 
     const navigation = useNavigation();
@@ -42,8 +44,10 @@ const Products = () => {
 
     const fetchData = async () => {
         try {
+
           const response = await axios.get('https://fakestoreapi.com/products?limit=12');
           const data: Coffee[] = response.data;
+          setLoading(false)
           setCoffeeData(data);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -83,7 +87,7 @@ const Products = () => {
 
       const handleNavigate = ( selectedData: Coffee | null) => {
         console.log(selectedData)
-        navigation.navigate('ProductDetail', {data: selectedData})
+        navigation.navigate('ProductDetail' as never, {data: selectedData} as never)
       };
 
       const data: Categories[] = [
@@ -138,7 +142,7 @@ const Products = () => {
   return (
     <CommonLayout>
       <View style={{}}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:5, alignItems:'center'}}>
       <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Products</Text>
       {deleteMode ? (
         <View/>
@@ -190,18 +194,27 @@ const Products = () => {
                     )}
                   </TouchableOpacity>
                 )}
-            <TouchableOpacity 
-            key={index}
-            onPress={() => handleNavigate(x)} 
-            style={styles.cardRow}>
-                <View style={{width:'50%'}}>
-                    <Image source={{ uri: x.image }} style={{width:'100%', height:'100%'}} />
-                </View>
-                <View style={{width:'50%'}}>
-                    <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.title}</Text>
-                    <Text style={{fontSize:8, color: 'black' }}>Rp {x.price}</Text>
-                </View>
-            </TouchableOpacity>
+
+                {loading ? (
+                  <View 
+                  key={index}
+                  style={styles.cardRowSkeleton} />
+                  
+                ):(
+                    <TouchableOpacity 
+                      key={index}
+                      onPress={() => handleNavigate(x)} 
+                      style={styles.cardRow}>
+                  <View style={{width:'50%'}}>
+                      <Image source={{ uri: x.image }} style={{width:'100%', height:'100%'}} />
+                  </View>
+                  <View style={{width:'50%'}}>
+                      <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.title}</Text>
+                      <Text style={{fontSize:8, color: 'black' }}>Rp {x.price}</Text>
+                  </View>
+              </TouchableOpacity>
+                )}
+            
             </View>
         ))}
       </View>
@@ -254,6 +267,15 @@ const styles = StyleSheet.create({
       justifyContent:'center', 
       alignItems:'center',
       borderColor:'#D2D2D2',
+      width:130, 
+      margin: 4,
+    },
+    cardRowSkeleton: {
+      padding:10, 
+      gap:5,
+      borderRadius:7,  
+      height:100, 
+      backgroundColor:'black',
       width:130, 
       margin: 4,
     },

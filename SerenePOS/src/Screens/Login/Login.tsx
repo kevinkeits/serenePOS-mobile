@@ -16,8 +16,6 @@ const Login = () => {
   const handleLogin = () => {
     if (username === 'user' && password === '123') {
       navigation.navigate('Home' as never);
-      setUsername('');
-      setPassword('');
     } else {
       Alert.alert('Error', 'Invalid username or password');
     }

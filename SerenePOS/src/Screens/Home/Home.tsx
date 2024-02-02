@@ -13,7 +13,7 @@ const Home = () => {
   return (
     <CommonLayout>
       <View style={{}}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:10}}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:5}}>
       <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Dashboard</Text>
       {/* <Text style={{fontWeight:"bold", fontSize:8, borderWidth:2, padding:7, borderColor:"#ECEDF3", borderRadius:20, margin: "auto", textAlign: 'center'}}>{getCurrentDate()}</Text> */}
       </View>

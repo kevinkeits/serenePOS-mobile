@@ -9,6 +9,7 @@ import { Picker } from '@react-native-picker/picker'
 import RNPickerSelect from "react-native-picker-select";
 import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
+import SettingsSVG from '../../assets/svgs/SettingsSVG'
 
 
 
@@ -239,8 +240,14 @@ const Profile = () => {
                             <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>navigation.navigate('Login' as never)} style={{justifyContent:'center',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
-                            <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Logout</Text>
+          <TouchableOpacity onPress={()=>navigation.navigate('Setting' as never)} style={{justifyContent:'center', gap:4, flexDirection:'row',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
+              <SettingsSVG width='11' height='11' color='black'/>
+              <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Setting</Text>
+          </TouchableOpacity> 
+
+          <TouchableOpacity onPress={()=>navigation.navigate('Login' as never)} style={{justifyContent:'center', gap:4, flexDirection:'row',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
+                  <SettingsSVG width='11' height='11' color='black'/>
+                  <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Logout</Text>
           </TouchableOpacity>    
                 {/* <Text>File Name: {form.paymentConfirmationFileName}</Text> */}
         </View>
