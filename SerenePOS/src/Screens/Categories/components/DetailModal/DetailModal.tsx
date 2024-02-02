@@ -19,6 +19,31 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selecte
 
     const [quantity, setQuantity] = React.useState(1);
     const [textName, setTextName] = React.useState('');
+    const [colorSelection, setColorSelection] = React.useState<string | null>(null);
+
+
+
+    const handleColorSelection = (color: string) => {
+      setColorSelection(color);
+    };
+
+    const renderColorSelection = () => {
+      const colors = ['#7653DA', '#2925EB', '#2563EB', '#4AB8E8', '#E88C4A', '#E84AD8', '#E84A4A' ]; 
+      return (
+        <View style={styles.colorSelectionContainer}>
+          {colors.map((color, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.colorOption,
+                { backgroundColor: color, borderColor: colorSelection === color ? 'black' : 'transparent' },
+              ]}
+              onPress={() => handleColorSelection(color)}
+            />
+          ))}
+        </View>
+      );
+    };
 
 
     const incrementQuantity = () => {
@@ -34,6 +59,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selecte
     const handleClose = () => {
         setTextName('')
         setQuantity(1)
+        setColorSelection('')
         onClose()
       };
 
@@ -42,6 +68,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selecte
         if (selectedItem) {
           setTextName(selectedItem.name)
           setQuantity(parseInt(selectedItem.totalItem))
+          setColorSelection(selectedItem.color || null);
         }
     }, [selectedItem]);
 
@@ -99,6 +126,11 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selecte
                     <Text style={styles.quantityButtonText}>+</Text>
                     </TouchableOpacity>
                 </View>       
+        </View>
+
+        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'85%', justifyContent:'space-between', alignItems:'center'}}>
+        <Text style={{fontSize:10,  marginBottom:5, marginLeft:8, color:'black', width:'15%'}}>Color</Text>
+                {renderColorSelection()}      
         </View>
 
         <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
@@ -164,8 +196,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButtonText: {
-    color: 'grey', // Change color to black
-    fontSize: 15,
+    color: 'black',
+    fontSize: 13,
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -200,6 +232,19 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
   },
+  colorSelectionContainer: {
+    flexDirection: 'row',
+    width:'80%',
+    justifyContent:'flex-end'
+  },
+  colorOption: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginHorizontal: 2,
+    borderWidth:2,
+  },
+  
 });
 
 export default DetailModal;

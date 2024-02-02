@@ -9,6 +9,8 @@ import { Picker } from '@react-native-picker/picker'
 import RNPickerSelect from "react-native-picker-select";
 import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
+import DropdownSVG from '../../assets/svgs/DropdownSVG'
+import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
 
 
 
@@ -50,7 +52,14 @@ export interface Coffee {
     // Add more options as needed
   ];
 
-const DetailProduct = () => {
+  type DetailScreenProps = {
+    route: { params: {  data: Coffee | null } };
+  };
+  
+  
+const DetailProduct = ({ route }: DetailScreenProps) => {
+
+  const  { data }  = route.params
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [textProductSKU, setTextProductSKU] = React.useState('');
@@ -60,6 +69,10 @@ const DetailProduct = () => {
     const [quantity, setQuantity] = React.useState(1);
     const [selectedCategory, setSelectedCategory] =  React.useState<CategoryOption | null>(null);
     const [ language, setLanguage ] = React.useState("");
+
+    const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
+
+
   const [selectedOptionIds, setSelectedOptionIds] = React.useState<string[]>([]);
   const [servingInputValues, setServingInputValues] = React.useState<string[]>(temperatureOptions.map(() => ''));
   const [isServingSubmitting, setIsServingSubmitting] = React.useState(false); 
@@ -77,6 +90,15 @@ const DetailProduct = () => {
     paymentConfirmationFileName: '',
     paymentConfirmationFileData: '',
   });
+
+
+      const onOpenConfirmation= () => {
+        setIsOpenConfirmation(true);
+      };
+    
+      const onCloseConfirmation = () => {
+        setIsOpenConfirmation(false);
+      };
   
 
   const handleTextInputChange = (id: string, text: string) => {
@@ -209,55 +231,78 @@ const DetailProduct = () => {
 
 
     React.useEffect(() => {
-        fetchData();
-      }, []);
+        if (data) {
+          setTextName(data.title)
+          setTextPrice(data.price.toString())
+        }
+      }, [data]);
 
   return (
     <CommonLayout>
       <View style={{}}>
       <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
-        {/* <TouchableOpacity onPress={()=> navigation.goBack()}>
-            <Text style={{fontSize:12, fontWeight:'bold', color:'black'}}>&lt;--</Text>
-        </TouchableOpacity> */}
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Add Products</Text>
+        <TouchableOpacity onPress={()=> navigation.goBack()}>
+            <Text style={{fontSize:10, fontWeight:'bold', color:'black'}}>&lt;--</Text>
+        </TouchableOpacity>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{data ? 'Edit' : ' Add'} Product</Text>
       </View>
       <View style={{flexDirection:'row', gap:6}}>
         <View style={{width:'25%',  alignItems:'center'}}>
 
-        <View style={{paddingLeft:8}}>
+          {data && data.image ? (
+            <View style={{paddingLeft:8}}>
+                {form.paymentConfirmationFileData ? (
+                 <Image
+                 source={{ uri: form.paymentConfirmationFileData }}
+                 style={{ width: 120, height: 100, borderRadius:7 }}
+               />
+                ) : (
+              
+                  <Image
+                  source={{ uri: data.image }}
+                  style={{ width: 120, height: 100, borderRadius:7 }}
+                />
+                )}
 
-
-          {form.paymentConfirmationFileData ? (
-            <Image
-              source={{ uri: form.paymentConfirmationFileData }}
-              style={{ width: 130, height: 100, borderRadius:7 }}
-            />
-          ) : (
-            <View style={{ width: 130, height: 100, borderWidth:0.5, borderColor:'grey', borderRadius:7 }}>
-
-            </View>
+                <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 120, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
+                                  <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
+                </TouchableOpacity>   
+              </View>
+              ):(
+                <View style={{paddingLeft:8}}>
+                {form.paymentConfirmationFileData ? (
+                  <Image
+                    source={{ uri: form.paymentConfirmationFileData }}
+                    style={{ width: 120, height: 100, borderRadius:7 }}
+                  />
+                ) : (
+                  <View style={{ width: 120, height: 100, borderWidth:0.5, borderColor:'grey', borderRadius:7 }}>
+      
+                  </View>
+                )}
+      
+                <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 120, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
+                                  <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
+                </TouchableOpacity>   
+              </View>
           )}
 
-          <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 130, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
-                            <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
-          </TouchableOpacity>   
-                {/* <Text>File Name: {form.paymentConfirmationFileName}</Text> */}
-        </View>
+
 
         </View>
         <View style={{width:'85%',}}>
-        <View style={{marginHorizontal:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        <View style={{marginHorizontal:10, marginBottom:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Product SKU</Text>
                     <View
                         style={{
-                            backgroundColor: '#D2D2D2',
+                            backgroundColor: textProductSKU,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
                             width:'80%'
                         }}>
                         <TextInput
-                            editable={false}
+                            editable={true}
                             // multiline
                             // numberOfLines={4}
                             maxLength={40}
@@ -267,7 +312,7 @@ const DetailProduct = () => {
                         />
                     </View>          
         </View>
-        <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Name</Text>
                     <View
                         style={{
@@ -290,15 +335,12 @@ const DetailProduct = () => {
                     </View>          
         </View>
 
-        <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        <View style={{ marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Category</Text>
             <View style={{flex: 1,
             justifyContent: 'center',
-            alignItems: 'center',
-            borderColor: '#D2D2D2',
-            borderWidth:0.5,
-            borderRadius:5,
-            height:25
+            height:25,
+            width:'100%',
             }}>
 
             <RNPickerSelect
@@ -311,17 +353,11 @@ const DetailProduct = () => {
                     { label: "C++", value: "C++" },
                     { label: "C", value: "C" },
                 ]}
-                style={{
-                    inputAndroid: {
-                      fontSize: 8, // Adjust the font size as needed
-                      color: 'black', // Set the text color
-                    },
-                    inputIOS: {
-                      fontSize: 8,
-                      color: 'black',
-                    },
-                  }}
-            //   style={pickerSelectStyles}
+                useNativeAndroidPickerStyle={false}
+                Icon={() => {
+                  return <View style={{marginTop:2}}><DropdownSVG width='11' height='11' color='black' /></View>;
+                }}
+             style={pickerSelectStyles}
             
             />
 
@@ -329,7 +365,7 @@ const DetailProduct = () => {
             </View>        
         </View>
 
-        <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Qty</Text>
                 <View style={{flexDirection: 'row', justifyContent:'space-between', }}>
 
@@ -348,7 +384,7 @@ const DetailProduct = () => {
           </View>         
         </View>
 
-        <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Price</Text>
                     <View
                         style={{
@@ -371,7 +407,7 @@ const DetailProduct = () => {
                     </View>          
         </View>
 
-        <View style={{margin:10, flexDirection:'row', width:'80%',  }}>
+        <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%',  }}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Descriptions</Text>
                     <View
                         style={{
@@ -394,7 +430,9 @@ const DetailProduct = () => {
                     </View>          
         </View>
 
-        <View style={{margin:10, flexDirection:'row', width:'80%',  }}>
+        {data && (
+          <View>
+            <View style={{margin:10, flexDirection:'row', width:'80%',  }}>
         <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Serving: </Text>
           <View>
             {temperatureOptions.map((option, index) => (
@@ -496,22 +534,32 @@ const DetailProduct = () => {
         </View>
         </View>
 
-        <View style={{margin:10, width:'80%',  }}>
+          </View>
+        )}
+
+        <View style={{marginHorizontal:10, marginVertical:8, width:'80%',  }}>
                     <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
+                        <Text style={{fontSize:8, color:'white', }}>Save</Text>
                     </TouchableOpacity>     
-
-                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'black', fontWeight:'500'}}>Cancel</Text>
-                    </TouchableOpacity>       
+                  {data && (
+                    <TouchableOpacity onPress={()=> onOpenConfirmation()} style={{flexDirection:'row', gap:5, marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: 'red', padding:4, borderRadius:5}}>
+                        <TrashSVG width='12' height='12' color='red'/>
+                        <Text style={{fontSize:8, color:'black',}}>Remove Product</Text>
+                    </TouchableOpacity>   
+                  )}    
         </View>
 
         </View>
+
       </View>
+
+
 
       
 
       </View>
+
+      <ConfirmationModal isVisible={isOpenConfirmation} selectedData={data} onClose={onCloseConfirmation} />
 
       
     </CommonLayout>
@@ -619,5 +667,32 @@ const styles = StyleSheet.create({
       },
     
   });
+
+  const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        fontSize: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderWidth: 0.5,
+        borderColor: '#D2D2D2',
+        borderRadius: 6,
+        color: 'black',
+        paddingRight: 30 // to ensure the text is never behind the icon
+    },
+    inputAndroid: {
+        fontSize: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderWidth: 0.5,
+        borderColor: '#D2D2D2',
+        borderRadius: 6,
+        color: 'black',
+        paddingRight: 30 // to ensure the text is never behind the icon
+    },
+    iconContainer: {
+        top: 5,
+        right: 15,
+      },
+});
 
 export default DetailProduct

@@ -2,17 +2,12 @@ import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
 import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput, Switch } from 'react-native'
-import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 
 import RNPickerSelect from "react-native-picker-select";
-import  { ImagePickerResponse  } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import DropdownSVG from '../../assets/svgs/DropdownSVG'
-
-
-
 
 
 export interface Coffee {
@@ -20,11 +15,6 @@ export interface Coffee {
     title: string;
     price: number;
     image: string;
-  }
-
-  interface CustomImagePickerResponse extends ImagePickerResponse {
-    uri?: string;
-    error?: string;
   }
 
   interface CategoryOption {
@@ -57,9 +47,7 @@ export interface Coffee {
 const Setting = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
-    const [textProductSKU, setTextProductSKU] = React.useState('');
     const [textName, setTextName] = React.useState('');
-    const [textDescription, setTextDescription] = React.useState('');
     const [textPrice, setTextPrice] = React.useState('');
     const [quantity, setQuantity] = React.useState(1);
     const [form, setForm] = React.useState({
@@ -417,7 +405,7 @@ const Setting = () => {
                       </View>          
           </View>
 
-          <View style={{flexDirection:'row', gap:6, width:'60%', marginBottom:10}}>
+          <View style={{flexDirection:'row', gap:6, width:'60%', marginBottom:10, marginLeft:85}}>
                       <View
                           style={{
                               width:'30%'
@@ -437,31 +425,31 @@ const Setting = () => {
             </View> 
 
             <Text style={{fontSize:10, fontWeight:'bold', color:'black'}}>Outlet</Text>
-          <View style={{marginTop:5, marginBottom:10, marginHorizontal:10,  width:'80%', }}>
-                      <Text style={{fontSize:8,  marginBottom:5, color:'black', width:'20%'}}>Bogor</Text>
-                      <View
+          <View style={{marginTop:5, marginBottom:10, marginHorizontal:10,  width:'60%', }}>
+                  <View style={{flexDirection:'row'}}>
+                    <Text style={{fontSize:8,  marginBottom:2, color:'black', width:'10%'}}>Bogor</Text>
+                    <View style={{width:60, backgroundColor:'blue', borderRadius:5, paddingVertical:2}}>
+                          <Text style={{fontSize:6, color:'white', fontWeight:'bold', textAlign:'center'}}>Primary</Text>
+                    </View>
+                  </View>
+                      <TouchableOpacity
+                          onPress={() => navigation.navigate('OutletDetail' as never)}
                           style={{
-                              // backgroundColor: textName,
-                              // borderColor: '#D2D2D2',
-                              // borderWidth: 0.5,
-                              // borderRadius:5,
-                              width:'80%'
+                              backgroundColor: textName,
+                              borderColor: 'grey',
+                              borderBottomWidth: 0.5,
+                              borderRadius:5,
+                              flexDirection:'row',
+                              justifyContent:'space-between',
+                              alignItems:'center',
+                              width:'80%',
+                              paddingVertical:5,
+                              paddingHorizontal:10
                           }}>
-                          <RNPickerSelect
-                                  onValueChange={(x) => setSelectedType(x)}
-                                  items={[
-                                      { label: "Single Selection", value: "1" },
-                                      { label: "Multi Selection", value: "2" },
-                                  ]}
+                            <Text style={{fontSize:7}}>TEST</Text>
+                            <Text style={{fontSize:8, fontWeight:'bold'}}>&gt;</Text>
 
-                                    useNativeAndroidPickerStyle={false}
-                                    Icon={() => {
-                                      return <View style={{marginTop:2}}><DropdownSVG width='11' height='11' color='black' /></View>;
-                                    }}
-                                style={pickerSelectStyles}
-                              
-                              />
-                      </View>          
+                      </TouchableOpacity>          
           </View>
        
 

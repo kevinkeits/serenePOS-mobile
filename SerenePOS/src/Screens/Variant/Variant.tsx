@@ -20,27 +20,20 @@ export interface Coffee {
     totalItem: string;
   }
 
+
 const Variant = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [deleteMode, setDeleteMode] = React.useState(false);
-    const [isOpenDetail, setIsOpenDetail] = React.useState(false);
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
-    const [selectedItemForEdit, setSelectedItemForEdit] = React.useState<Categories | null>(null);
-
-
 
     const navigation = useNavigation();
 
-    const onOpenDetail = (item?: Categories) => {
-        setSelectedItemForEdit(item ?? null);
-        setIsOpenDetail(true);
-      };
-    
-      const onCloseDetail = () => {
-        setIsOpenDetail(false);
-      };
+    const handleNavigate = ( selectedData: Categories | null) => {
+      console.log(selectedData)
+      navigation.navigate('VariantDetail', {data: selectedData})
+    };
 
       const onOpenConfirmation= () => {
         setIsOpenConfirmation(true);
@@ -92,7 +85,7 @@ const Variant = () => {
         setSelectedItems([]);
       };
 
-    const data = [
+    const data: Categories[] = [
         {
         id: '1',
         name: 'Coffee',
@@ -138,7 +131,7 @@ const Variant = () => {
         <View/>
       ):(
         <View style={{flexDirection:'row', gap:4}}>
-        <TouchableOpacity onPress={() => navigation.navigate('VariantDetail' as never)} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
+        <TouchableOpacity onPress={() => handleNavigate(null)} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
             <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
@@ -171,7 +164,7 @@ const Variant = () => {
                     )}
                   </TouchableOpacity>
                 )}
-            <TouchableOpacity key={index} style={styles.firstRowItem}>
+            <TouchableOpacity onPress={() => handleNavigate(x)} key={index} style={styles.firstRowItem}>
                 <View style={{flexDirection:'row', justifyContent:'space-between'}}>
                 <View>
                     <Text style={{fontWeight: "bold", color: "black", fontSize: 12}}>{x.name}</Text>

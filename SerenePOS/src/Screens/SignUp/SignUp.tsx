@@ -1,12 +1,25 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import TrashSVG from '../../assets/svgs/TrashSVG';
 
 const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+
 
   const navigation = useNavigation()
+
+  const handleNavigateLogin = () => {
+    setUsername('');
+    setPassword('');
+    setConfirmPassword('')
+    navigation.navigate('Login' as never)
+  }
 
   const handleLogin = () => {
     if (username === 'user' && password === '123') {
@@ -16,6 +29,14 @@ const SignUp = () => {
       // Display error message on failed login
       Alert.alert('Error', 'Invalid username or password');
     }
+  };
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  const handleToggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prevShowPassword) => !prevShowPassword);
   };
 
   return (
@@ -72,25 +93,54 @@ const SignUp = () => {
       />
       </View>
 
-      <View>
-        <Text style={{fontSize:10, color:'black', marginLeft:30, marginBottom:5}}>Password</Text>
-        <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={(text) => setPassword(text)}
-      />
-      </View>
 
-      <View>
-        <Text style={{fontSize:10, color:'black', marginLeft:30, marginBottom:5}}>Re-Enter Password</Text>
-        <TextInput
-        style={styles.input}
+<View>       
+   <Text style={{fontSize:10, color:'black', marginLeft:30, marginBottom:5}}>Password</Text>
+      <View style={{
+        width:'80%',
+         height: 20,
+         borderWidth: 1,
+         marginBottom: 10,
+         borderColor: '#2563EB',
+         //padding: 5,
+         borderRadius:6,
+         alignSelf: 'center',
+      }}>
+      <TextInput
+        style={styles.inputPassword}
         placeholder="Password"
-        secureTextEntry
+        secureTextEntry={!showPassword}
         onChangeText={(text) => setPassword(text)}
       />
+        <TouchableOpacity onPress={handleTogglePasswordVisibility} style={styles.eyeIcon}>
+          {showPassword ? <TrashSVG width='10' height='10' color="#2563EB" /> : <TrashSVG width='10' height='10' color="#2563EB" />}
+        </TouchableOpacity>
       </View>
+  </View>
+
+  <View>       
+   <Text style={{fontSize:10, color:'black', marginLeft:30, marginBottom:5}}>Re-Enter Password</Text>
+      <View style={{
+        width:'80%',
+         height: 20,
+         borderWidth: 1,
+         marginBottom: 10,
+         borderColor: '#2563EB',
+         //padding: 5,
+         borderRadius:6,
+         alignSelf: 'center',
+      }}>
+      <TextInput
+        style={styles.inputPassword}
+        placeholder="Confirm Password"
+        secureTextEntry={!showConfirmPassword}
+        onChangeText={(text) => setConfirmPassword(text)}
+      />
+        <TouchableOpacity onPress={handleToggleConfirmPasswordVisibility} style={styles.eyeIcon}>
+          {showPassword ? <TrashSVG width='10' height='10' color="#2563EB" /> : <TrashSVG width='10' height='10' color="#2563EB" />}
+        </TouchableOpacity>
+      </View>
+  </View>
 
       
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
@@ -99,7 +149,7 @@ const SignUp = () => {
 
       <View style={styles.signupContainer}>
         <Text style={styles.signupText}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>
+        <TouchableOpacity onPress={() => handleNavigateLogin()}>
           <Text style={styles.signupLink}>Login</Text>
         </TouchableOpacity>
       </View>
@@ -118,7 +168,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16, // Add padding for testing
   },
   header: {
-    fontSize: 12,
+    fontSize: 30,
     marginTop:20,
     fontWeight: 'bold',
     marginBottom: 5,
@@ -136,6 +186,13 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center', // Center the text vertically
     // Optional: Add the following to center the TextInput within its parent
     alignSelf: 'center',
+    lineHeight: 30,
+  },
+  inputPassword: {
+    width: '100%',
+    fontSize: 7,
+    paddingVertical: 5,
+    paddingHorizontal:10,
     lineHeight: 30,
   },
   button: {
@@ -174,6 +231,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     color: '#2563EB',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 4,
   },
 });
 export default SignUp;

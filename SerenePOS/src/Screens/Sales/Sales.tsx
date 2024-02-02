@@ -19,6 +19,13 @@ export interface Coffee {
     image: string;
   }
 
+  export interface Categories {
+    id: string;
+    name: string;
+    totalItem: string;
+    color?: string;
+  }
+
 const Sales = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
@@ -30,7 +37,6 @@ const Sales = () => {
     const [isOpenOrder, setIsOpenOrder] = React.useState(false);
     const [isOpenDiscount, setIsOpenDiscount] = React.useState(false);
     const [customerName, setCustomerName] = React.useState('Aulia');
-
 
 
 
@@ -127,36 +133,48 @@ const Sales = () => {
 
   const navigation = useNavigation();
 
-  const data = [
+  const data: Categories[] = [
     {
     id: '1',
     name: 'Coffee',
-    totalItem: '3'
+    totalItem: '3',
+    color: '#7653DA',
   },
   {
     id: '2',
     name: 'Non Coffee',
-    totalItem: '5'
+    totalItem: '5',
+    color: '#2925EB',
   },
   {
     id: '3',
     name: 'Food',
-    totalItem: '10'
+    totalItem: '10',
+    color: '#2563EB',
   },
   {
     id: '4',
     name: 'Main Course',
-    totalItem: '8'
+    totalItem: '8',
+    color: '#4AB8E8',
   },
   {
     id: '5',
     name: 'Signature',
-    totalItem: '8'
+    totalItem: '8',
+    color: '#E88C4A',
   },
   {
     id: '6',
     name: 'Dessert',
-    totalItem: '9'
+    totalItem: '9',
+    color: '#E84AD8',
+  },
+  {
+    id: '7',
+    name: 'Etc',
+    totalItem: '6',
+    color: '#E84A4A',
   },
 ];
 
@@ -178,7 +196,11 @@ React.useEffect(() => {
 
       <View style={{ marginHorizontal:"auto", flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
         {data.map((x, index) => (
-            <TouchableOpacity key={index} style={styles.firstRowItem}>
+            <TouchableOpacity key={index} 
+            style={[
+              styles.firstRowItem,
+              {backgroundColor: x.color}
+              ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
             <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
             <Text style={{ color: "white", fontSize: 11}}>{x.totalItem} Items</Text>
@@ -448,6 +470,13 @@ justifyContent: 'space-between'
     textAlign: 'center',
     fontSize: 8,
     fontWeight: 'bold',
+  },
+  inputPassword: {
+    width: '100%',
+    fontSize: 10,
+    paddingVertical: 5,
+    paddingHorizontal:10,
+    lineHeight: 30,
   },
 });
 

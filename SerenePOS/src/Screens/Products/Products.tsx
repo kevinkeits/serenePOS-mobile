@@ -14,6 +14,13 @@ export interface Coffee {
     image: string;
   }
 
+  export interface Categories {
+    id: string;
+    name: string;
+    totalItem: string;
+    color?: string;
+  }
+
 const Products = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
@@ -74,36 +81,53 @@ const Products = () => {
         setSelectedItems([]);
       };
 
-    const data = [
+      const handleNavigate = ( selectedData: Coffee | null) => {
+        console.log(selectedData)
+        navigation.navigate('ProductDetail', {data: selectedData})
+      };
+
+      const data: Categories[] = [
         {
         id: '1',
         name: 'Coffee',
-        totalItem: '3'
+        totalItem: '3',
+        color: '#7653DA',
       },
       {
         id: '2',
         name: 'Non Coffee',
-        totalItem: '5'
+        totalItem: '5',
+        color: '#2925EB',
       },
       {
         id: '3',
         name: 'Food',
-        totalItem: '10'
+        totalItem: '10',
+        color: '#2563EB',
       },
       {
         id: '4',
         name: 'Main Course',
-        totalItem: '8'
+        totalItem: '8',
+        color: '#4AB8E8',
       },
       {
         id: '5',
         name: 'Signature',
-        totalItem: '8'
+        totalItem: '8',
+        color: '#E88C4A',
       },
       {
         id: '6',
         name: 'Dessert',
-        totalItem: '9'
+        totalItem: '9',
+        color: '#E84AD8',
+      },
+      {
+        id: '7',
+        name: 'Etc',
+        totalItem: '6',
+        color: '#E84A4A',
       },
     ];
 
@@ -120,7 +144,7 @@ const Products = () => {
         <View/>
       ):(
         <View style={{flexDirection:'row', gap:4}}>
-        <TouchableOpacity onPress={() => navigation.navigate('ProductDetail' as never)} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
+        <TouchableOpacity onPress={() => handleNavigate(null)} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
             <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
@@ -141,7 +165,11 @@ const Products = () => {
       <View>
       <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
         {data.map((x, index) => (
-            <TouchableOpacity key={index} style={styles.firstRowItem}>
+            <TouchableOpacity key={index} 
+            style={[
+              styles.firstRowItem,
+              {backgroundColor: x.color}
+            ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
             <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
             <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Items</Text>
@@ -164,7 +192,7 @@ const Products = () => {
                 )}
             <TouchableOpacity 
             key={index}
-            onPress={() => handleProductPress(x)} 
+            onPress={() => handleNavigate(x)} 
             style={styles.cardRow}>
                 <View style={{width:'50%'}}>
                     <Image source={{ uri: x.image }} style={{width:'100%', height:'100%'}} />

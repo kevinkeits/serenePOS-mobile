@@ -11,6 +11,7 @@ import RNPickerSelect from "react-native-picker-select";
 import ImagePicker, { ImageLibraryOptions, ImagePickerResponse  } from 'react-native-image-picker';
 import DropdownSVG from '../../assets/svgs/DropdownSVG'
 import ProductModal from './ProductModal/ProductModal'
+import { Categories } from '../Variant/Variant'
 
 
 
@@ -23,11 +24,6 @@ export interface Coffee {
     image: string;
   }
 
-  interface CustomImagePickerResponse extends ImagePickerResponse {
-    uri?: string;
-    error?: string;
-  }
-
   interface CategoryOption {
     label: string;
     value: string;
@@ -37,6 +33,10 @@ export interface Coffee {
     optionName: string;
     price: string;
   }
+
+  type DetailScreenProps = {
+    route: { params: {  data: Categories | null } };
+  };
 
   const temperatureOptions = [
     { id: 'hot', label: 'Hot' },
@@ -60,7 +60,9 @@ export interface Coffee {
     // Add more options as needed
   ];
 
-const VariantDetail = () => {
+const VariantDetail = ({ route }: DetailScreenProps) => {
+
+    const  { data }  = route.params
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [textName, setTextName] = React.useState('');
@@ -212,7 +214,10 @@ const VariantDetail = () => {
 
 
     React.useEffect(() => {
-        fetchData();
+      fetchData()
+        if (data) {
+          setTextName(data.name)
+        }
       }, []);
 
   return (
@@ -222,7 +227,7 @@ const VariantDetail = () => {
         {/* <TouchableOpacity onPress={()=> navigation.goBack()}>
             <Text style={{fontSize:12, fontWeight:'bold', color:'black'}}>&lt;--</Text>
         </TouchableOpacity> */}
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Add Variant</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{data ? 'Edit' : ' Add'} Variant</Text>
       </View>
       <View style={{}}>
        

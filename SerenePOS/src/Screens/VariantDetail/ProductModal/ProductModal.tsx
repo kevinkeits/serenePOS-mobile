@@ -89,8 +89,8 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
       visible={isVisible}
       onRequestClose={() => handleClose()}
     >
-        <ScrollView>
       <View style={styles.modalContainer}>
+
         <View style={styles.modalContent}>
           <View style={styles.titleContainer}>
             <Text style={styles.modalTitle}>Select Product</Text>
@@ -123,7 +123,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
                         />
             </View>  
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20, marginBottom:3 }}>
               <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text>
               <TouchableOpacity onPress={() => handleCheckboxPress(-1)}>
                 <Text style={{ fontSize: 10, color: 'black' }}>
@@ -132,6 +132,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
               </TouchableOpacity>
             </View>
 
+<ScrollView>
           <View style={{flexDirection:'row', flexWrap:'wrap', gap:6, justifyContent:'center', alignItems:'center'}}>
             {data.map((x, index)=> (
             <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
@@ -158,6 +159,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
             </View>
             ))}
           </View>
+ </ScrollView>
 
           <View style={{marginVertical:5,  width:'90%', justifyContent:'center', alignSelf:'center' }}>
                     <TouchableOpacity onPress={() => onSave(selectedProducts)} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
@@ -169,9 +171,11 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
           <TouchableOpacity onPress={() => handleClose()} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>x</Text>
           </TouchableOpacity>
-        </View>
+          
       </View>
-      </ScrollView>
+
+
+      </View>
     </Modal>
   );
 };
@@ -185,6 +189,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '90%',
+    height:'97%',
     backgroundColor: 'white',
     paddingTop: 10,
     borderRadius: 10,

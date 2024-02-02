@@ -52,6 +52,8 @@ export interface Coffee {
 
 const Profile = () => {
 
+  const navigation = useNavigation();
+
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [textProductSKU, setTextProductSKU] = React.useState('');
     const [textName, setTextName] = React.useState('');
@@ -180,11 +182,6 @@ const Profile = () => {
           }
         }
       };
-    
-    
-
-    const navigation = useNavigation();
-
 
     const fetchData = async () => {
         try {
@@ -242,7 +239,7 @@ const Profile = () => {
                             <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{justifyContent:'center',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
+          <TouchableOpacity onPress={()=>navigation.navigate('Login' as never)} style={{justifyContent:'center',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
                             <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Logout</Text>
           </TouchableOpacity>    
                 {/* <Text>File Name: {form.paymentConfirmationFileName}</Text> */}

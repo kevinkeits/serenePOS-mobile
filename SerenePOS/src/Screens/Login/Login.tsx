@@ -1,22 +1,42 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import TrashSVG from '../../assets/svgs/TrashSVG';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const [showPassword, setShowPassword] = useState(false);
+
+ 
+
   const navigation = useNavigation()
 
   const handleLogin = () => {
     if (username === 'user' && password === '123') {
-      // Navigate to Home screen on successful login
       navigation.navigate('Home' as never);
+      setUsername('');
+      setPassword('');
     } else {
-      // Display error message on failed login
       Alert.alert('Error', 'Invalid username or password');
     }
   };
+
+  const handleNavigateSignUp = () => {
+    setUsername('');
+    setPassword('');
+    navigation.navigate('SignUp' as never)
+  }
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  React.useEffect(() => {
+    setUsername('');
+    setPassword('');
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -39,14 +59,30 @@ const Login = () => {
       <TextInput
         style={styles.input}
         placeholder="Username"
+        value={username}
         onChangeText={(text) => setUsername(text)}
       />
+      <View style={{
+         width: '25%',
+         height: 30,
+         borderWidth: 1,
+         marginBottom: 10,
+         borderColor: '#2563EB',
+         //padding: 5,
+         borderRadius:6,
+         alignSelf: 'center',
+      }}>
       <TextInput
-        style={styles.input}
+        style={styles.inputPassword}
         placeholder="Password"
-        secureTextEntry
+        value={password}
+        secureTextEntry={!showPassword}
         onChangeText={(text) => setPassword(text)}
       />
+        <TouchableOpacity onPress={handleTogglePasswordVisibility} style={styles.eyeIcon}>
+          {showPassword ? <TrashSVG width='10' height='10' color="#2563EB" /> : <TrashSVG width='10' height='10' color="#2563EB" />}
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
@@ -54,7 +90,7 @@ const Login = () => {
       <View style={styles.underline}></View>
       <View style={styles.signupContainer}>
         <Text style={styles.signupText}>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
+        <TouchableOpacity onPress={() => handleNavigateSignUp()}>
           <Text style={styles.signupLink}>Sign Up</Text>
         </TouchableOpacity>
       </View>
@@ -83,12 +119,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     borderColor: '#2563EB',
-    padding: 10,
+    paddingVertical: 5,
+    paddingHorizontal:10,
     borderRadius:6,
     fontSize: 10,
-    textAlignVertical: 'center', // Center the text vertically
-    // Optional: Add the following to center the TextInput within its parent
+    textAlignVertical: 'center', 
     alignSelf: 'center',
+  },
+  inputPassword: {
+    width: '100%',
+    fontSize: 10,
+    paddingVertical: 5,
+    paddingHorizontal:10,
     lineHeight: 30,
   },
   button: {
@@ -125,6 +167,16 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     color: '#2563EB',
+  },
+  passwordContainer: {
+    position: 'relative',
+    width: '25%',
+    marginBottom: 10,
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 8,
   },
 });
 export default Login;

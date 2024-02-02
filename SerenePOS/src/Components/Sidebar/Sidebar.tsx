@@ -206,10 +206,9 @@ const styles = StyleSheet.create({
   circleAvatar: {
     width: 20,
     height: 20,
-    fontSize:8,
-    padding:4,
+    fontSize:6,
+    padding:5,
     borderRadius: 20,
-    fontWeight:'bold',
     backgroundColor: '#E1F0DA', // Change this to your desired background color
     color: 'black', // Change this to your desired text color
     textAlign: 'center',
