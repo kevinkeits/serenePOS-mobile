@@ -145,7 +145,7 @@ const SignUp = () => {
 
       
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
-        <Text style={styles.buttonText}>Login</Text>
+        <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
 
       <View style={styles.signupContainer}>
