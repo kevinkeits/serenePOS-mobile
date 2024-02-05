@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
@@ -14,6 +15,9 @@ const ReceivedCashModal: React.FC<Props> = ({ isVisible, onClose, totalPrice }) 
 
     const [textReceived, setTextReceived] = React.useState('');
     const [textNotes, setTextNotes] = React.useState('');
+
+    const navigation = useNavigation()
+
 
 
   return (
@@ -79,7 +83,7 @@ const ReceivedCashModal: React.FC<Props> = ({ isVisible, onClose, totalPrice }) 
                 </View>
           </View>
           <View style={{width:'90%', marginTop:20, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
-            <TouchableOpacity style={{width:'100%', alignItems:'center'}}>
+            <TouchableOpacity onPress={() => navigation.navigate('TransactionHistory' as never)} style={{width:'100%', alignItems:'center'}}>
                 <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Pay</Text>
             </TouchableOpacity>
           </View>

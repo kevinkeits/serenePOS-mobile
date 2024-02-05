@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, StyleSheet, Text, View, Image, ScrollView } from 'react-native';
+import { Button, StyleSheet, Text, View, Image, ScrollView, TextInput } from 'react-native';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
@@ -10,7 +10,10 @@ import EditOrderModal from './components/EditOrderModal/EditOrderModal';
 import DiscountModal from './components/DiscountModal/DiscountModal';
 import PencilSVG from '../../assets/svgs/PencilSVG';
 import DiscountSVG from '../../assets/svgs/DiscountSVG';
-import OtherPaymentModal from './components/OtherPayment/OtherPayment';
+import ReceiptSVG from '../../assets/svgs/ReceiptSVG';
+import CartSVG from '../../assets/svgs/CartSVG';
+import SaveSVG from '../../assets/svgs/SaveSVG';
+import TrashSVG from '../../assets/svgs/TrashSVG';
 
 export interface Coffee {
     id: number;
@@ -36,7 +39,7 @@ const Sales = () => {
     const [isOpenPayment, setIsOpenPayment] = React.useState(false);
     const [isOpenOrder, setIsOpenOrder] = React.useState(false);
     const [isOpenDiscount, setIsOpenDiscount] = React.useState(false);
-    const [customerName, setCustomerName] = React.useState('Aulia');
+    const [customerName, setCustomerName] = React.useState('');
 
 
 
@@ -105,9 +108,11 @@ const Sales = () => {
         setIsOpenDiscount(false);
       };
   
-      const addToSelectedItems = (item: Coffee) => {
-        if (!selectedItems.some((selectedItem) => selectedItem.id === item.id)) {
-          setSelectedItems((prevItems) => [...prevItems, item]);
+      const addToSelectedItems = (item: Coffee | null) => {
+        if (item) {
+          if (!selectedItems.some((selectedItem) => selectedItem.id === item.id)) {
+            setSelectedItems((prevItems) => [...prevItems, item]);
+          }
         }
       };
     
@@ -194,7 +199,7 @@ React.useEffect(() => {
       <Text style={{fontWeight:"bold", fontSize:17, }}></Text>
       </View>
 
-      <View style={{ marginHorizontal:"auto", flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
+      <View style={{ marginHorizontal:"auto", flexDirection: 'row', flexWrap: 'wrap',}}>
         {data.map((x, index) => (
             <TouchableOpacity key={index} 
             style={[
@@ -216,7 +221,8 @@ React.useEffect(() => {
     <View style={{justifyContent:'center', alignItems: 'center', marginBottom:20, width:'95%'}}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollView}>
       {coffeeData.map((x) => (
-        <TouchableOpacity key={x.id} style={styles.card} onPress={() => addToSelectedItems(x)}>
+        // <TouchableOpacity key={x.id} style={styles.card} onPress={() => addToSelectedItems(x)}>
+        <TouchableOpacity key={x.id} style={styles.card} onPress={() => openEditModal(x)}>
           <Image source={{ uri: x.image }} style={styles.image} />
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{x.title}</Text>
           <Text style={styles.price}>${x.price}</Text>
@@ -227,10 +233,47 @@ React.useEffect(() => {
 
     </View>
 
+
+
+        {/* Side Container */}
+
+{selectedItems.length > 0 ? (
     <View style={styles.selectedItemsContainer}>
       <View>
       <Text style={{fontSize:7, marginTop:3, marginHorizontal:10, marginBottom:5, color:'black'}}>{getCurrentDate()}</Text>
-        <View style={{flexDirection:'row', justifyContent: 'space-between', marginHorizontal:8}}>
+      <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:5, marginTop:7, gap:2}}>
+            <ReceiptSVG width='14' height='14' color='#828282' />
+            <View
+                        style={{
+                            backgroundColor: customerName,
+                            borderColor: '#D2D2D2',
+                            borderWidth: 0.5,
+                            borderRadius:5,
+                            width: '67%',
+                            height:20
+                        }}>
+                        <TextInput
+                            editable
+                            // multiline
+                            // numberOfLines={4}
+                            placeholder='Type here'
+                            maxLength={40}
+                            onChangeText={text => 
+                                setCustomerName(text)
+                            }
+                            value={customerName}
+                            style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
+                        />
+                    </View>  
+                    <SaveSVG width='14' height='14' color='#828282' />
+
+            <TouchableOpacity>
+              <Text style={{fontSize:6}} onPress={()=> onOpenDiscount()}>
+                <DiscountSVG width='16' heigth='16'/>
+                </Text>
+            </TouchableOpacity>
+          </View>
+        {/* <View style={{flexDirection:'row', justifyContent: 'space-between', marginHorizontal:8}}>
           <Text style={{fontSize:10, fontWeight:'bold', color:'black'}}>#{customerName}</Text>
           <View style={{flexDirection:'row', gap:2}}>
             <TouchableOpacity>
@@ -242,9 +285,10 @@ React.useEffect(() => {
               <PencilSVG width='16' heigth='11' color='white' />
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
+
         {selectedItems.map((item) => (
-          <View key={item.id} style={styles.selectedItem}>
+        <View key={item.id} style={styles.selectedItem}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
             <Text style={{ fontSize: 8, fontWeight: 'bold', maxWidth: 150  }}>{item.title}</Text>
             <Text style={{ fontSize: 8, marginLeft: 5 }}>x 1</Text>
@@ -258,12 +302,12 @@ React.useEffect(() => {
             <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp 0</Text>
           </View>
 
-          <View style={{flexDirection:'row'}}>
-          <TouchableOpacity onPress={() => removeFromSelectedItems(item.id)} style={styles.deleteButton}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
+          <View style={{flexDirection:'row', gap:4, justifyContent:'flex-end'}}>
+          <TouchableOpacity onPress={() => removeFromSelectedItems(item.id)} style={{marginTop:5}}>
+            <TrashSVG width='12' height='12' color='red'/>
           </TouchableOpacity>
-            <TouchableOpacity onPress={() => openEditModal(item)} style={styles.editButton}>
-                <Text style={styles.editButtonText}>Edit</Text>
+            <TouchableOpacity onPress={() => openEditModal(item)} style={{marginTop:5}}>
+               <PencilSVG width='11' heigth='11' color='grey'/>
               </TouchableOpacity>
               </View>
         </View>
@@ -294,15 +338,57 @@ React.useEffect(() => {
             <Text style={styles.payNowButtonText}>Pay Now</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.billButton}>
-            <Text style={styles.billButtonText}>Open Bill</Text>
+          <TouchableOpacity onPress={() => setSelectedItems([])} style={styles.billButton}>
+            <Text style={styles.billButtonText}>Clear</Text>
           </TouchableOpacity>
         </View>
 
       </View>
+      ):(
+        <View style={styles.selectedItemsContainerBlank}>
+        <View>
+          <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:8, marginTop:7, gap:5}}>
+            <ReceiptSVG width='14' height='14' color='#828282' />
+            <View
+                        style={{
+                            backgroundColor: customerName,
+                            borderColor: '#D2D2D2',
+                            borderWidth: 0.5,
+                            borderRadius:5,
+                            width: '85%',
+                            height:20
+                        }}>
+                        <TextInput
+                            editable
+                            // multiline
+                            // numberOfLines={4}
+                            placeholder='Type here'
+                            maxLength={40}
+                            onChangeText={text => 
+                                setCustomerName(text)
+                            }
+                            value={customerName}
+                            style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
+                        />
+                    </View>  
+          </View>
+
+          </View>
+          <View style={{marginHorizontal:8, marginTop:150, }}>
+                <CartSVG width='100' height='100' color='#A4A4A4'/>
+                <Text style={{fontSize:10, fontWeight:'bold', textAlign:'center', color:'black', marginTop:10, marginLeft:16}}> Empty Cart</Text>
+                <Text style={{fontSize:10, textAlign:'center', color:'black', marginTop:10, marginLeft:16}}>Add Product to the cart from catalog.</Text>
+          </View>
+
+  
+        </View>
+      )} 
+
+
+        {/* Side Container */}
 
     </View>
-    <EditItemModal isVisible={isEditModalVisible} selectedItem={selectedItemForEdit} onClose={closeEditModal} />
+    <EditItemModal isVisible={isEditModalVisible} selectedItem={selectedItemForEdit} onClose={closeEditModal} onSave={addToSelectedItems} />
     <PaymentMethodModal isVisible={isOpenPayment} totalPrice={totalPriceState} onClose={onClosePayment}/>
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
     <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.id)} />
@@ -357,7 +443,7 @@ const styles = StyleSheet.create({
   selectedItemsContainer: {
     marginVertical: 20,
     width: '30%',
-    borderRadius: 16,
+    borderRadius: 10,
     backgroundColor: '#FFF',
     shadowColor: '#000',
     shadowOffset: {
@@ -368,6 +454,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     elevation: 5,
 justifyContent: 'space-between'
+  },
+  selectedItemsContainerBlank: {
+    marginVertical: 20,
+    width: '30%',
+    borderRadius: 10,
+    backgroundColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowRadius: 10,
+    shadowOpacity: 0.5,
+    elevation: 5,
+    alignItems:'center'
   },
   selectedItemsTitle: {
     fontWeight: 'bold',

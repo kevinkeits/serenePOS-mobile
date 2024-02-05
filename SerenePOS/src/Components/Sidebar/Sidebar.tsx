@@ -7,6 +7,7 @@ import ProductSVG from '../../assets/svgs/ProductSVG';
 import DashboardSVG from '../../assets/svgs/DashboardSVG';
 import CategoriesSVG from '../../assets/svgs/CategoriesSVG';
 import TransactionHistorySVG from '../../assets/svgs/TransactionHistorySVG';
+import VariantSVG from '../../assets/svgs/VariantSVG';
 
 // import { Ionicons } from '@expo/vector-icons';
 
@@ -39,7 +40,7 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('Home')}
       >
-        <SalesSVG width='12' heigth='12' color={isActive('Home') ? 'white' : 'black'}  />
+        <DashboardSVG width='12' heigth='12' color={isActive('Home') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Home') && styles.activeMenuItemText]}>Dashboard</Text>
       </TouchableOpacity>
 
@@ -83,7 +84,7 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('Variants')}
       >
-        <CategoriesSVG width='12' height='12' color={isActive('Variants') ? 'white' : 'black'}  />
+        <VariantSVG width='12' height='12' color={isActive('Variants') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Variants') && styles.activeMenuItemText]}>Variants</Text>
       </TouchableOpacity>
 

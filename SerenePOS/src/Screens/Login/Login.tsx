@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import TrashSVG from '../../assets/svgs/TrashSVG';
+import ViewSVG from '../../assets/svgs/ViewSVG';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -78,7 +79,7 @@ const Login = () => {
         onChangeText={(text) => setPassword(text)}
       />
         <TouchableOpacity onPress={handleTogglePasswordVisibility} style={styles.eyeIcon}>
-          {showPassword ? <TrashSVG width='10' height='10' color="#2563EB" /> : <TrashSVG width='10' height='10' color="#2563EB" />}
+          {showPassword ? <ViewSVG width='12' height='12' color="#2563EB" /> : <ViewSVG width='12' height='12' color="#2563EB" />}
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={handleLogin} style={styles.button}>

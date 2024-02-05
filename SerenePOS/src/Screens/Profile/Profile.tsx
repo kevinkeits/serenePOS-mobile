@@ -10,6 +10,7 @@ import RNPickerSelect from "react-native-picker-select";
 import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
 import SettingsSVG from '../../assets/svgs/SettingsSVG'
+import LogoutSVG from '../../assets/svgs/LogoutSVG'
 
 
 
@@ -246,7 +247,7 @@ const Profile = () => {
           </TouchableOpacity> 
 
           <TouchableOpacity onPress={()=>navigation.navigate('Login' as never)} style={{justifyContent:'center', gap:4, flexDirection:'row',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
-                  <SettingsSVG width='11' height='11' color='black'/>
+                  <LogoutSVG width='12' height='12' color='black'/>
                   <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Logout</Text>
           </TouchableOpacity>    
                 {/* <Text>File Name: {form.paymentConfirmationFileName}</Text> */}

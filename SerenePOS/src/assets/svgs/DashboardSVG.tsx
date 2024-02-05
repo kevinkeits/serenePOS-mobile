@@ -11,13 +11,10 @@ interface Props {
 const DashboardSVG = ({width, heigth, color}:Props) => {
   return (
     <View style={styles.container}>
-      <Svg width={width} height={heigth} viewBox="0 0 24 24" fill="none">
+      <Svg viewBox="0 0 24 24" width={width} height={heigth} fill="none">
         <Path
-          d="M17 7V5C17 3.93913 16.5786 2.92172 15.8284 2.17157C15.0783 1.42143 14.0609 1 13 1H5C3.93913 1 2.92172 1.42143 2.17157 2.17157C1.42143 2.92172 1 3.93913 1 5V7"
-          stroke={color}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d="M12 2.0996094 L 1 12 L 4 12 L 4 21 L 11 21 L 11 15 L 13 15 L 13 21 L 20 21 L 20 12 L 23 12 L 12 2.0996094 z M 12 4.7910156 L 18 10.191406 L 18 11 L 18 19 L 15 19 L 15 13 L 9 13 L 9 19 L 6 19 L 6 10.191406 L 12 4.7910156 z"
+          fill={color}
         />
       </Svg>
     </View>

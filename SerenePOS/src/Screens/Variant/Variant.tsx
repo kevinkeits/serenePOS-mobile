@@ -31,8 +31,7 @@ const Variant = () => {
     const navigation = useNavigation();
 
     const handleNavigate = ( selectedData: Categories | null) => {
-      console.log(selectedData)
-      navigation.navigate('VariantDetail', {data: selectedData})
+      navigation.navigate('VariantDetail' as never, {data: selectedData} as never)
     };
 
       const onOpenConfirmation= () => {
@@ -52,11 +51,6 @@ const Variant = () => {
         } catch (error) {
           console.error('Error fetching data:', error);
         }
-      };
-
-      const handleProductPress = (selectedItem: Coffee) => {
-        // Handle the press action for each product
-        navigation.navigate('ProductDetail' as never);
       };
     
       const handleCheckboxPress = (itemId: string) => {
