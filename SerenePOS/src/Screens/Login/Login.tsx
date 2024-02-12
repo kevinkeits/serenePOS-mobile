@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     paddingVertical: 5,
     paddingHorizontal:10,
-    lineHeight: 30,
+    //lineHeight: 30,
   },
   button: {
     backgroundColor: '#2563EB',

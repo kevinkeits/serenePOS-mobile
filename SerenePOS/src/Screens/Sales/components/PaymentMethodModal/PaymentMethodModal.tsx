@@ -33,6 +33,11 @@ const PaymentMethodModal: React.FC<Props> = ({ isVisible, onClose, totalPrice })
         setIsOpenOtherPayment(false);
       };
 
+    const handleCloseAll = () => {
+      onClose()
+      onCloseCash()
+    }
+
 
 
   return (
@@ -98,7 +103,7 @@ const PaymentMethodModal: React.FC<Props> = ({ isVisible, onClose, totalPrice })
           </TouchableOpacity>
         </View>
       </View>
-      <ReceivedCashModal isVisible={isOpenCash} totalPrice={totalPriceState} onClose={onCloseCash} />
+      <ReceivedCashModal isVisible={isOpenCash} totalPrice={totalPriceState} onClose={onCloseCash} handleCloseAll={handleCloseAll} />
       <OtherPaymentModal isVisible={isOpenOtherPayment} totalPrice={totalPrice} onClose={onCloseOtherPayment}/>
 
     </Modal>

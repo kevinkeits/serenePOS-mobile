@@ -11,7 +11,7 @@ import RNPickerSelect from "react-native-picker-select";
 import ImagePicker, { ImageLibraryOptions, ImagePickerResponse  } from 'react-native-image-picker';
 import DropdownSVG from '../../assets/svgs/DropdownSVG'
 import ProductModal from './ProductModal/ProductModal'
-import { Categories } from '../Variant/Variant'
+import { Variants } from '../Variant/Variant'
 
 
 
@@ -35,7 +35,7 @@ export interface Coffee {
   }
 
   type DetailScreenProps = {
-    route: { params: {  data: Categories | null } };
+    route: { params: {  data: Variants | null } };
   };
 
   const temperatureOptions = [
@@ -217,6 +217,7 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
       fetchData()
         if (data) {
           setTextName(data.name)
+          setSelectedType(data.type)
         }
       }, []);
 
@@ -260,19 +261,22 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Type</Text>
             <View style={{marginBottom: 10, height: 25, justifyContent: 'center', width:'80%',}}>
             <RNPickerSelect
-                onValueChange={(x) => setSelectedType(x)}
+                onValueChange={(x) => 
+                  setSelectedType(x)}
                 items={[
                     { label: "Single Selection", value: "1" },
                     { label: "Multi Selection", value: "2" },
                 ]}
 
                   useNativeAndroidPickerStyle={false}
+                  value={selectedType}
                   Icon={() => {
                     return <View style={{marginTop:2}}><DropdownSVG width='11' height='11' color='black' /></View>;
                   }}
                style={pickerSelectStyles}
             
             />
+
 
 
             </View>        
@@ -493,7 +497,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: '#D2D2D2',
         borderRadius: 6,
-        color: 'black',
+        //color: 'black',
         paddingRight: 30 // to ensure the text is never behind the icon
     },
     inputAndroid: {
@@ -503,7 +507,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: '#D2D2D2',
         borderRadius: 6,
-        color: 'black',
+        //color: 'black',
         paddingRight: 30 // to ensure the text is never behind the icon
     },
     iconContainer: {

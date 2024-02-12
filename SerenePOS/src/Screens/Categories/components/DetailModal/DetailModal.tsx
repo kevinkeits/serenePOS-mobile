@@ -67,8 +67,8 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selecte
         // Set the textName when the modal is opened
         if (selectedItem) {
           setTextName(selectedItem.name)
-          setQuantity(parseInt(selectedItem.totalItem))
-          setColorSelection(selectedItem.color || null);
+          setQuantity(parseInt(selectedItem.qtyAlert))
+          setColorSelection(selectedItem.bgColor || null);
         }
     }, [selectedItem]);
 

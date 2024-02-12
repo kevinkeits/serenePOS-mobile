@@ -11,6 +11,7 @@ import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
 import DropdownSVG from '../../assets/svgs/DropdownSVG'
 import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
+import { Product } from '../Products/Products'
 
 
 
@@ -53,7 +54,7 @@ export interface Coffee {
   ];
 
   type DetailScreenProps = {
-    route: { params: {  data: Coffee | null } };
+    route: { params: {  data: Product | null } };
   };
   
   
@@ -68,7 +69,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
     const [textPrice, setTextPrice] = React.useState('');
     const [quantity, setQuantity] = React.useState(1);
     const [selectedCategory, setSelectedCategory] =  React.useState<CategoryOption | null>(null);
-    const [ language, setLanguage ] = React.useState("");
+    const [ selCategory, setSelCategory ] = React.useState("");
 
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
 
@@ -84,6 +85,11 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
   const [selectedAddOnIds, setSelectedAddOnIds] = React.useState<string[]>([]);
   const [addOnInputValues, setAddOnInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
   const [isAddOnSubmitting, setIsAddOnSubmitting] = React.useState(false); 
+
+  const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
+  const [variantInputValues, setVariantInputValues] = React.useState<string[]>(data?.selVariant.map(() => '') ?? []); 
+  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
+
 
   const [form, setForm] = React.useState({
     // Your other form fields
@@ -225,15 +231,46 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
         // Add more categories as needed
       ];
 
-     
 
-    
+      const handleVariantOptionChange = (id: string) => {
+        setSelectedVariantIds((prevIds) => {
+          if (prevIds.includes(id)) {
+            // If the ID is already in the array, remove it
+            return prevIds.filter((prevId) => prevId !== id);
+          } else {
+            // If the ID is not in the array, add it
+            return [...prevIds, id];
+          }
+        });
+      };
+      
+      const handleVariantInputTextChange = (id: string, text: string) => {
+        if (data) {
+        setVariantInputValues((prevValues) => {
+          const index = data.selVariant.findIndex((variant) => variant.variantOptionID === id);
+          const newValues = [...prevValues];
+          newValues[index] = text;
+          return newValues;
+        });
+      }
+      }; 
 
 
     React.useEffect(() => {
         if (data) {
-          setTextName(data.title)
-          setTextPrice(data.price.toString())
+          setTextProductSKU(data.header.productSKU)
+          setTextName(data.header.name)
+          setTextPrice(parseInt(data.header.price).toLocaleString())
+          setSelCategory(data.header.categoryID)
+          setQuantity(data.header.qty)
+          setTextDescription(data.header.notes)
+          if (data.selVariant) {
+            // Set the initial selected variant IDs
+            setSelectedVariantIds(data.selVariant.map((variant) => variant.variantOptionID));
+      
+            // Set the initial input values for variant options
+            setVariantInputValues(data.selVariant.map((variant) =>parseInt(variant.price).toLocaleString())); // <-- Set the prices here
+          }
         }
       }, [data]);
 
@@ -249,7 +286,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
       <View style={{flexDirection:'row', gap:6}}>
         <View style={{width:'25%',  alignItems:'center'}}>
 
-          {data && data.image ? (
+          {data && data.header.imgUrl ? (
             <View style={{paddingLeft:8}}>
                 {form.paymentConfirmationFileData ? (
                  <Image
@@ -259,7 +296,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
                 ) : (
               
                   <Image
-                  source={{ uri: data.image }}
+                  source={{ uri: data.header.imgUrl }}
                   style={{ width: 120, height: 100, borderRadius:7 }}
                 />
                 )}
@@ -344,16 +381,12 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
             }}>
 
             <RNPickerSelect
-                onValueChange={(language) => setLanguage(language)}
+                onValueChange={(x) => setSelCategory(x)}
                 items={[
-                    { label: "JavaScript", value: "JavaScript" },
-                    { label: "TypeScript", value: "TypeScript" },
-                    { label: "Python", value: "Python" },
-                    { label: "Java", value: "Java" },
-                    { label: "C++", value: "C++" },
-                    { label: "C", value: "C" },
+                    { label: "Coffee", value: "08f2bd82-d414-42bf-befa-0aa3921f08a3" },
                 ]}
                 useNativeAndroidPickerStyle={false}
+                value={selCategory}
                 Icon={() => {
                   return <View style={{marginTop:2}}><DropdownSVG width='11' height='11' color='black' /></View>;
                 }}
@@ -432,109 +465,35 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
 
         {data && (
           <View>
-            <View style={{margin:10, flexDirection:'row', width:'80%',  }}>
-        <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Serving: </Text>
-          <View>
-            {temperatureOptions.map((option, index) => (
-            <View key={option.id} style={styles.rowContainer}>
-              <TouchableOpacity
-                style={styles.checkboxContainer}
-                activeOpacity={1}
-                onPress={() => handleOptionChange(option.id)}
-              >
-                <View style={styles.checkbox}>
-                  {selectedOptionIds.includes(option.id) && <View style={styles.checkboxInner} />}
-                </View>
-                <Text style={styles.checkboxLabel}>{option.label}</Text>
-              </TouchableOpacity>
-
-              <TextInput
-                style={[
-                  styles.servingInput,
-                  {
-                    opacity: selectedOptionIds.includes(option.id) ? 1 : 0.5,
-                    backgroundColor: selectedOptionIds.includes(option.id) ? '#F5F6FF' : '#D2D2D2', 
-                  },
-                ]}
-                placeholder={`Enter value for ${option.label}`}
-                value={servingInputValues[index]}
-                onChangeText={(text) => handleTextInputChange(option.id, text)}
-                editable={selectedOptionIds.includes(option.id) && !isServingSubmitting}
-              />
-            </View>
-          ))}
+  {data.selVariant.map((variant, index) => (
+    <View key={variant.variantOptionID} style={styles.rowContainer}>
+      <TouchableOpacity
+        style={styles.checkboxContainer}
+        activeOpacity={1}
+        onPress={() => handleVariantOptionChange(variant.variantOptionID)}
+      >
+        <View style={styles.checkbox}>
+          {selectedVariantIds.includes(variant.variantOptionID) && <View style={styles.checkboxInner} />}
         </View>
-        </View>
+        <Text style={styles.checkboxLabel}>{variant.label}</Text>
+      </TouchableOpacity>
 
-        <View style={{margin:10, flexDirection:'row', width:'80%',  }}>
-        <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Sugar: </Text>
-          <View>
-            {sugarOptions.map((option, index) => (
-            <View key={option.id} style={styles.rowContainer}>
-              <TouchableOpacity
-                style={styles.checkboxContainer}
-                activeOpacity={1}
-                onPress={() => handleOptionSugarChange(option.id)}
-              >
-                <View style={styles.checkbox}>
-                  {selectedSugarIds.includes(option.id) && <View style={styles.checkboxInner} />}
-                </View>
-                <Text style={styles.checkboxLabel}>{option.label}</Text>
-              </TouchableOpacity>
-
-              <TextInput
-                style={[
-                  styles.servingInput,
-                  {
-                    opacity: selectedSugarIds.includes(option.id) ? 1 : 0.5,
-                    backgroundColor: selectedSugarIds.includes(option.id) ? '#F5F6FF' : '#D2D2D2', 
-                  },
-                ]}
-                placeholder={`Enter value for ${option.label}`}
-                value={sugarInputValues[index]}
-                onChangeText={(text) => handleTextInputSugarChange(option.id, text)}
-                editable={selectedSugarIds.includes(option.id) && !isSugarSubmitting}
-              />
-            </View>
-          ))}
-        </View>
-        </View>
-
-        <View style={{margin:10, flexDirection:'row', width:'80%',  }}>
-        <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Add On: </Text>
-          <View>
-            {addOnOptions.map((option, index) => (
-            <View key={option.id} style={styles.rowContainer}>
-              <TouchableOpacity
-                style={styles.checkboxContainer}
-                activeOpacity={1}
-                onPress={() => handleOptionAddOnChange(option.id)}
-              >
-                <View style={styles.checkbox}>
-                  {selectedAddOnIds.includes(option.id) && <View style={styles.checkboxInner} />}
-                </View>
-                <Text style={styles.checkboxLabel}>{option.label}</Text>
-              </TouchableOpacity>
-
-              <TextInput
-                style={[
-                  styles.servingInput,
-                  {
-                    opacity: selectedAddOnIds.includes(option.id) ? 1 : 0.5,
-                    backgroundColor: selectedAddOnIds.includes(option.id) ? '#F5F6FF' : '#D2D2D2', 
-                  },
-                ]}
-                placeholder={`Enter value for ${option.label}`}
-                value={addOnInputValues[index]}
-                onChangeText={(text) => handleTextInputAddOnChange(option.id, text)}
-                editable={selectedAddOnIds.includes(option.id) && !isAddOnSubmitting}
-              />
-            </View>
-          ))}
-        </View>
-        </View>
-
-          </View>
+      <TextInput
+        style={[
+          styles.variantInput,
+          {
+            opacity: selectedVariantIds.includes(variant.variantOptionID) ? 1 : 0.5,
+            backgroundColor: selectedVariantIds.includes(variant.variantOptionID) ? '#F5F6FF' : '#D2D2D2',
+          },
+        ]}
+        placeholder={`Enter value for ${variant.label}`}
+        value={variantInputValues[index]}
+        onChangeText={(text) => handleVariantInputTextChange(variant.variantOptionID, text)}
+        editable={selectedVariantIds.includes(variant.variantOptionID) && !isSubmitting}
+      />
+    </View>
+  ))}
+</View>
         )}
 
         <View style={{marginHorizontal:10, marginVertical:8, width:'80%',  }}>
@@ -665,6 +624,17 @@ const styles = StyleSheet.create({
         borderRadius:7,
         marginLeft:20
       },
+
+  variantInput: {
+    height: 25,
+    width: '60%',
+    borderColor: 'gray',
+    paddingVertical: 5,
+    paddingLeft: 8,
+    fontSize: 8,
+    borderRadius: 7,
+    marginLeft: 20,
+  },
     
   });
 
@@ -693,6 +663,7 @@ const styles = StyleSheet.create({
         top: 5,
         right: 15,
       },
+      
 });
 
 export default DetailProduct

@@ -14,6 +14,33 @@ export interface Coffee {
     image: string;
   }
 
+export interface Product {
+   header: headerProduct
+   selVariant: selVariantProduct[]
+  }
+
+  export interface headerProduct {
+    id: string;
+    clientID: string;
+    name: string;
+    notes: string;
+    qty: number;
+    price: string;
+    categoryID: string;
+    category: string;
+    productSKU: string;
+    imgUrl: string;
+    mimeType: string;
+  }
+  export interface selVariantProduct {
+    id: string;
+    name: string;
+    type: string;
+    variantOptionID: string;
+    label: string;
+    price: string;
+  }
+
   export interface Categories {
     id: string;
     name: string;
@@ -24,7 +51,9 @@ export interface Coffee {
 const Products = () => {
 
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
-    const [selectedItems, setSelectedItems] = React.useState<number[]>([]);
+    const [productData, setProductData] = React.useState<Product[]>([]);
+
+    const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [deleteMode, setDeleteMode] = React.useState(false);
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
@@ -59,7 +88,7 @@ const Products = () => {
         navigation.navigate('ProductDetail' as never);
       };
     
-      const handleCheckboxPress = (itemId: number) => {
+      const handleCheckboxPress = (itemId: string) => {
         // Toggle the selection status of the item
         setSelectedItems((prevSelectedItems) => {
           if (prevSelectedItems.includes(itemId)) {
@@ -85,7 +114,7 @@ const Products = () => {
         setSelectedItems([]);
       };
 
-      const handleNavigate = ( selectedData: Coffee | null) => {
+      const handleNavigate = ( selectedData: Product | null) => {
         console.log(selectedData)
         navigation.navigate('ProductDetail' as never, {data: selectedData} as never)
       };
@@ -135,6 +164,42 @@ const Products = () => {
       },
     ];
 
+    const dataProducts: Product[] = [
+      {
+        header: {
+            id: "8a4ccc2a-8f74-4b47-a91c-732e15844964",
+            clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
+            name: "Kopi Tubruk",
+            notes: "",
+            qty: 100,
+            price: "25000.00",
+            categoryID: "08f2bd82-d414-42bf-befa-0aa3921f08a3",
+            category: "Coffee",
+            productSKU: "SE001",
+            imgUrl: "/images/cdn/product/9781292396637.jpg",
+            mimeType: "image/jpeg"
+        },
+        selVariant: [
+            {
+                id: "329cbb0e-646e-45e8-8643-22cd12245e79",
+                name: "Serving",
+                type: "1",
+                variantOptionID: "1d093c6e-e5f0-4223-9395-cf1f8f24410d",
+                label: "Cold",
+                price: "0.00"
+            },
+            {
+                id: "329cbb0e-646e-45e8-8643-22cd12245e79",
+                name: "Serving",
+                type: "1",
+                variantOptionID: "80068683-a6f5-4259-870c-0f1ea017417a",
+                label: "Hot",
+                price: "0.00"
+            }
+        ]
+    },
+    ]
+
     React.useEffect(() => {
         fetchData();
       }, []);
@@ -182,8 +247,8 @@ const Products = () => {
         ))}
       </ScrollView>
 
-      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', justifyContent:'center', marginVertical:3}}>
-        {coffeeData.map((x, index)=>(
+      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center',  marginVertical:3}}>
+        {/* {coffeeData.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
                   <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
@@ -211,6 +276,40 @@ const Products = () => {
                   <View style={{width:'50%'}}>
                       <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.title}</Text>
                       <Text style={{fontSize:8, color: 'black' }}>Rp {x.price}</Text>
+                  </View>
+              </TouchableOpacity>
+                )}
+            
+            </View>
+        ))} */}
+        {dataProducts.map((x, index)=>(
+          <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
+            {deleteMode && (
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.header.id)} style={{ marginRight: 5 }}>
+                    {selectedItems.includes(x.header.id) ? (
+                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
+                    ) : (
+                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
+                    )}
+                  </TouchableOpacity>
+                )}
+
+                {loading ? (
+                  <View 
+                  key={index}
+                  style={styles.cardRowSkeleton} />
+                  
+                ):(
+                    <TouchableOpacity 
+                      key={index}
+                      onPress={() => handleNavigate(x)} 
+                      style={styles.cardRow}>
+                  <View style={{width:'50%'}}>
+                      <Image source={{ uri: x.header.imgUrl }} style={{width:'100%', height:'100%'}} />
+                  </View>
+                  <View style={{width:'50%'}}>
+                      <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.header.name}</Text>
+                      <Text style={{fontSize:8, color: 'black' }}>Rp {parseInt(x.header.price).toLocaleString()}</Text>
                   </View>
               </TouchableOpacity>
                 )}

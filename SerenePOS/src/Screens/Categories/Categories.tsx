@@ -18,8 +18,8 @@ export interface Coffee {
   export interface Categories {
     id: string;
     name: string;
-    totalItem: string;
-    color?: string;
+    qtyAlert: string;
+    bgColor?: string;
   }
 
 const Categories = () => {
@@ -98,44 +98,44 @@ const Categories = () => {
         {
         id: '1',
         name: 'Coffee',
-        totalItem: '3',
-        color: '#7653DA',
+        qtyAlert: '3',
+        bgColor: '#7653DA',
       },
       {
         id: '2',
         name: 'Non Coffee',
-        totalItem: '5',
-        color: '#2925EB',
+        qtyAlert: '5',
+        bgColor: '#2925EB',
       },
       {
         id: '3',
         name: 'Food',
-        totalItem: '10',
-        color: '#2563EB',
+        qtyAlert: '10',
+        bgColor: '#2563EB',
       },
       {
         id: '4',
         name: 'Main Course',
-        totalItem: '8',
-        color: '#4AB8E8',
+        qtyAlert: '8',
+        bgColor: '#4AB8E8',
       },
       {
         id: '5',
         name: 'Signature',
-        totalItem: '8',
-        color: '#E88C4A',
+        qtyAlert: '8',
+        bgColor: '#E88C4A',
       },
       {
         id: '6',
         name: 'Dessert',
-        totalItem: '9',
-        color: '#E84AD8',
+        qtyAlert: '9',
+        bgColor: '#E84AD8',
       },
       {
         id: '7',
         name: 'Etc',
-        totalItem: '6',
-        color: '#E84A4A',
+        qtyAlert: '6',
+        bgColor: '#E84A4A',
       },
     ];
 
@@ -189,11 +189,11 @@ const Categories = () => {
             onPress={() => onOpenDetail(x)}  key={index} 
             style={[
               styles.firstRowItem,
-              {backgroundColor: x.color}
+              {backgroundColor: x.bgColor}
               ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
             <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Items</Text>
+            <Text style={{ color: "white", fontSize: 9}}>{x.qtyAlert} Items</Text>
             </View>
           </TouchableOpacity>
             </View>

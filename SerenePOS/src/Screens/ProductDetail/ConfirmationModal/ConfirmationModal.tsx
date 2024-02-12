@@ -1,11 +1,12 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Product } from '../../Products/Products';
 import { Coffee } from '../DetailProduct';
 
 interface EditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
-  selectedData: Coffee | null
+  selectedData: Product | null
 }
 
 const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selectedData }) => {
@@ -26,7 +27,7 @@ const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, s
          
 
         <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
-                    <Text style={{fontSize:10, color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Are you sure want to delete {selectedData?.title} ?</Text>
+                    <Text style={{fontSize:10, color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Are you sure want to delete {selectedData?.header.name} ?</Text>
                     <TouchableOpacity  onPress={onClose} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#EF4444', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Yes</Text>
                     </TouchableOpacity>     

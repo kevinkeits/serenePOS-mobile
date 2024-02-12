@@ -60,6 +60,10 @@ const OutletDetail = () => {
     const [textName, setTextName] = React.useState('');
     const [textDescription, setTextDescription] = React.useState('');
     const [textPrice, setTextPrice] = React.useState('');
+    const [textPhoneNumber, setTextPhoneNumber] = React.useState('');
+    const [textDetailAddress, setTextDetailAddress] = React.useState('');
+
+
     const [quantity, setQuantity] = React.useState(1);
     const [form, setForm] = React.useState({
       // Your other form fields
@@ -184,6 +188,18 @@ const OutletDetail = () => {
         // Add more categories as needed
       ];
 
+      const outletData = 
+      { 
+        id: "080bd62c-810f-4b92-9967-0ce080bf30e8",
+        clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
+        name: "Serene",
+        phoneNumber: "85737323334",
+        planType: "1",
+        isPrimary: 1,
+        detailsAddress: "Jln. Kesehatan no.12"
+      }
+      ;
+
      
       const handleUpload = async () => {
         try {
@@ -212,6 +228,9 @@ const OutletDetail = () => {
 
     React.useEffect(() => {
         fetchData();
+        setTextName(outletData.name)
+        setTextPhoneNumber(outletData.phoneNumber)
+        setTextDetailAddress(outletData.detailsAddress)
       }, []);
 
   return (
@@ -271,7 +290,7 @@ const OutletDetail = () => {
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Phone Number</Text>
                     <View
                         style={{
-                            backgroundColor: textPrice,
+                            backgroundColor: textPhoneNumber,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
@@ -283,8 +302,8 @@ const OutletDetail = () => {
                             // numberOfLines={4}
                             placeholder='Type here'
                             maxLength={40}
-                            onChangeText={text => setTextPrice(text)}
-                            value={textPrice}
+                            onChangeText={text => setTextPhoneNumber(text)}
+                            value={textPhoneNumber}
                             style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
                         />
                     </View>          
@@ -297,7 +316,7 @@ const OutletDetail = () => {
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Detail Address</Text>
                     <View
                         style={{
-                            backgroundColor: textPrice,
+                            backgroundColor: textDetailAddress,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
@@ -309,8 +328,8 @@ const OutletDetail = () => {
                             // numberOfLines={4}
                             placeholder='Type here'
                             maxLength={40}
-                            onChangeText={text => setTextPrice(text)}
-                            value={textPrice}
+                            onChangeText={text => setTextDetailAddress(text)}
+                            value={textDetailAddress}
                             style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
                         />
                     </View>          

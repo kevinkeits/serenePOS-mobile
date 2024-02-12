@@ -52,6 +52,18 @@ export interface Coffee {
     // Add more options as needed
   ];
 
+  const accountData = 
+    { 
+      ID: "8bf8e17c-0cbb-4a08-b8f3-3b0e870223dc",
+      outletID: "080bd62c-810f-4b92-9967-0ce080bf30e8",
+      outletName: "Serene",
+      name: "Reza",
+      phoneNumber: "085157930313",
+      email: "reza@gmail.com",
+      password: "qwerty123"
+    }
+
+
 const Profile = () => {
 
   const navigation = useNavigation();
@@ -59,22 +71,9 @@ const Profile = () => {
     const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [textProductSKU, setTextProductSKU] = React.useState('');
     const [textName, setTextName] = React.useState('');
-    const [textDescription, setTextDescription] = React.useState('');
-    const [textPrice, setTextPrice] = React.useState('');
+    const [textEmail, setTextEmail] = React.useState('');
+    const [textPassword, setTextPassword] = React.useState('');
     const [quantity, setQuantity] = React.useState(1);
-    const [selectedCategory, setSelectedCategory] =  React.useState<CategoryOption | null>(null);
-    const [ language, setLanguage ] = React.useState("");
-  const [selectedOptionIds, setSelectedOptionIds] = React.useState<string[]>([]);
-  const [servingInputValues, setServingInputValues] = React.useState<string[]>(temperatureOptions.map(() => ''));
-  const [isServingSubmitting, setIsServingSubmitting] = React.useState(false); 
-
-  const [selectedSugarIds, setSelectedSugarIds] = React.useState<string[]>([]);
-  const [sugarInputValues, setSugarInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
-  const [isSugarSubmitting, setIsSugarSubmitting] = React.useState(false); 
-
-  const [selectedAddOnIds, setSelectedAddOnIds] = React.useState<string[]>([]);
-  const [addOnInputValues, setAddOnInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
-  const [isAddOnSubmitting, setIsAddOnSubmitting] = React.useState(false); 
 
   const [form, setForm] = React.useState({
     // Your other form fields
@@ -82,83 +81,6 @@ const Profile = () => {
     paymentConfirmationFileData: '',
   });
   
-
-  const handleTextInputChange = (id: string, text: string) => {
-    setServingInputValues((prevValues) => {
-      const index = temperatureOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionChange = (id: string) => {
-    setSelectedOptionIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-  const handleTextInputSugarChange = (id: string, text: string) => {
-    setSugarInputValues((prevValues) => {
-      const index = sugarOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionSugarChange = (id: string) => {
-    setSelectedSugarIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-  const handleTextInputAddOnChange = (id: string, text: string) => {
-    setAddOnInputValues((prevValues) => {
-      const index = addOnOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionAddOnChange = (id: string) => {
-    setSelectedAddOnIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-    const incrementQuantity = () => {
-        setQuantity((prevQuantity) => prevQuantity + 1);
-      };
-    
-      const decrementQuantity = () => {
-        if (quantity > 1) {
-          setQuantity((prevQuantity) => prevQuantity - 1);
-        }
-      };
-    
 
       
     
@@ -195,13 +117,6 @@ const Profile = () => {
         }
       };
 
-      const categoryOptions: CategoryOption[] = [
-        { label: 'Category 1', value: 'category1' },
-        { label: 'Category 2', value: 'category2' },
-        { label: 'Category 3', value: 'category3' },
-        // Add more categories as needed
-      ];
-
      
 
     
@@ -209,6 +124,9 @@ const Profile = () => {
 
     React.useEffect(() => {
         fetchData();
+        setTextName(accountData.name)
+        setTextEmail(accountData.email)
+        setTextPassword(accountData.password)
       }, []);
 
   return (
@@ -292,8 +210,8 @@ const Profile = () => {
                             // multiline
                             // numberOfLines={4}
                             maxLength={40}
-                            onChangeText={text => setTextProductSKU(text)}
-                            value={textProductSKU}
+                            onChangeText={text => setTextEmail(text)}
+                            value={textEmail}
                             style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
                         />
                     </View>          
@@ -302,7 +220,7 @@ const Profile = () => {
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Password</Text>
                     <View
                         style={{
-                            backgroundColor: textName,
+                            backgroundColor: textPassword,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
@@ -314,8 +232,8 @@ const Profile = () => {
                             // numberOfLines={4}
                             placeholder='Type here'
                             maxLength={40}
-                            onChangeText={text => setTextName(text)}
-                            value={textName}
+                            onChangeText={text => setTextPassword(text)}
+                            value={textPassword}
                             style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
                         />
                     </View>          

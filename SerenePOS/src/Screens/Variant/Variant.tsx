@@ -14,10 +14,11 @@ export interface Coffee {
     image: string;
   }
 
-  export interface Categories {
+  export interface Variants {
     id: string;
     name: string;
-    totalItem: string;
+    type: string;
+    count: number;
   }
 
 
@@ -30,7 +31,7 @@ const Variant = () => {
 
     const navigation = useNavigation();
 
-    const handleNavigate = ( selectedData: Categories | null) => {
+    const handleNavigate = ( selectedData: Variants | null) => {
       navigation.navigate('VariantDetail' as never, {data: selectedData} as never)
     };
 
@@ -79,37 +80,43 @@ const Variant = () => {
         setSelectedItems([]);
       };
 
-    const data: Categories[] = [
-        {
-        id: '1',
-        name: 'Coffee',
-        totalItem: '3'
-      },
+    const data: Variants[] = [
       {
-        id: '2',
-        name: 'Non Coffee',
-        totalItem: '5'
-      },
-      {
-        id: '3',
-        name: 'Food',
-        totalItem: '10'
-      },
-      {
-        id: '4',
-        name: 'Main Course',
-        totalItem: '8'
-      },
-      {
-        id: '5',
-        name: 'Signature',
-        totalItem: '8'
-      },
-      {
-        id: '6',
-        name: 'Dessert',
-        totalItem: '9'
-      },
+        id : "329cbb0e-646e-45e8-8643-22cd12245e79",
+        name: "Serving",
+        type: "1",
+        count: 0
+    },
+    {
+        id: "93ca4c5d-bd04-4855-8fc6-759b3bf9a0e4",
+        name: "Sugar",
+        type: "1",
+        count: 0
+    },
+    {
+        id: "c24c993d-6e18-4c0e-8131-5a1cd6e0ead5",
+        name: "Pilihan Es",
+        type: "2",
+        count: 0
+    },
+    {
+        id: "204b3027-ab90-4fff-8f22-d089e016aceb",
+        name: "Pilihan Kopi",
+        type: "2",
+        count: 0
+    },
+    {
+        id: "12bfefd0-75f4-489a-b7d3-a5d0c435f924",
+        name: "Pilihan Susu",
+        type: "2",
+        count: 0
+    },
+    {
+        id: "33797aa4-f3c0-4437-9871-f38278f979ba",
+        name: "Add On",
+        type: "2",
+        count: 0
+    }
     ];
 
     React.useEffect(() => {
@@ -162,9 +169,12 @@ const Variant = () => {
                 <View style={{flexDirection:'row', justifyContent:'space-between'}}>
                 <View>
                     <Text style={{fontWeight: "bold", color: "black", fontSize: 12}}>{x.name}</Text>
-                    <Text style={{ color: "black", fontSize: 9}}>{x.totalItem} Items</Text>
+                    <Text style={{ color: "black", fontSize: 8}}>Normal, More, Less</Text>
                 </View>
-                    <Text style={{ color: "#2563EB", fontSize: 7, padding:3, borderWidth:0.5, borderColor:'#2563EB', borderRadius:3, width:50, height:18, textAlign:'center'}}>{x.name}</Text>
+                    <Text style={{ color: "#2563EB", fontSize: 7, padding:3, borderWidth:0.5, borderColor:'#2563EB', borderRadius:3, width:80, height:18, textAlign:'center'}}>{x.type == "1" ? 'Single' : 'Multi'} Selection</Text>
+                </View>
+                <View style={{marginTop:35}}>
+                  <Text style={{fontSize:7, color:'black'}}>{x.count} Linked Product</Text>
                 </View>
             </TouchableOpacity>
             </View>

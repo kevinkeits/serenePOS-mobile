@@ -14,6 +14,7 @@ import ReceiptSVG from '../../assets/svgs/ReceiptSVG';
 import CartSVG from '../../assets/svgs/CartSVG';
 import SaveSVG from '../../assets/svgs/SaveSVG';
 import TrashSVG from '../../assets/svgs/TrashSVG';
+import TransactionModal from './components/TransactionModal/TransactionModal';
 
 export interface Coffee {
     id: number;
@@ -40,6 +41,7 @@ const Sales = () => {
     const [isOpenOrder, setIsOpenOrder] = React.useState(false);
     const [isOpenDiscount, setIsOpenDiscount] = React.useState(false);
     const [customerName, setCustomerName] = React.useState('');
+    const [isOpenTransaction, setIsOpenTransaction] = React.useState(false);
 
 
 
@@ -59,7 +61,7 @@ const Sales = () => {
 
     const fetchData = async () => {
         try {
-          const response = await axios.get('https://fakestoreapi.com/products?limit=5');
+          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
           const data: Coffee[] = response.data;
           setCoffeeData(data);
         } catch (error) {
@@ -92,6 +94,14 @@ const Sales = () => {
     
       const onCloseOrder = () => {
         setIsOpenOrder(false);
+      };
+
+      const onOpenTransaction= () => {
+        setIsOpenTransaction(true);
+      };
+    
+      const onCloseTransaction = () => {
+        setIsOpenTransaction(false);
       };
 
       const onSaveOrder = (name: string) => {
@@ -198,10 +208,12 @@ React.useEffect(() => {
       <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Sales</Text>
       <Text style={{fontWeight:"bold", fontSize:17, }}></Text>
       </View>
-
-      <View style={{ marginHorizontal:"auto", flexDirection: 'row', flexWrap: 'wrap',}}>
+      <View style={{height:85}}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal:"auto", flexDirection: 'row'}}>
         {data.map((x, index) => (
-            <TouchableOpacity key={index} 
+            <TouchableOpacity
+            onPress={() => fetchData()} 
+            key={index} 
             style={[
               styles.firstRowItem,
               {backgroundColor: x.color}
@@ -212,14 +224,13 @@ React.useEffect(() => {
             </View>
           </TouchableOpacity>
         ))}
-      
+      </ScrollView>
       </View>
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginTop:20}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto"}}>Coffee</Text>
+      {/* <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto"}}>Coffee</Text> */}
       <Text style={{fontWeight:"bold", fontSize:17}}></Text>
       </View>
-    <View style={{justifyContent:'center', alignItems: 'center', marginBottom:20, width:'95%'}}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollView}>
+    <View style={{ alignItems: 'center', marginBottom:20, marginLeft:10, width:'100%', flexDirection:'row', flexWrap:"wrap"}}>
       {coffeeData.map((x) => (
         // <TouchableOpacity key={x.id} style={styles.card} onPress={() => addToSelectedItems(x)}>
         <TouchableOpacity key={x.id} style={styles.card} onPress={() => openEditModal(x)}>
@@ -228,7 +239,6 @@ React.useEffect(() => {
           <Text style={styles.price}>${x.price}</Text>
         </TouchableOpacity>
       ))}
-    </ScrollView>
     </View>
 
     </View>
@@ -240,10 +250,12 @@ React.useEffect(() => {
 {selectedItems.length > 0 ? (
     <View style={styles.selectedItemsContainer}>
       <View>
-      <Text style={{fontSize:7, marginTop:3, marginHorizontal:10, marginBottom:5, color:'black'}}>{getCurrentDate()}</Text>
+      <Text style={{fontSize:7, marginTop:3, marginHorizontal:10,  color:'black'}}>{getCurrentDate()}</Text>
       <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:5, marginTop:7, gap:2}}>
-            <ReceiptSVG width='14' height='14' color='#828282' />
-            <View
+            <TouchableOpacity onPress={()=>onOpenTransaction()}>
+              <ReceiptSVG width='14' height='14' color='#828282' />
+            </TouchableOpacity>
+                        <View
                         style={{
                             backgroundColor: customerName,
                             borderColor: '#D2D2D2',
@@ -273,20 +285,6 @@ React.useEffect(() => {
                 </Text>
             </TouchableOpacity>
           </View>
-        {/* <View style={{flexDirection:'row', justifyContent: 'space-between', marginHorizontal:8}}>
-          <Text style={{fontSize:10, fontWeight:'bold', color:'black'}}>#{customerName}</Text>
-          <View style={{flexDirection:'row', gap:2}}>
-            <TouchableOpacity>
-              <Text style={{fontSize:6}} onPress={()=> onOpenDiscount()}>
-                <DiscountSVG width='16' heigth='16'/>
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={()=> onOpenOrder()}>
-              <PencilSVG width='16' heigth='11' color='white' />
-            </TouchableOpacity>
-          </View>
-        </View> */}
-
         {selectedItems.map((item) => (
         <View key={item.id} style={styles.selectedItem}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
@@ -348,7 +346,9 @@ React.useEffect(() => {
         <View style={styles.selectedItemsContainerBlank}>
         <View>
           <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:8, marginTop:7, gap:5}}>
-            <ReceiptSVG width='14' height='14' color='#828282' />
+            <TouchableOpacity onPress={()=>onOpenTransaction()}>
+              <ReceiptSVG width='14' height='14' color='#828282' />
+            </TouchableOpacity>
             <View
                         style={{
                             backgroundColor: customerName,
@@ -374,7 +374,7 @@ React.useEffect(() => {
           </View>
 
           </View>
-          <View style={{marginHorizontal:8, marginTop:150, }}>
+          <View style={{marginHorizontal:8, marginTop:'50%', marginBottom:15 }}>
                 <CartSVG width='100' height='100' color='#A4A4A4'/>
                 <Text style={{fontSize:10, fontWeight:'bold', textAlign:'center', color:'black', marginTop:10, marginLeft:16}}> Empty Cart</Text>
                 <Text style={{fontSize:10, textAlign:'center', color:'black', marginTop:10, marginLeft:16}}>Add Product to the cart from catalog.</Text>
@@ -392,6 +392,7 @@ React.useEffect(() => {
     <PaymentMethodModal isVisible={isOpenPayment} totalPrice={totalPriceState} onClose={onClosePayment}/>
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
     <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.id)} />
+    <TransactionModal isVisible={isOpenTransaction} onClose={onCloseTransaction}/>
 
 
     </CommonLayout>
@@ -402,8 +403,8 @@ const styles = StyleSheet.create({
   firstRowItem: {
     backgroundColor:"blue",
     justifyContent: 'flex-end',
-    width:100, 
-    height:100, 
+    width:120, 
+    height:80, 
     borderRadius:10, 
     shadowColor: '#000', 
     shadowOffset: { width: 0, height: 8 }, 
@@ -417,9 +418,10 @@ const styles = StyleSheet.create({
     marginTop:10
   },
   card: {
-    marginRight: 10,
+    marginRight: 6,
     borderWidth: 0.5,
-    width:90, 
+    marginBottom:10,
+    width:105, 
     height:120, 
     borderRadius:10, 
   },
@@ -479,13 +481,12 @@ justifyContent: 'space-between'
   selectedItem: {
     // alignItems: 'center',
     padding: 8,
-    marginTop: 5,
     borderBottomWidth: 1,
     borderBottomColor: 'grey',
     borderStyle: 'dotted',  },
-  deleteButton: {
+    deleteButton: {
     backgroundColor: 'red',
-    padding: 8,
+    padding: 5,
     borderRadius: 5,
   },
   deleteButtonText: {
@@ -532,7 +533,7 @@ justifyContent: 'space-between'
     fontWeight: 'bold',
   },
   billButton: {
-    borderColor: '#2563EB',
+    borderColor: '#E84A4A',
     borderWidth: 1,
     padding: 6,
     borderRadius: 8,
@@ -542,9 +543,8 @@ justifyContent: 'space-between'
     marginBottom:10
   },
   billButtonText: {
-    color: '#2563EB',
+    color: 'black',
     fontSize: 9,
-    fontWeight: 'bold',
   },
   underline: {
     borderBottomWidth: 1,

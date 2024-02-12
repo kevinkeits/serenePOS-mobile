@@ -1,41 +1,43 @@
-// Import necessary modules
-import React, { useState } from 'react';
-import { View, Text, Button, TextInput, Platform, StyleSheet } from 'react-native';
-import CommonLayout from '../../Components/CommonLayout/CommonLayout';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
-import DetailModal from './components/DetailModal/DetailModal';
+import React from 'react';
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 
+interface Props {
+  isVisible: boolean;
+  onClose: () => void;
+}
 
-// Define TransactionHistory component
-const TransactionHistory: React.FC = () => {
-    const navigation = useNavigation();
+const TransactionModal: React.FC<Props> = ({ isVisible, onClose }) => {
 
     const [isOpenDetail, setIsOpenDetail] = React.useState(false);
     const [selectedID, setSelectedID] = React.useState('');
 
-
     const onCloseDetail = () => {
-      setIsOpenDetail(false);
-    };
-
-    const onOpenDetail = (id: string) => {
-      setSelectedID(id)
-      setIsOpenDetail(true);
-    };
+        setIsOpenDetail(false);
+      };
   
+      const onOpenDetail = (id: string) => {
+        setSelectedID(id)
+        setIsOpenDetail(true);
+      };
 
 
 
   return (
-    <CommonLayout>
-        <View style={{width:'100%'}}>
-            <View style={{flexDirection: 'row', gap:10,  marginRight:30, marginVertical:10, alignItems:'center'}}>
-                <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Transaction History</Text>
-            </View>
-
-        <View>
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isVisible}
+      onRequestClose={() => onClose()}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.modalTitle}>Transaction</Text>
+            <View style={styles.underline}></View>
+          </View>
+        <ScrollView>
+          <View>
                   <View style={{ backgroundColor:'#E1E1E1', flexDirection:'row', justifyContent:'space-between', padding:5, marginHorizontal:10}}>
                       <Text style={{fontSize:10, color:'black', fontWeight:'bold'}}>Tuesday, 30 Jan 2024</Text>
                       {/* <Text style={{fontSize:10, color:'black'}}>#001</Text> */}
@@ -82,7 +84,7 @@ const TransactionHistory: React.FC = () => {
                       </View>                    
                   </TouchableOpacity>
       </View>
-      <View>
+      <View style={{marginBottom:20}}>
                   <View style={{ backgroundColor:'#E1E1E1', flexDirection:'row', justifyContent:'space-between', padding:5, marginHorizontal:10}}>
                       <Text style={{fontSize:10, color:'black', fontWeight:'bold'}}>Monday, 30 Jan 2024</Text>
                       {/* <Text style={{fontSize:10, color:'black'}}>#001</Text> */}
@@ -129,50 +131,80 @@ const TransactionHistory: React.FC = () => {
                       </View>                    
                   </TouchableOpacity>
       </View>
-            {/* <View style={{marginHorizontal:10, backgroundColor:'#2563EB', width:'20%', justifyContent:'flex-end', alignSelf:'flex-end', borderRadius:5, marginBottom:10}}>
-                <TouchableOpacity style={{paddingVertical:6}}>
-                    <Text style={{color:'white', fontSize:8, textAlign:'center'}}>Print Receipt</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={{marginHorizontal:10, borderWidth:0.5, borderColor:'#2563EB', width:'20%', justifyContent:'flex-end', alignSelf:'flex-end', borderRadius:5, marginBottom:10}}>
-                <TouchableOpacity onPress={()=> navigation.goBack()} style={{paddingVertical:6}}>
-                    <Text style={{color:'black', fontSize:8, textAlign:'center'}}>Close</Text>
-                </TouchableOpacity>
-            </View> */}
+      </ScrollView>
         
 
-        </View>
+            
 
-        <DetailModal isVisible={isOpenDetail} selectedID={selectedID} onClose={onCloseDetail} />
-    </CommonLayout>
+      <TouchableOpacity onPress={() => onClose()} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>x</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
-const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-        fontSize: 8,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderWidth: 0.5,
-        borderColor: 'grey',
-        borderRadius: 6,
-        color: 'black',
-        paddingRight: 30 // to ensure the text is never behind the icon
-    },
-    inputAndroid: {
-        fontSize: 8,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderWidth: 0.5,
-        borderColor: 'grey',
-        borderRadius: 6,
-        color: 'black',
-        paddingRight: 30 // to ensure the text is never behind the icon
-    },
-    iconContainer: {
-        top: 5,
-        right: 15,
-      },
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '70%',
+    //height: '50%',
+    backgroundColor: 'white',
+    paddingTop: 20,
+    borderRadius: 10,
+    position: 'relative',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginTop:10
+  },
+  modalTitle: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: 'black'
+  },
+  underline: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'grey',
+    //borderStyle: 'dotted',
+    marginBottom: 10,
+    width: '100%',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 16,
+    right: 10,
+    backgroundColor: 'white', // Change background color to transparent
+    padding: 8,
+    borderRadius: 5,
+    width: 30,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'grey', // Change color to black
+    fontSize: 15,
+  },
+  radioContainer: {
+    marginLeft:20
+    //flexDirection: 'row',
+    //alignItems: 'center',
+    //justifyContent: 'space-around',
+    //marginTop: 20,
+  },
+  radioButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  
 });
 
-export default TransactionHistory
+export default TransactionModal;
