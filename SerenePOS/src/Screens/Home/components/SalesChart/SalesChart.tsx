@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { LineChart } from 'react-native-chart-kit';
+import RNPickerSelect from "react-native-picker-select";
+import DropdownSVG from '../../../../assets/svgs/DropdownSVG';
+
 
 const SalesChart: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<'weekly' | 'monthly'>('weekly');
@@ -35,14 +38,30 @@ const SalesChart: React.FC = () => {
       </Text> */}
       <View style={styles.pickerContainer}>
       <Text style={{fontWeight: "bold", color: "black", fontSize: 12, marginVertical:'auto', marginLeft:20}}>Sales History</Text>
-        {/* <Picker
-          selectedValue={selectedFilter}
-          onValueChange={(itemValue) => setSelectedFilter(itemValue as 'weekly' | 'monthly')}
-          style={styles.picker}
-        >
-          <Picker.Item label="Weekly" value="weekly" />
-          <Picker.Item label="Monthly" value="monthly" />
-        </Picker> */}
+
+        <View style={{
+            justifyContent: 'center',
+            height:25,
+            width:100,
+            }}>
+
+            <RNPickerSelect
+                onValueChange={(x) => setSelectedFilter(x as 'weekly' | 'monthly')}
+                items={[
+                    { label: "Weekly", value: "weekly" },
+                    { label: "Monthly", value: "monthly" },
+                ]}
+                useNativeAndroidPickerStyle={false}
+                value={selectedFilter}
+                Icon={() => {
+                  return <View style={{marginTop:2}}><DropdownSVG width='9' height='9' color='black' /></View>;
+                }}
+             style={pickerSelectStyles}
+            
+            />
+
+
+            </View>  
       </View>
       <LineChart
         data={{
@@ -85,14 +104,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   pickerContainer: {
-    borderColor: '#ddd',
-    marginRight:10,
-    borderRadius: 8,
-    flexDirection: 'row',
-    marginBottom:10,
-    overflow: 'hidden',
-    
-    marginTop: 20,
+   flexDirection:'row',
+   alignItems:'center',
+   gap:80,
+   marginTop:10,
+   marginBottom:8
   },
   picker: {
     height: 40,
@@ -109,6 +125,34 @@ const styles = StyleSheet.create({
     alignItems:'center',
     justifyContent: 'center',
   },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+      fontSize: 8,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderWidth: 0.5,
+      borderColor: '#D2D2D2',
+      borderRadius: 6,
+      color: 'black',
+      paddingRight: 30 // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+      fontSize: 8,
+      // paddingHorizontal: 10,
+       paddingTop: 5,
+      borderBottomWidth: 0.5,
+      borderColor: '#D2D2D2',
+      borderRadius: 6,
+      color: 'black',
+      paddingRight: 5 // to ensure the text is never behind the icon
+  },
+  iconContainer: {
+      top: 5,
+      right: 15,
+    },
+    
 });
 
 export default SalesChart;

@@ -11,6 +11,7 @@ import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
 import SettingsSVG from '../../assets/svgs/SettingsSVG'
 import LogoutSVG from '../../assets/svgs/LogoutSVG'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 
@@ -80,6 +81,34 @@ const Profile = () => {
     paymentConfirmationFileName: '',
     paymentConfirmationFileData: '',
   });
+  const [userData, setUserData] = React.useState<any>(null);
+
+  const fetchUser = async () => {
+    try {
+      // Retrieve userData from AsyncStorage
+      const jsonValue = await AsyncStorage.getItem('userData');
+      if (jsonValue !== null) {
+        const jsonData = JSON.parse(jsonValue).data
+        setUserData(JSON.parse(jsonValue));
+        console.log("ini:" + jsonValue)
+        setTextName(jsonData.Name)
+      }
+    } catch (error) {
+      console.error('Error retrieving data from AsyncStorage:', error);
+    }
+  };
+
+
+  const handleLogout = async () => {
+    try {
+      // Remove userData from AsyncStorage
+      await AsyncStorage.removeItem('userData');
+      // Navigate back to Login page
+      navigation.navigate('Login' as never);
+    } catch (error) {
+      console.error('Error removing data from AsyncStorage:', error);
+    }
+  };
   
 
       
@@ -123,10 +152,12 @@ const Profile = () => {
 
 
     React.useEffect(() => {
-        fetchData();
-        setTextName(accountData.name)
+        fetchUser()
+        if (userData){
+        setTextName(userData.data.Name)
         setTextEmail(accountData.email)
         setTextPassword(accountData.password)
+        }
       }, []);
 
   return (
@@ -164,7 +195,7 @@ const Profile = () => {
               <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Setting</Text>
           </TouchableOpacity> 
 
-          <TouchableOpacity onPress={()=>navigation.navigate('Login' as never)} style={{justifyContent:'center', gap:4, flexDirection:'row',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
+          <TouchableOpacity onPress={handleLogout} style={{justifyContent:'center', gap:4, flexDirection:'row',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
                   <LogoutSVG width='12' height='12' color='black'/>
                   <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Logout</Text>
           </TouchableOpacity>    

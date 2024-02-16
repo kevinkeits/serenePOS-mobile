@@ -105,6 +105,12 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
       const onCloseConfirmation = () => {
         setIsOpenConfirmation(false);
       };
+
+      const onChangePrice = (text: string) => {
+        // Only allow numeric values
+        const numericValue = text.replace(/[^0-9]/g, '');
+        setTextPrice(numericValue);
+      };
   
 
   const handleTextInputChange = (id: string, text: string) => {
@@ -433,7 +439,8 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
                             // numberOfLines={4}
                             placeholder='Type here'
                             maxLength={40}
-                            onChangeText={text => setTextPrice(text)}
+                            keyboardType="numeric"
+                            onChangeText={onChangePrice}
                             value={textPrice}
                             style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
                         />

@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
-import TrashSVG from '../../assets/svgs/TrashSVG';
 import ViewSVG from '../../assets/svgs/ViewSVG';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -14,13 +14,47 @@ const Login = () => {
 
   const navigation = useNavigation()
 
-  const handleLogin = () => {
-    if (username === 'user' && password === '123') {
-      navigation.navigate('Home' as never);
-    } else {
-      Alert.alert('Error', 'Invalid username or password');
+//   {
+//     "Email": "keits.kevin@gmail.com",
+//     "Password": "12345"
+// }
+
+  async function handleLogin() {
+    try {
+      const url = 'https://serenepos.temandigital.id/api/external/doLogin';
+      const credentials = {
+        Email: username, // Using the entered username
+        Password: password // Using the entered password
+      };
+  
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials)
+      });
+  
+      if (response.ok) {
+        // Login successful
+        const data = await response.json();
+
+        await AsyncStorage.setItem('userData', JSON.stringify(data));
+
+        console.log('Login successful:', data);
+        navigation.navigate('Home' as never);
+        // You can perform further actions here after successful login
+      } else {
+        // Login failed
+        console.error('Login failed:', response.statusText);
+        Alert.alert('Error', 'Invalid username or password');
+        // Handle login failure
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      // Handle error during login
     }
-  };
+  }
 
   const handleNavigateSignUp = () => {
     setUsername('');
@@ -66,7 +100,7 @@ const Login = () => {
          height: 30,
          borderWidth: 1,
          marginBottom: 10,
-         borderColor: '#2563EB',
+         borderColor: '#D2D2D2',
          //padding: 5,
          borderRadius:6,
          alignSelf: 'center',
@@ -79,7 +113,7 @@ const Login = () => {
         onChangeText={(text) => setPassword(text)}
       />
         <TouchableOpacity onPress={handleTogglePasswordVisibility} style={styles.eyeIcon}>
-          {showPassword ? <ViewSVG width='12' height='12' color="#2563EB" /> : <ViewSVG width='12' height='12' color="#2563EB" />}
+          {showPassword ? <ViewSVG width='12' height='12' color="black" /> : <ViewSVG width='12' height='12' color="black" />}
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
@@ -117,7 +151,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderWidth: 1,
     marginBottom: 10,
-    borderColor: '#2563EB',
+    borderColor: '#D2D2D2',
     paddingVertical: 5,
     paddingHorizontal:10,
     borderRadius:6,
@@ -159,12 +193,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   signupText: {
-    fontSize: 10,
+    fontSize: 9,
     color: 'black',
   },
   signupLink: {
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: 9,
+    textDecorationLine:'underline',
     color: '#2563EB',
   },
   passwordContainer: {

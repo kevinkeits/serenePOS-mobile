@@ -1,36 +1,149 @@
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import TrashSVG from '../../assets/svgs/TrashSVG';
 import ViewSVG from '../../assets/svgs/ViewSVG';
 
+interface CustomCheckboxProps {
+  checked: boolean;
+  onChange: () => void;
+}
+
+const CustomCheckbox: React.FC<CustomCheckboxProps> = ({ checked, onChange }) => {
+  return (
+    <TouchableOpacity onPress={onChange} style={[styles.checkbox, checked && styles.checked]}>
+      {checked && <Text style={styles.checkmark}>✓</Text>}
+    </TouchableOpacity>
+  );
+};
+
+
 const SignUp = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [storeName, setStoreName] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [emailError, setEmailError] = useState<string>('');
+  const [nameError, setNameError] = useState<string>('');
+  const [storeNameError, setStoreNameError] = useState<string>('');
+  const [passwordError, setPasswordError] = useState<string>('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string>('');
+
+  const [agreeTerms, setAgreeTerms] = useState(false); // State for checkbox
+  const [agreeTermsError, setAgreeTermsError] = useState<string>('');
+
 
 
 
   const navigation = useNavigation()
 
   const handleNavigateLogin = () => {
-    setUsername('');
+    setEmail('');
     setPassword('');
     setConfirmPassword('')
     navigation.navigate('Login' as never)
   }
 
-  const handleLogin = () => {
-    if (username === 'user' && password === '123') {
-      // Navigate to Home screen on successful login
-      navigation.navigate('Home' as never);
+  const handleAgreeTermsChange = () => {
+    setAgreeTerms(!agreeTerms);
+  };
+
+  const handleSignUp = async () => {
+    let isValid = true;
+
+    // Email validation
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Invalid email format');
+      isValid = false;
     } else {
-      // Display error message on failed login
-      Alert.alert('Error', 'Invalid username or password');
+      setEmailError('');
+    }
+
+    // Name validation
+    if (!name.trim()) {
+      setNameError('Name is required');
+      isValid = false;
+    } else {
+      setNameError('');
+    }
+
+    // Store name validation
+    if (!storeName.trim()) {
+      setStoreNameError('Store name is required');
+      isValid = false;
+    } else {
+      setStoreNameError('');
+    }
+
+    // Password validation
+    if (!password.trim()) {
+      setPasswordError('Password is required');
+      isValid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (!confirmPassword.trim()) {
+      setConfirmPasswordError('Confirm Password is required');
+      isValid = false;
+    } else {
+      setConfirmPasswordError('');
+    }
+
+    if (!agreeTerms) {
+      setAgreeTermsError('Please agree to Terms & Privacy');
+      isValid = false;
+    } else {
+      setAgreeTermsError('');
+    }
+
+    if (isValid) {
+      try {
+        const url = 'https://serenepos.temandigital.id/api/external/doRegister';
+        const userData = {
+          Email: email,
+          Name: name,
+          StoreName: storeName,
+          Password: password
+        };
+
+        const response = await axios.post(url, userData);
+
+        if (response.status === 200) {
+          // Registration successful
+          navigation.navigate('Login' as never);
+          Alert.alert('Success', 'Registration successful!');
+        } else {
+          // Registration failed
+          Alert.alert('Error', 'Registration failed');
+        }
+      } catch (error) {
+        console.error('Error during registration:', error);
+        Alert.alert('Error', 'Something went wrong during registration. Please try again.');
+      }
     }
   };
+
+  const onSignUp = () => {
+    let isValid = true;
+
+    if (confirmPassword !== password) {
+      setConfirmPasswordError('Confirm password should be the same as Password');
+      isValid = false;
+    } else {
+      handleSignUp()
+    }
+  }
+
+
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -67,42 +180,49 @@ const SignUp = () => {
         borderStyle:'dotted',
             width: '80%',
         alignSelf: 'center', marginBottom:10}}></View>
-     <View>
-        <Text style={{fontSize:10, color:'black', marginLeft:30, marginBottom:5}}>Name</Text>
+
+     <View style={{marginBottom:5}}>
+        <Text style={{fontSize:9, color:'black', marginLeft:30}}>Name *</Text>
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        onChangeText={(text) => setUsername(text)}
+        placeholder="Name"
+        value={name}
+        onChangeText={(text) => setName(text)}
       />
+      {nameError ? <Text style={styles.error}>{nameError}</Text> : null}
       </View>
 
-      <View>
-        <Text style={{fontSize:10, color:'black', marginLeft:30, marginBottom:5}}>Email Address</Text>
+      <View style={{marginBottom:5}}>
+        <Text style={{fontSize:9, color:'black', marginLeft:30}}>Email Address *</Text>
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        onChangeText={(text) => setUsername(text)}
+        placeholder="Email"
+        value={email}
+        onChangeText={(text) => setEmail(text)}
       />
+      {emailError ? <Text style={styles.error}>{emailError}</Text> : null}
       </View>
 
-      <View>
-        <Text style={{fontSize:10, color:'black', marginLeft:30, marginBottom:5}}>Store Name</Text>
+      <View style={{marginBottom:5}}>
+        <Text style={{fontSize:9, color:'black', marginLeft:30}}>Store Name *</Text>
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        onChangeText={(text) => setUsername(text)}
+        placeholder="Store Name"
+        value={storeName}
+        onChangeText={(text) => setStoreName(text)}
       />
+      {storeNameError ? <Text style={styles.error}>{storeNameError}</Text> : null}
       </View>
 
 
-<View>       
-   <Text style={{fontSize:10, color:'black', marginLeft:30, marginBottom:5}}>Password</Text>
+<View style={{marginBottom:5}}>       
+   <Text style={{fontSize:9, color:'black', marginLeft:30}}>Password *</Text>
       <View style={{
         width:'80%',
          height: 20,
          borderWidth: 1,
-         marginBottom: 10,
-         borderColor: '#2563EB',
+         
+         borderColor: '#D2D2D2',
          //padding: 5,
          borderRadius:6,
          alignSelf: 'center',
@@ -110,23 +230,25 @@ const SignUp = () => {
       <TextInput
         style={styles.inputPassword}
         placeholder="Password"
+        value={password}
         secureTextEntry={!showPassword}
         onChangeText={(text) => setPassword(text)}
       />
         <TouchableOpacity onPress={handleTogglePasswordVisibility} style={styles.eyeIcon}>
-          {showPassword ? <ViewSVG width='10' height='10' color="#2563EB" /> : <ViewSVG width='10' height='10' color="#2563EB" />}
+          {showPassword ? <ViewSVG width='10' height='10' color="black" /> : <ViewSVG width='10' height='10' color="black" />}
         </TouchableOpacity>
       </View>
+      {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
   </View>
 
   <View>       
-   <Text style={{fontSize:10, color:'black', marginLeft:30, marginBottom:5}}>Re-Enter Password</Text>
+   <Text style={{fontSize:9, color:'black', marginLeft:30}}>Re-Enter Password *</Text>
       <View style={{
         width:'80%',
          height: 20,
          borderWidth: 1,
-         marginBottom: 10,
-         borderColor: '#2563EB',
+         
+         borderColor: '#D2D2D2',
          //padding: 5,
          borderRadius:6,
          alignSelf: 'center',
@@ -134,17 +256,33 @@ const SignUp = () => {
       <TextInput
         style={styles.inputPassword}
         placeholder="Confirm Password"
+        value={confirmPassword}
         secureTextEntry={!showConfirmPassword}
         onChangeText={(text) => setConfirmPassword(text)}
       />
         <TouchableOpacity onPress={handleToggleConfirmPasswordVisibility} style={styles.eyeIcon}>
-          {showPassword ? <ViewSVG width='10' height='10' color="#2563EB" /> : <ViewSVG width='10' height='10' color="#2563EB" />}
+          {showPassword ? <ViewSVG width='10' height='10' color="black" /> : <ViewSVG width='10' height='10' color="black" />}
         </TouchableOpacity>
       </View>
+      {confirmPasswordError ? <Text style={styles.error}>{confirmPasswordError}</Text> : null}
   </View>
 
+  <View style={{ marginBottom: 2, marginTop:3 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 30, }}>
+        <CustomCheckbox checked={agreeTerms} onChange={handleAgreeTermsChange} />
+
+        <View style={styles.signupContainer}>
+        <Text style={styles.signupText}>I agree to the </Text>
+        <TouchableOpacity onPress={() => handleNavigateLogin()}>
+          <Text style={styles.signupLink}>Terms & Privacy</Text>
+        </TouchableOpacity>
+      </View>
+        </View>
+        {agreeTermsError ? <Text style={styles.error}>{agreeTermsError}</Text> : null}
+      </View>
+
       
-      <TouchableOpacity onPress={handleLogin} style={styles.button}>
+      <TouchableOpacity onPress={onSignUp} style={styles.button}>
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
 
@@ -179,15 +317,13 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 20,
     borderWidth: 1,
-    marginBottom: 4,
-    borderColor: '#2563EB',
+   
+    borderColor: '#D2D2D2',
     padding: 6,
     borderRadius:6,
+    color:'black',
     fontSize: 7,
-    textAlignVertical: 'center', // Center the text vertically
-    // Optional: Add the following to center the TextInput within its parent
     alignSelf: 'center',
-    lineHeight: 30,
   },
   inputPassword: {
     width: '100%',
@@ -221,22 +357,43 @@ const styles = StyleSheet.create({
   signupContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 2,
     alignSelf:'center'
   },
   signupText: {
-    fontSize: 10,
+    fontSize: 9,
     color: 'black',
   },
   signupLink: {
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: 9,
+    textDecorationLine:'underline',
     color: '#2563EB',
   },
   eyeIcon: {
     position: 'absolute',
     right: 10,
     top: 4,
+  },
+  error: {
+    color: 'red',
+    fontSize:7,
+    marginLeft:30, 
+  },
+  checkbox: {
+    width: 12,
+    height: 12,
+    borderWidth: 0.5,
+    borderColor: '#D2D2D2',
+    marginRight: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checked: {
+    backgroundColor: '#2563EB',
+  },
+  checkmark: {
+    fontSize:7,
+    color: 'white',
   },
 });
 export default SignUp;

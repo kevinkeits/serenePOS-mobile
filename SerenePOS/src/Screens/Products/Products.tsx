@@ -176,7 +176,7 @@ const Products = () => {
             categoryID: "08f2bd82-d414-42bf-befa-0aa3921f08a3",
             category: "Coffee",
             productSKU: "SE001",
-            imgUrl: "/images/cdn/product/9781292396637.jpg",
+            imgUrl: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8fA%3D%3D",
             mimeType: "image/jpeg"
         },
         selVariant: [
@@ -198,6 +198,105 @@ const Products = () => {
             }
         ]
     },
+    {
+      header: {
+          id: "8a4ccc2a-8f74-4b47-a91c-732e15844965",
+          clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
+          name: "Kopi Americano",
+          notes: "",
+          qty: 100,
+          price: "25000.00",
+          categoryID: "08f2bd82-d414-42bf-befa-0aa3921f08a3",
+          category: "Coffee",
+          productSKU: "SE001",
+          imgUrl: "https://images.unsplash.com/photo-1682695799561-033f55f75b25?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          mimeType: "image/jpeg"
+      },
+      selVariant: [
+          {
+              id: "329cbb0e-646e-45e8-8643-22cd12245e79",
+              name: "Serving",
+              type: "1",
+              variantOptionID: "1d093c6e-e5f0-4223-9395-cf1f8f24410d",
+              label: "Cold",
+              price: "0.00"
+          },
+          {
+              id: "329cbb0e-646e-45e8-8643-22cd12245e79",
+              name: "Serving",
+              type: "1",
+              variantOptionID: "80068683-a6f5-4259-870c-0f1ea017417a",
+              label: "Hot",
+              price: "0.00"
+          }
+      ]
+  },
+  {
+    header: {
+        id: "8a4ccc2a-8f74-4b47-a91c-732e15844966",
+        clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
+        name: "Red Velvet",
+        notes: "",
+        qty: 100,
+        price: "25000.00",
+        categoryID: "08f2bd82-d414-42bf-befa-0aa3921f08a3",
+        category: "Non Coffee",
+        productSKU: "SE001",
+        imgUrl: "https://images.unsplash.com/photo-1682695799561-033f55f75b25?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        mimeType: "image/jpeg"
+    },
+    selVariant: [
+        {
+            id: "329cbb0e-646e-45e8-8643-22cd12245e79",
+            name: "Serving",
+            type: "1",
+            variantOptionID: "1d093c6e-e5f0-4223-9395-cf1f8f24410d",
+            label: "Cold",
+            price: "0.00"
+        },
+        {
+            id: "329cbb0e-646e-45e8-8643-22cd12245e79",
+            name: "Serving",
+            type: "1",
+            variantOptionID: "80068683-a6f5-4259-870c-0f1ea017417a",
+            label: "Hot",
+            price: "0.00"
+        }
+    ]
+},
+{
+  header: {
+      id: "8a4ccc2a-8f74-4b47-a91c-732e15844968",
+      clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
+      name: "Matcha Latte",
+      notes: "",
+      qty: 100,
+      price: "25000.00",
+      categoryID: "08f2bd82-d414-42bf-befa-0aa3921f08a3",
+      category: "Non Coffee",
+      productSKU: "SE001",
+      imgUrl: "https://images.unsplash.com/photo-1682695799561-033f55f75b25?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      mimeType: "image/jpeg"
+  },
+  selVariant: [
+      {
+          id: "329cbb0e-646e-45e8-8643-22cd12245e79",
+          name: "Serving",
+          type: "1",
+          variantOptionID: "1d093c6e-e5f0-4223-9395-cf1f8f24410d",
+          label: "Cold",
+          price: "0.00"
+      },
+      {
+          id: "329cbb0e-646e-45e8-8643-22cd12245e79",
+          name: "Serving",
+          type: "1",
+          variantOptionID: "80068683-a6f5-4259-870c-0f1ea017417a",
+          label: "Hot",
+          price: "0.00"
+      }
+  ]
+},
     ]
 
     React.useEffect(() => {
@@ -346,7 +445,7 @@ const styles = StyleSheet.create({
     firstRowItem: {
       backgroundColor:"blue",
       justifyContent: 'flex-end',
-      width:130, 
+      width:150, 
       height:60,
       borderRadius:7, 
       shadowColor: '#000', 
@@ -366,7 +465,7 @@ const styles = StyleSheet.create({
       justifyContent:'center', 
       alignItems:'center',
       borderColor:'#D2D2D2',
-      width:130, 
+      width:150, 
       margin: 4,
     },
     cardRowSkeleton: {
@@ -374,7 +473,7 @@ const styles = StyleSheet.create({
       gap:5,
       borderRadius:7,  
       height:100, 
-      backgroundColor:'black',
+      backgroundColor:'#D2D2D2',
       width:130, 
       margin: 4,
     },

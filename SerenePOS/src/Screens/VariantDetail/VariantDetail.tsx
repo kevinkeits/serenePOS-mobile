@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: '#D2D2D2',
         borderRadius: 6,
-        //color: 'black',
+        color: 'black',
         paddingRight: 30 // to ensure the text is never behind the icon
     },
     inputAndroid: {
@@ -507,7 +507,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: '#D2D2D2',
         borderRadius: 6,
-        //color: 'black',
+        color: 'black',
         paddingRight: 30 // to ensure the text is never behind the icon
     },
     iconContainer: {

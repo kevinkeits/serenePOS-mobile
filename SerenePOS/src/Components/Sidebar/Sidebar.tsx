@@ -8,12 +8,28 @@ import DashboardSVG from '../../assets/svgs/DashboardSVG';
 import CategoriesSVG from '../../assets/svgs/CategoriesSVG';
 import TransactionHistorySVG from '../../assets/svgs/TransactionHistorySVG';
 import VariantSVG from '../../assets/svgs/VariantSVG';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // import { Ionicons } from '@expo/vector-icons';
 
 const Sidebar: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
+
+  const [userData, setUserData] = React.useState<any>(null);
+
+  const fetchUser = async () => {
+    try {
+      // Retrieve userData from AsyncStorage
+      const jsonValue = await AsyncStorage.getItem('userData');
+      if (jsonValue !== null) {
+        setUserData(JSON.parse(jsonValue));
+        console.log("ini:" + jsonValue)
+      }
+    } catch (error) {
+      console.error('Error retrieving data from AsyncStorage:', error);
+    }
+  };
   
   const isActive = (screenName: string) => route.name === screenName;
 
@@ -29,6 +45,10 @@ const Sidebar: React.FC = () => {
       </Text>
     );
   };
+
+  React.useEffect(() => {
+    fetchUser();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -143,8 +163,10 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('Account')}
       >
-        {CircleAvatar('Lovi M.')}
-        <Text style={styles.menuAccountItem}>Lovi M.</Text>
+        {userData && (
+        CircleAvatar(userData?.data.Name)
+        )}
+        <Text style={styles.menuAccountItem}>{userData?.data.Name}</Text>
       </TouchableOpacity>
 
 

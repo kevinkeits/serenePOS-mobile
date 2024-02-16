@@ -42,6 +42,8 @@ const Sales = () => {
     const [isOpenDiscount, setIsOpenDiscount] = React.useState(false);
     const [customerName, setCustomerName] = React.useState('');
     const [isOpenTransaction, setIsOpenTransaction] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
+
 
 
 
@@ -63,6 +65,7 @@ const Sales = () => {
         try {
           const response = await axios.get('https://fakestoreapi.com/products?limit=12');
           const data: Coffee[] = response.data;
+          setLoading(false)
           setCoffeeData(data);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -208,7 +211,7 @@ React.useEffect(() => {
       <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Sales</Text>
       <Text style={{fontWeight:"bold", fontSize:17, }}></Text>
       </View>
-      <View style={{height:85}}>
+      <View style={{height:85,}}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal:"auto", flexDirection: 'row'}}>
         {data.map((x, index) => (
             <TouchableOpacity
@@ -218,7 +221,7 @@ React.useEffect(() => {
               styles.firstRowItem,
               {backgroundColor: x.color}
               ]}>
-            <View style={{marginBottom:10, marginLeft: 10}}>
+            <View style={{marginBottom:5, marginLeft: 10}}>
             <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
             <Text style={{ color: "white", fontSize: 11}}>{x.totalItem} Items</Text>
             </View>
@@ -226,11 +229,11 @@ React.useEffect(() => {
         ))}
       </ScrollView>
       </View>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginTop:20}}>
-      {/* <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto"}}>Coffee</Text> */}
+      {/* <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginTop:5}}>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto"}}>Coffee</Text>
       <Text style={{fontWeight:"bold", fontSize:17}}></Text>
-      </View>
-    <View style={{ alignItems: 'center', marginBottom:20, marginLeft:10, width:'100%', flexDirection:'row', flexWrap:"wrap"}}>
+      </View> */}
+    <View style={{ alignItems: 'center', marginBottom:20, marginLeft:10, width:'100%', flexDirection:'row', flexWrap:"wrap", marginTop:5}}>
       {coffeeData.map((x) => (
         // <TouchableOpacity key={x.id} style={styles.card} onPress={() => addToSelectedItems(x)}>
         <TouchableOpacity key={x.id} style={styles.card} onPress={() => openEditModal(x)}>
@@ -423,7 +426,17 @@ const styles = StyleSheet.create({
     marginBottom:10,
     width:105, 
     height:120, 
-    borderRadius:10, 
+    borderRadius:7,
+    borderColor:'#D2D2D2', 
+  },
+  cardRowSkeleton: {
+    marginRight: 6,
+    borderWidth: 0.5,
+    marginBottom:10,
+    width:105, 
+    height:120, 
+    borderRadius:7,
+    backgroundColor:'#D2D2D2', 
   },
   image: {
     width: '100%',
