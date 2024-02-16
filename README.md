@@ -1,1 +1,1 @@
-# mola-bidhub-api
+# serenePOS mobile
