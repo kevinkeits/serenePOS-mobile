@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { ApiUrls } from '../../apiUrls/apiUrls';
 import TrashSVG from '../../assets/svgs/TrashSVG';
 import ViewSVG from '../../assets/svgs/ViewSVG';
 
@@ -107,7 +108,7 @@ const SignUp = () => {
 
     if (isValid) {
       try {
-        const url = 'https://serenepos.temandigital.id/api/external/doRegister';
+        const url = ApiUrls.doRegister
         const userData = {
           Email: email,
           Name: name,

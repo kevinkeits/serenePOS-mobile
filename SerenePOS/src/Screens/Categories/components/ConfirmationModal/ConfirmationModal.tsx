@@ -1,13 +1,24 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { CategoriesForm } from '../../Categories';
 
 interface EditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
-  totalItems: number
+  onSave: (data: CategoriesForm) => void;
+  selectedItems: string[]
 }
 
-const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, totalItems }) => {
+const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selectedItems, onSave }) => {
+
+  const handleSave = () => {
+    const updatedData: CategoriesForm = {
+      ID: selectedItems.join(','),
+      Action: 'delete',
+    };
+    onSave(updatedData); 
+    onClose()
+  };
 
 
   return (
@@ -25,8 +36,8 @@ const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, t
          
 
         <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
-                    <Text style={{fontSize:10, color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Are you sure want to delete selected ({totalItems}) categories?</Text>
-                    <TouchableOpacity  onPress={onClose} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#EF4444', padding:4, borderRadius:5}}>
+                    <Text style={{fontSize:10, color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Are you sure want to delete selected ({selectedItems.length}) categories?</Text>
+                    <TouchableOpacity  onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#EF4444', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Yes</Text>
                     </TouchableOpacity>     
 

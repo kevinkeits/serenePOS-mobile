@@ -24,7 +24,6 @@ const Sidebar: React.FC = () => {
       const jsonValue = await AsyncStorage.getItem('userData');
       if (jsonValue !== null) {
         setUserData(JSON.parse(jsonValue));
-        console.log("ini:" + jsonValue)
       }
     } catch (error) {
       console.error('Error retrieving data from AsyncStorage:', error);

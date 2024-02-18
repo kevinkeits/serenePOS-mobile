@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import ViewSVG from '../../assets/svgs/ViewSVG';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ApiUrls } from '../../apiUrls/apiUrls';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -21,7 +22,7 @@ const Login = () => {
 
   async function handleLogin() {
     try {
-      const url = 'https://serenepos.temandigital.id/api/external/doLogin';
+      const url = ApiUrls.doLogin
       const credentials = {
         Email: username, // Using the entered username
         Password: password // Using the entered password

@@ -1,7 +1,9 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
-import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native'
+import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import { ApiUrls } from '../../apiUrls/apiUrls'
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
@@ -16,15 +18,26 @@ export interface Coffee {
   }
 
   export interface Categories {
-    id: string;
-    name: string;
-    qtyAlert: string;
-    bgColor?: string;
+    ID: string;
+    Name: string;
+    QtyAlert: string;
+    BGColor?: string;
   }
+
+  export interface CategoriesForm {
+    ID: string;
+    Action: string
+    Name?: string;
+    QtyAlert?: string;
+    BGColor?: string;
+  }
+
 
 const Categories = () => {
 
-    const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
+
+
+    const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [deleteMode, setDeleteMode] = React.useState(false);
     const [isOpenDetail, setIsOpenDetail] = React.useState(false);
@@ -36,6 +49,8 @@ const Categories = () => {
     const navigation = useNavigation();
 
     const onOpenDetail = (item?: Categories) => {
+        // fetchDetail(item?.id ?? '')
+        console.log(item?.ID ?? '')
         setSelectedItemForEdit(item ?? null);
         setIsOpenDetail(true);
       };
@@ -45,6 +60,7 @@ const Categories = () => {
       };
 
       const onOpenConfirmation= () => {
+        console.log(selectedItems.join(','))
         setIsOpenConfirmation(true);
       };
     
@@ -53,19 +69,75 @@ const Categories = () => {
       };
 
 
-    const fetchData = async () => {
+      const fetchData = async () => {
         try {
-          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
-          const data: Coffee[] = response.data;
-          setCoffeeData(data);
+          const token = await AsyncStorage.getItem('userData');     
+          if (token) {
+            const authToken = JSON.parse(token).data.Token
+            const response = await axios.get(ApiUrls.getCategory, {
+              headers: {
+                'Authorization': `Bearer ${authToken}`
+              }
+            });           
+            const data: Categories[] = response.data.data;
+            console.log(response.data.data)
+            setCategoriesData(data);
+          } else {
+            console.error('No token found in AsyncStorage');
+          }
         } catch (error) {
           console.error('Error fetching data:', error);
         }
       };
 
-      const handleProductPress = (selectedItem: Coffee) => {
-        // Handle the press action for each product
-        navigation.navigate('ProductDetail' as never);
+      const fetchDetail = async (id: string) => {
+        try {
+          const token = await AsyncStorage.getItem('userData'); 
+          const categoryDetailUrl = ApiUrls.getCategoryDetail(id);    
+          if (token) {
+            const authToken = JSON.parse(token).data.Token
+            const response = await axios.get(categoryDetailUrl, {
+              headers: {
+                'Authorization': `Bearer ${authToken}`
+              }
+            });           
+            const data: Categories[] = response.data.data;
+            setCategoriesData(data);
+          } else {
+            console.error('No token found in AsyncStorage');
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+
+      const onSave = async (data: CategoriesForm) => {
+          try {
+            console.log(data)
+            const token = await AsyncStorage.getItem('userData'); 
+            const url = ApiUrls.saveCategory
+            if (token) {
+            const authToken = JSON.parse(token).data.Token
+            const response = await axios.post(url, data, {
+              headers: {
+                'Authorization': `Bearer ${authToken}`
+              }
+            });
+            if (response.status === 200) {
+              // Registration successful
+              Alert.alert('Success', 'Saved data successful!');
+              onCloseDetail()
+              fetchData()
+            } else {
+              // Registration failed
+              Alert.alert('Error', 'Saving data failed');
+            }
+          }
+          } catch (error) {
+            console.error('Error during saving:', error);
+            Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+          }
+        
       };
     
       const handleCheckboxPress = (itemId: string) => {
@@ -94,50 +166,50 @@ const Categories = () => {
         setSelectedItems([]);
       };
 
-    const data: Categories[] = [
-        {
-        id: '1',
-        name: 'Coffee',
-        qtyAlert: '3',
-        bgColor: '#7653DA',
-      },
-      {
-        id: '2',
-        name: 'Non Coffee',
-        qtyAlert: '5',
-        bgColor: '#2925EB',
-      },
-      {
-        id: '3',
-        name: 'Food',
-        qtyAlert: '10',
-        bgColor: '#2563EB',
-      },
-      {
-        id: '4',
-        name: 'Main Course',
-        qtyAlert: '8',
-        bgColor: '#4AB8E8',
-      },
-      {
-        id: '5',
-        name: 'Signature',
-        qtyAlert: '8',
-        bgColor: '#E88C4A',
-      },
-      {
-        id: '6',
-        name: 'Dessert',
-        qtyAlert: '9',
-        bgColor: '#E84AD8',
-      },
-      {
-        id: '7',
-        name: 'Etc',
-        qtyAlert: '6',
-        bgColor: '#E84A4A',
-      },
-    ];
+    // const data: Categories[] = [
+    //     {
+    //     id: '1',
+    //     name: 'Coffee',
+    //     qtyAlert: '3',
+    //     bgColor: '#7653DA',
+    //   },
+    //   {
+    //     id: '2',
+    //     name: 'Non Coffee',
+    //     qtyAlert: '5',
+    //     bgColor: '#2925EB',
+    //   },
+    //   {
+    //     id: '3',
+    //     name: 'Food',
+    //     qtyAlert: '10',
+    //     bgColor: '#2563EB',
+    //   },
+    //   {
+    //     id: '4',
+    //     name: 'Main Course',
+    //     qtyAlert: '8',
+    //     bgColor: '#4AB8E8',
+    //   },
+    //   {
+    //     id: '5',
+    //     name: 'Signature',
+    //     qtyAlert: '8',
+    //     bgColor: '#E88C4A',
+    //   },
+    //   {
+    //     id: '6',
+    //     name: 'Dessert',
+    //     qtyAlert: '9',
+    //     bgColor: '#E84AD8',
+    //   },
+    //   {
+    //     id: '7',
+    //     name: 'Etc',
+    //     qtyAlert: '6',
+    //     bgColor: '#E84A4A',
+    //   },
+    // ];
 
     React.useEffect(() => {
         fetchData();
@@ -174,11 +246,11 @@ const Categories = () => {
 
 
       <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', justifyContent:'center', marginVertical:3}}>
-        {data.map((x, index)=>(
+        {categoriesData?.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.id) ? (
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.ID)} style={{ marginRight: 5 }}>
+                    {selectedItems.includes(x.ID) ? (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
                     ) : (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
@@ -189,11 +261,11 @@ const Categories = () => {
             onPress={() => onOpenDetail(x)}  key={index} 
             style={[
               styles.firstRowItem,
-              {backgroundColor: x.bgColor}
+              {backgroundColor: x.BGColor}
               ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.qtyAlert} Items</Text>
+            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.Name}</Text>
+            <Text style={{ color: "white", fontSize: 9}}>{x.QtyAlert} Items</Text>
             </View>
           </TouchableOpacity>
             </View>
@@ -214,8 +286,8 @@ const Categories = () => {
       
       </View>
       </View>
-      <DetailModal isVisible={isOpenDetail} selectedItem={selectedItemForEdit} onClose={onCloseDetail} />
-      <ConfirmationModal isVisible={isOpenConfirmation} totalItems={selectedItems.length} onClose={onCloseConfirmation} />
+      <DetailModal isVisible={isOpenDetail} selectedItem={selectedItemForEdit} onClose={onCloseDetail} onSave={onSave} />
+      <ConfirmationModal isVisible={isOpenConfirmation} selectedItems={selectedItems} onClose={onCloseConfirmation} onSave={onSave} />
 
       
     </CommonLayout>

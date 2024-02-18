@@ -1,21 +1,17 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Categories } from '../../Categories';
+import { Categories, CategoriesForm } from '../../Categories';
 
-interface Coffee {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-}
+
 
 interface EditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
+  onSave: (data: CategoriesForm) => void;
   selectedItem: Categories | null; // Add selectedItem prop
 }
 
-const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selectedItem }) => {
+const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave, selectedItem }) => {
 
     const [quantity, setQuantity] = React.useState(1);
     const [textName, setTextName] = React.useState('');
@@ -63,12 +59,24 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selecte
         onClose()
       };
 
+      const handleSave = () => {
+        const updatedData: CategoriesForm = {
+          ID: selectedItem ? selectedItem.ID : '',
+          Action: selectedItem ? 'edit' : 'add',
+          Name: textName,
+          QtyAlert: quantity.toString(),
+          BGColor: colorSelection ?? '',
+        };
+        onSave(updatedData); 
+      };
+
+      
     React.useEffect(() => {
         // Set the textName when the modal is opened
         if (selectedItem) {
-          setTextName(selectedItem.name)
-          setQuantity(parseInt(selectedItem.qtyAlert))
-          setColorSelection(selectedItem.bgColor || null);
+          setTextName(selectedItem.Name)
+          setQuantity(parseInt(selectedItem.QtyAlert))
+          setColorSelection(selectedItem.BGColor || null);
         }
     }, [selectedItem]);
 
@@ -134,7 +142,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selecte
         </View>
 
         <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
-                    <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
