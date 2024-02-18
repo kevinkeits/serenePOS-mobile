@@ -105,7 +105,7 @@ const Profile = () => {
       const url = ApiUrls.doLogout
       if (token) {
       const authToken = JSON.parse(token).data.Token
-      const response = await axios.get(url, {
+      const response = await axios.post(url, {
         headers: {
           'Authorization': `Bearer ${authToken}`
         }
