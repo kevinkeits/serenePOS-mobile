@@ -12,6 +12,7 @@ import DocumentPicker from 'react-native-document-picker';
 import SettingsSVG from '../../assets/svgs/SettingsSVG'
 import LogoutSVG from '../../assets/svgs/LogoutSVG'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ApiUrls } from '../../apiUrls/apiUrls'
 
 
 
@@ -98,12 +99,34 @@ const Profile = () => {
     }
   };
 
+  const onLogout = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userData'); 
+      const url = ApiUrls.doLogout
+      if (token) {
+      const authToken = JSON.parse(token).data.Token
+      const response = await axios.get(url, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+      if (response.status === 200) {
+        Alert.alert('Success', 'Logout successful!');
+      } else {
+        Alert.alert('Error', 'Logout failed');
+      }
+    }
+    } catch (error) {
+      console.error('Error during saving:', error);
+      Alert.alert('Error', 'Something went wrong during Logout. Please try again.');
+    }
+};
+
 
   const handleLogout = async () => {
     try {
-      // Remove userData from AsyncStorage
+      onLogout()
       await AsyncStorage.removeItem('userData');
-      // Navigate back to Login page
       navigation.navigate('Login' as never);
     } catch (error) {
       console.error('Error removing data from AsyncStorage:', error);

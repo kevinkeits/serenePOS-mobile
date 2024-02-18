@@ -50,7 +50,6 @@ const Categories = () => {
 
     const onOpenDetail = (item?: Categories) => {
         // fetchDetail(item?.id ?? '')
-        console.log(item?.ID ?? '')
         setSelectedItemForEdit(item ?? null);
         setIsOpenDetail(true);
       };
@@ -60,7 +59,6 @@ const Categories = () => {
       };
 
       const onOpenConfirmation= () => {
-        console.log(selectedItems.join(','))
         setIsOpenConfirmation(true);
       };
     
@@ -80,7 +78,6 @@ const Categories = () => {
               }
             });           
             const data: Categories[] = response.data.data;
-            console.log(response.data.data)
             setCategoriesData(data);
           } else {
             console.error('No token found in AsyncStorage');
@@ -113,7 +110,6 @@ const Categories = () => {
 
       const onSave = async (data: CategoriesForm) => {
           try {
-            console.log(data)
             const token = await AsyncStorage.getItem('userData'); 
             const url = ApiUrls.saveCategory
             if (token) {
@@ -137,7 +133,6 @@ const Categories = () => {
             console.error('Error during saving:', error);
             Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
           }
-        
       };
     
       const handleCheckboxPress = (itemId: string) => {
@@ -245,7 +240,7 @@ const Categories = () => {
       <View>
 
 
-      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', justifyContent:'center', marginVertical:3}}>
+      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', marginVertical:3, marginLeft:15}}>
         {categoriesData?.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
