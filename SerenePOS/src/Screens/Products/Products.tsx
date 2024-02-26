@@ -1,62 +1,76 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
-import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native'
+import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import { ApiUrls } from '../../apiUrls/apiUrls'
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
-import ConfirmationModal from '../Categories/components/ConfirmationModal/ConfirmationModal'
-
-export interface Coffee {
-    id: number;
-    title: string;
-    price: number;
-    image: string;
-  }
+import { Categories } from '../Categories/Categories'
+import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal'
 
 export interface Product {
-   header: headerProduct
-   selVariant: selVariantProduct[]
+    ID: string;
+    Name: string;
+    Price: string;
+    Notes: string;
+    ImgUrl: string
+  }
+
+export interface ProductDetail {
+   product: headerProduct
+   variant: selVariantProduct[]
   }
 
   export interface headerProduct {
-    id: string;
-    clientID: string;
-    name: string;
-    notes: string;
-    qty: number;
-    price: string;
-    categoryID: string;
-    category: string;
-    productSKU: string;
-    imgUrl: string;
-    mimeType: string;
+    ID: string;
+    ProductSKU: string
+    Name: string;
+    Price: string;
+    CategoryID: string
+    CategoryName: string
+    Qty: number
+    Notes: string;
+    ImgUrl: string
+    MimeType: string
+ 
   }
   export interface selVariantProduct {
-    id: string;
-    name: string;
-    type: string;
-    variantOptionID: string;
-    label: string;
-    price: string;
+    VariantID: string;
+    Name: string;
+    Type: string;
+    VariantOptionID: string;
+    Label: string;
+    Price: string;
   }
 
-  export interface Categories {
-    id: string;
-    name: string;
-    totalItem: string;
-    color?: string;
+  export interface ProductForm {
+    ID: string;
+    Action: string
+    Name?: string;
+    Notes?: string;
+    Qty?: number;
+    Price?: number;
+    CategoryID?: string
+    ProductSKU?: string
+    ImgUrl?: string
+    MimeType?: string
+    VariantOptionID?: string
+    IsSelected?: string
+    ProductVariantOptionID?: string
   }
 
 const Products = () => {
 
-    const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [productData, setProductData] = React.useState<Product[]>([]);
 
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [deleteMode, setDeleteMode] = React.useState(false);
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
+    const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
+
 
 
 
@@ -71,22 +85,49 @@ const Products = () => {
     };
 
 
-    const fetchData = async () => {
-        try {
-
-          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
-          const data: Coffee[] = response.data;
+    const fetchData = async (categoryID: string) => {
+      try {
+        const token = await AsyncStorage.getItem('userData'); 
+        const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(categoryDetailUrl, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: Product[] = response.data.data;
+          setProductData(data);
+          console.log(data)
           setLoading(false)
-          setCoffeeData(data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
+        } else {
+          console.error('No token found in AsyncStorage');
         }
-      };
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-      const handleProductPress = (selectedItem: Coffee) => {
-        // Handle the press action for each product
-        navigation.navigate('ProductDetail' as never);
-      };
+    const fetchCategories = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userData');     
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(ApiUrls.getCategory, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: Categories[] = response.data.data;
+          setCategoriesData(data);
+        } else {
+          console.error('No token found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
     
       const handleCheckboxPress = (itemId: string) => {
         // Toggle the selection status of the item
@@ -100,6 +141,34 @@ const Products = () => {
           }
         });
       };
+
+      const onSave = async (data: ProductForm) => {
+        try {
+          const token = await AsyncStorage.getItem('userData'); 
+          const url = ApiUrls.saveProduct
+          if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.post(url, data, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });
+          if (response.status === 200) {
+            // Registration successful
+            Alert.alert('Success', 'Saved data successful!');
+            onCloseConfirmation()
+            setDeleteMode(false)
+            fetchData(categoriesData[0].ID)
+          } else {
+            // Registration failed
+            Alert.alert('Error', 'Saving data failed');
+          }
+        }
+        } catch (error) {
+          console.error('Error during saving:', error);
+          Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+        }
+    };
     
       const handleDeleteModeToggle = () => {
         setDeleteMode((prevDeleteMode) => !prevDeleteMode);
@@ -114,193 +183,17 @@ const Products = () => {
         setSelectedItems([]);
       };
 
-      const handleNavigate = ( selectedData: Product | null) => {
-        console.log(selectedData)
-        navigation.navigate('ProductDetail' as never, {data: selectedData} as never)
+      // const handleNavigate = ( selectedData: ProductDetail | null) => {
+      //   console.log(selectedData)
+      //   navigation.navigate('ProductDetail' as never, {data: selectedData} as never)
+      // };
+
+      const handleNavigate = ( selectedId: string) => {
+        navigation.navigate('ProductDetail' as never, {id: selectedId} as never)
       };
 
-      const data: Categories[] = [
-        {
-        id: '1',
-        name: 'Coffee',
-        totalItem: '3',
-        color: '#7653DA',
-      },
-      {
-        id: '2',
-        name: 'Non Coffee',
-        totalItem: '5',
-        color: '#2925EB',
-      },
-      {
-        id: '3',
-        name: 'Food',
-        totalItem: '10',
-        color: '#2563EB',
-      },
-      {
-        id: '4',
-        name: 'Main Course',
-        totalItem: '8',
-        color: '#4AB8E8',
-      },
-      {
-        id: '5',
-        name: 'Signature',
-        totalItem: '8',
-        color: '#E88C4A',
-      },
-      {
-        id: '6',
-        name: 'Dessert',
-        totalItem: '9',
-        color: '#E84AD8',
-      },
-      {
-        id: '7',
-        name: 'Etc',
-        totalItem: '6',
-        color: '#E84A4A',
-      },
-    ];
-
-    const dataProducts: Product[] = [
-      {
-        header: {
-            id: "8a4ccc2a-8f74-4b47-a91c-732e15844964",
-            clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
-            name: "Kopi Tubruk",
-            notes: "",
-            qty: 100,
-            price: "25000.00",
-            categoryID: "08f2bd82-d414-42bf-befa-0aa3921f08a3",
-            category: "Coffee",
-            productSKU: "SE001",
-            imgUrl: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8fA%3D%3D",
-            mimeType: "image/jpeg"
-        },
-        selVariant: [
-            {
-                id: "329cbb0e-646e-45e8-8643-22cd12245e79",
-                name: "Serving",
-                type: "1",
-                variantOptionID: "1d093c6e-e5f0-4223-9395-cf1f8f24410d",
-                label: "Cold",
-                price: "0.00"
-            },
-            {
-                id: "329cbb0e-646e-45e8-8643-22cd12245e79",
-                name: "Serving",
-                type: "1",
-                variantOptionID: "80068683-a6f5-4259-870c-0f1ea017417a",
-                label: "Hot",
-                price: "0.00"
-            }
-        ]
-    },
-    {
-      header: {
-          id: "8a4ccc2a-8f74-4b47-a91c-732e15844965",
-          clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
-          name: "Kopi Americano",
-          notes: "",
-          qty: 100,
-          price: "25000.00",
-          categoryID: "08f2bd82-d414-42bf-befa-0aa3921f08a3",
-          category: "Coffee",
-          productSKU: "SE001",
-          imgUrl: "https://images.unsplash.com/photo-1682695799561-033f55f75b25?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          mimeType: "image/jpeg"
-      },
-      selVariant: [
-          {
-              id: "329cbb0e-646e-45e8-8643-22cd12245e79",
-              name: "Serving",
-              type: "1",
-              variantOptionID: "1d093c6e-e5f0-4223-9395-cf1f8f24410d",
-              label: "Cold",
-              price: "0.00"
-          },
-          {
-              id: "329cbb0e-646e-45e8-8643-22cd12245e79",
-              name: "Serving",
-              type: "1",
-              variantOptionID: "80068683-a6f5-4259-870c-0f1ea017417a",
-              label: "Hot",
-              price: "0.00"
-          }
-      ]
-  },
-  {
-    header: {
-        id: "8a4ccc2a-8f74-4b47-a91c-732e15844966",
-        clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
-        name: "Red Velvet",
-        notes: "",
-        qty: 100,
-        price: "25000.00",
-        categoryID: "08f2bd82-d414-42bf-befa-0aa3921f08a3",
-        category: "Non Coffee",
-        productSKU: "SE001",
-        imgUrl: "https://images.unsplash.com/photo-1682695799561-033f55f75b25?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        mimeType: "image/jpeg"
-    },
-    selVariant: [
-        {
-            id: "329cbb0e-646e-45e8-8643-22cd12245e79",
-            name: "Serving",
-            type: "1",
-            variantOptionID: "1d093c6e-e5f0-4223-9395-cf1f8f24410d",
-            label: "Cold",
-            price: "0.00"
-        },
-        {
-            id: "329cbb0e-646e-45e8-8643-22cd12245e79",
-            name: "Serving",
-            type: "1",
-            variantOptionID: "80068683-a6f5-4259-870c-0f1ea017417a",
-            label: "Hot",
-            price: "0.00"
-        }
-    ]
-},
-{
-  header: {
-      id: "8a4ccc2a-8f74-4b47-a91c-732e15844968",
-      clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
-      name: "Matcha Latte",
-      notes: "",
-      qty: 100,
-      price: "25000.00",
-      categoryID: "08f2bd82-d414-42bf-befa-0aa3921f08a3",
-      category: "Non Coffee",
-      productSKU: "SE001",
-      imgUrl: "https://images.unsplash.com/photo-1682695799561-033f55f75b25?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      mimeType: "image/jpeg"
-  },
-  selVariant: [
-      {
-          id: "329cbb0e-646e-45e8-8643-22cd12245e79",
-          name: "Serving",
-          type: "1",
-          variantOptionID: "1d093c6e-e5f0-4223-9395-cf1f8f24410d",
-          label: "Cold",
-          price: "0.00"
-      },
-      {
-          id: "329cbb0e-646e-45e8-8643-22cd12245e79",
-          name: "Serving",
-          type: "1",
-          variantOptionID: "80068683-a6f5-4259-870c-0f1ea017417a",
-          label: "Hot",
-          price: "0.00"
-      }
-  ]
-},
-    ]
-
     React.useEffect(() => {
-        fetchData();
+        fetchCategories();
       }, []);
 
   return (
@@ -312,7 +205,7 @@ const Products = () => {
         <View/>
       ):(
         <View style={{flexDirection:'row', gap:4}}>
-        <TouchableOpacity onPress={() => handleNavigate(null)} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
+        <TouchableOpacity onPress={() => handleNavigate('')} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
             <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
@@ -332,26 +225,28 @@ const Products = () => {
       )}
       <View>
       <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
-        {data.map((x, index) => (
+        {categoriesData.map((x, index) => (
             <TouchableOpacity key={index} 
+            onPress={() => fetchData(x.ID)}
             style={[
               styles.firstRowItem,
-              {backgroundColor: x.color}
+              {backgroundColor: x.BGColor}
             ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Items</Text>
+            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.Name}</Text>
+            <Text style={{ color: "white", fontSize: 9}}>{x.QtyAlert} Items</Text>
             </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
       <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center',  marginVertical:3}}>
-        {/* {coffeeData.map((x, index)=>(
+
+        {productData.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.id) ? (
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.ID)} style={{ marginRight: 5 }}>
+                    {selectedItems.includes(x.ID) ? (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
                     ) : (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
@@ -367,48 +262,14 @@ const Products = () => {
                 ):(
                     <TouchableOpacity 
                       key={index}
-                      onPress={() => handleNavigate(x)} 
+                      onPress={() => handleNavigate(x.ID)} 
                       style={styles.cardRow}>
                   <View style={{width:'50%'}}>
-                      <Image source={{ uri: x.image }} style={{width:'100%', height:'100%'}} />
+                      <Image source={{ uri: x.ImgUrl }} style={{width:'100%', height:'100%'}} />
                   </View>
                   <View style={{width:'50%'}}>
-                      <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.title}</Text>
-                      <Text style={{fontSize:8, color: 'black' }}>Rp {x.price}</Text>
-                  </View>
-              </TouchableOpacity>
-                )}
-            
-            </View>
-        ))} */}
-        {dataProducts.map((x, index)=>(
-          <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
-            {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.header.id)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.header.id) ? (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
-                    ) : (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
-                    )}
-                  </TouchableOpacity>
-                )}
-
-                {loading ? (
-                  <View 
-                  key={index}
-                  style={styles.cardRowSkeleton} />
-                  
-                ):(
-                    <TouchableOpacity 
-                      key={index}
-                      onPress={() => handleNavigate(x)} 
-                      style={styles.cardRow}>
-                  <View style={{width:'50%'}}>
-                      <Image source={{ uri: x.header.imgUrl }} style={{width:'100%', height:'100%'}} />
-                  </View>
-                  <View style={{width:'50%'}}>
-                      <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.header.name}</Text>
-                      <Text style={{fontSize:8, color: 'black' }}>Rp {parseInt(x.header.price).toLocaleString()}</Text>
+                      <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.Name}</Text>
+                      <Text style={{fontSize:8, color: 'black' }}>Rp {parseInt(x.Price).toLocaleString()}</Text>
                   </View>
               </TouchableOpacity>
                 )}
@@ -434,7 +295,7 @@ const Products = () => {
       
 
       </View>
-      <ConfirmationModal isVisible={isOpenConfirmation} totalItems={selectedItems.length} onClose={onCloseConfirmation} />
+      <ConfirmationModal isVisible={isOpenConfirmation} onClose={onCloseConfirmation} selectedItems={selectedItems} onSave={onSave} />
 
       
     </CommonLayout>
@@ -465,7 +326,7 @@ const styles = StyleSheet.create({
       justifyContent:'center', 
       alignItems:'center',
       borderColor:'#D2D2D2',
-      width:150, 
+      width:140, 
       margin: 4,
     },
     cardRowSkeleton: {

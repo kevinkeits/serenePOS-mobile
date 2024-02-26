@@ -11,7 +11,10 @@ import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
 import DropdownSVG from '../../assets/svgs/DropdownSVG'
 import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
-import { Product } from '../Products/Products'
+import { Product, ProductDetail, ProductForm } from '../Products/Products'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ApiUrls } from '../../apiUrls/apiUrls'
+import { Categories } from '../Categories/Categories'
 
 
 
@@ -26,7 +29,7 @@ export interface Coffee {
 
 
 
-  interface CategoryOption {
+  interface CategoryOptions {
     label: string;
     value: string;
   }
@@ -53,22 +56,28 @@ export interface Coffee {
     // Add more options as needed
   ];
 
+  // type DetailScreenProps = {
+  //   route: { params: {  data: ProductDetail | null } };
+  // };
+
   type DetailScreenProps = {
-    route: { params: {  data: Product | null } };
+    route: { params: {  id: string} };
   };
+
+
   
   
 const DetailProduct = ({ route }: DetailScreenProps) => {
 
-  const  { data }  = route.params
+  const  { id }  = route.params
 
-    const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
+    const [detailData, setDetailData] = React.useState<ProductDetail | null>(null);
     const [textProductSKU, setTextProductSKU] = React.useState('');
     const [textName, setTextName] = React.useState('');
     const [textDescription, setTextDescription] = React.useState('');
     const [textPrice, setTextPrice] = React.useState('');
     const [quantity, setQuantity] = React.useState(1);
-    const [selectedCategory, setSelectedCategory] =  React.useState<CategoryOption | null>(null);
+    const [arrCategoryPicker, setArrCategoryPicker] =  React.useState<CategoryOptions[]>([]);
     const [ selCategory, setSelCategory ] = React.useState("");
 
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
@@ -87,8 +96,10 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
   const [isAddOnSubmitting, setIsAddOnSubmitting] = React.useState(false); 
 
   const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
-  const [variantInputValues, setVariantInputValues] = React.useState<string[]>(data?.selVariant.map(() => '') ?? []); 
+  const [variantInputValues, setVariantInputValues] = React.useState<string[]>(detailData?.variant.map(() => '') ?? []); 
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
+  const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
+
 
 
   const [form, setForm] = React.useState({
@@ -96,6 +107,130 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
     paymentConfirmationFileName: '',
     paymentConfirmationFileData: '',
   });
+
+
+  const fetchData = async (id: string) => {
+    try {
+      const token = await AsyncStorage.getItem('userData'); 
+      const categoryDetailUrl = ApiUrls.getProductDetail(id);    
+      if (token) {
+        const authToken = JSON.parse(token).data.Token
+        const response = await axios.get(categoryDetailUrl, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });           
+        const data: ProductDetail = response.data.data;
+        console.log(response.data.data)
+        if (id !== '') {
+        if (data) {
+          setTextProductSKU(data.product.ProductSKU)
+          setTextName(data.product.Name)
+          setTextPrice(parseInt(data.product.Price).toLocaleString())
+          setSelCategory(data.product.CategoryID)
+          setQuantity(data.product.Qty)
+          setTextDescription(data.product.Notes)
+          if (data.variant) {
+            setSelectedVariantIds(data.variant.map((x) => x.VariantOptionID));
+      
+            setVariantInputValues(data.variant.map((x) =>parseInt(x.Price).toLocaleString())); 
+          }
+        }
+        setDetailData(data);
+      }
+      } else {
+        console.error('No token found in AsyncStorage');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userData');     
+      if (token) {
+        const authToken = JSON.parse(token).data.Token
+        const response = await axios.get(ApiUrls.getCategory, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });           
+        const data: Categories[] = response.data.data;
+        setCategoriesData(data);
+
+        const modifiedData = data.map(category => ({
+          label: category.Name,
+          value: category.ID
+      }));
+      setArrCategoryPicker(modifiedData)
+
+      } else {
+        console.error('No token found in AsyncStorage');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const onSave = async (data: ProductForm) => {
+    try {
+      const token = await AsyncStorage.getItem('userData'); 
+      const url = ApiUrls.saveProduct
+      if (token) {
+      const authToken = JSON.parse(token).data.Token
+      const response = await axios.post(url, data, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+      if (response.status === 200) {
+        // Registration successful
+        Alert.alert('Success', 'Saved data successful!');
+        onCloseConfirmation()
+        // fetchData()
+      } else {
+        // Registration failed
+        Alert.alert('Error', 'Saving data failed');
+      }
+    }
+    } catch (error) {
+      console.error('Error during saving:', error);
+      Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+    }
+};
+
+const handleSave = () => {
+  const updatedData: ProductForm = {
+    ID: id !== '' ? id : '',
+    Action: id !== '' ? 'edit' : 'add',
+    Name: textName,
+    Notes: textDescription,
+    Qty: quantity,
+    Price: parseInt(textPrice),
+    CategoryID: selCategory,
+    ProductSKU: textProductSKU,
+    ImgUrl: form.paymentConfirmationFileName,
+    MimeType: getMimeTypeFromBase64(form.paymentConfirmationFileData) ?? '',
+    VariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.VariantOptionID).join(',') : '',
+    IsSelected: '',
+    ProductVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.VariantID).join(',') : '',
+  };
+  console.log(updatedData)
+  onSave(updatedData);
+  navigation.navigate('Products' as never) 
+};
+
+
+const getMimeTypeFromBase64 = (base64String: string): string | null => {
+  // Extract substring containing the MIME type from the base64 string
+  const mimeType = base64String.match(/^data:([A-Za-z-+\/]+);base64/);
+  if (mimeType && mimeType.length > 1) {
+    return mimeType[1]; // Return the MIME type
+  } else {
+    return null; // Return null if MIME type is not found
+  }
+}
 
 
       const onOpenConfirmation= () => {
@@ -220,24 +355,6 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
     const navigation = useNavigation();
 
 
-    const fetchData = async () => {
-        try {
-          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
-          const data: Coffee[] = response.data;
-          setCoffeeData(data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
-
-      const categoryOptions: CategoryOption[] = [
-        { label: 'Category 1', value: 'category1' },
-        { label: 'Category 2', value: 'category2' },
-        { label: 'Category 3', value: 'category3' },
-        // Add more categories as needed
-      ];
-
-
       const handleVariantOptionChange = (id: string) => {
         setSelectedVariantIds((prevIds) => {
           if (prevIds.includes(id)) {
@@ -251,9 +368,9 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
       };
       
       const handleVariantInputTextChange = (id: string, text: string) => {
-        if (data) {
+        if (detailData) {
         setVariantInputValues((prevValues) => {
-          const index = data.selVariant.findIndex((variant) => variant.variantOptionID === id);
+          const index = detailData.variant.findIndex((x) => x.VariantOptionID === id);
           const newValues = [...prevValues];
           newValues[index] = text;
           return newValues;
@@ -263,22 +380,9 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
 
 
     React.useEffect(() => {
-        if (data) {
-          setTextProductSKU(data.header.productSKU)
-          setTextName(data.header.name)
-          setTextPrice(parseInt(data.header.price).toLocaleString())
-          setSelCategory(data.header.categoryID)
-          setQuantity(data.header.qty)
-          setTextDescription(data.header.notes)
-          if (data.selVariant) {
-            // Set the initial selected variant IDs
-            setSelectedVariantIds(data.selVariant.map((variant) => variant.variantOptionID));
-      
-            // Set the initial input values for variant options
-            setVariantInputValues(data.selVariant.map((variant) =>parseInt(variant.price).toLocaleString())); // <-- Set the prices here
-          }
-        }
-      }, [data]);
+      fetchData(id)
+      fetchCategories()
+      }, []);
 
   return (
     <CommonLayout>
@@ -287,12 +391,11 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
         <TouchableOpacity onPress={()=> navigation.goBack()}>
             <Text style={{fontSize:10, fontWeight:'bold', color:'black'}}>&lt;--</Text>
         </TouchableOpacity>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{data ? 'Edit' : ' Add'} Product</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Product</Text>
       </View>
       <View style={{flexDirection:'row', gap:6}}>
         <View style={{width:'25%',  alignItems:'center'}}>
-
-          {data && data.header.imgUrl ? (
+          {detailData && detailData.product.ImgUrl ? (
             <View style={{paddingLeft:8}}>
                 {form.paymentConfirmationFileData ? (
                  <Image
@@ -302,7 +405,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
                 ) : (
               
                   <Image
-                  source={{ uri: data.header.imgUrl }}
+                  source={{ uri: detailData.product.ImgUrl }}
                   style={{ width: 120, height: 100, borderRadius:7 }}
                 />
                 )}
@@ -388,9 +491,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
 
             <RNPickerSelect
                 onValueChange={(x) => setSelCategory(x)}
-                items={[
-                    { label: "Coffee", value: "08f2bd82-d414-42bf-befa-0aa3921f08a3" },
-                ]}
+                items={arrCategoryPicker}
                 useNativeAndroidPickerStyle={false}
                 value={selCategory}
                 Icon={() => {
@@ -470,33 +571,33 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
                     </View>          
         </View>
 
-        {data && (
+        {detailData && (
           <View>
-  {data.selVariant.map((variant, index) => (
-    <View key={variant.variantOptionID} style={styles.rowContainer}>
+  {detailData.variant.map((x, index) => (
+    <View key={x.VariantOptionID} style={styles.rowContainer}>
       <TouchableOpacity
         style={styles.checkboxContainer}
         activeOpacity={1}
-        onPress={() => handleVariantOptionChange(variant.variantOptionID)}
+        onPress={() => handleVariantOptionChange(x.VariantOptionID)}
       >
         <View style={styles.checkbox}>
-          {selectedVariantIds.includes(variant.variantOptionID) && <View style={styles.checkboxInner} />}
+          {selectedVariantIds.includes(x.VariantOptionID) && <View style={styles.checkboxInner} />}
         </View>
-        <Text style={styles.checkboxLabel}>{variant.label}</Text>
+        <Text style={styles.checkboxLabel}>{x.Label}</Text>
       </TouchableOpacity>
 
       <TextInput
         style={[
           styles.variantInput,
           {
-            opacity: selectedVariantIds.includes(variant.variantOptionID) ? 1 : 0.5,
-            backgroundColor: selectedVariantIds.includes(variant.variantOptionID) ? '#F5F6FF' : '#D2D2D2',
+            opacity: selectedVariantIds.includes(x.VariantOptionID) ? 1 : 0.5,
+            backgroundColor: selectedVariantIds.includes(x.VariantOptionID) ? '#F5F6FF' : '#D2D2D2',
           },
         ]}
-        placeholder={`Enter value for ${variant.label}`}
+        placeholder={`Enter value for ${x.Label}`}
         value={variantInputValues[index]}
-        onChangeText={(text) => handleVariantInputTextChange(variant.variantOptionID, text)}
-        editable={selectedVariantIds.includes(variant.variantOptionID) && !isSubmitting}
+        onChangeText={(text) => handleVariantInputTextChange(x.VariantOptionID, text)}
+        editable={selectedVariantIds.includes(x.VariantOptionID) && !isSubmitting}
       />
     </View>
   ))}
@@ -504,10 +605,10 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
         )}
 
         <View style={{marginHorizontal:10, marginVertical:8, width:'80%',  }}>
-                    <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:8, color:'white', }}>Save</Text>
                     </TouchableOpacity>     
-                  {data && (
+                  {detailData && (
                     <TouchableOpacity onPress={()=> onOpenConfirmation()} style={{flexDirection:'row', gap:5, marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: 'red', padding:4, borderRadius:5}}>
                         <TrashSVG width='12' height='12' color='red'/>
                         <Text style={{fontSize:8, color:'black',}}>Remove Product</Text>
@@ -525,7 +626,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
 
       </View>
 
-      <ConfirmationModal isVisible={isOpenConfirmation} selectedData={data} onClose={onCloseConfirmation} />
+      <ConfirmationModal isVisible={isOpenConfirmation} selectedData={detailData} onClose={onCloseConfirmation} />
 
       
     </CommonLayout>

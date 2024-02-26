@@ -1,6 +1,8 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ScrollView } from 'react-native';
 import SearchSVG from '../../../assets/svgs/SearchSVG';
+import { Product } from '../../Products/Products';
+import { SelectedProduct } from '../VariantDetail';
 
 interface Coffee {
   id: number;
@@ -15,20 +17,31 @@ export interface Categories {
     totalItem: string;
   }
 
+
 interface EditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
-  data: Coffee[]
-  onSave: (selectedData: Coffee[]) => void 
+  data: Product[]
+  onSave: (selectedData: SelectedProduct[]) => void 
+  selectedData: SelectedProduct[]
 }
 
-const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, onSave }) => {
+const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, onSave, selectedData}) => {
 
     const [quantity, setQuantity] = React.useState(1);
     const [textName, setTextName] = React.useState('');
-    const [selectedItems, setSelectedItems] = React.useState<number[]>([]);
-    const [selectedProducts, setSelectedProducts] = React.useState<Coffee[]>([]);
+    const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
+    const [selectedProducts, setSelectedProducts] = React.useState<SelectedProduct[]>([]);
     const [selectAll, setSelectAll] = React.useState(false);
+
+
+    const onOpen = () => {
+      if (selectedData) {
+          const selectedItemsIds = selectedData.map(item => item.ID);
+          setSelectedItems(selectedItemsIds);
+          setSelectedProducts(selectedData);
+      }
+  };
 
 
 
@@ -48,13 +61,13 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
         onClose()
       };
 
-      const handleCheckboxPress = (itemId: number) => {
-        if (itemId === -1) {
+      const handleCheckboxPress = (itemId: string, index: number) => {
+        if (index === -1) {
           // "Select All" checkbox
           setSelectAll(!selectAll);
           if (!selectAll) {
             // If checking "Select All," select all items
-            setSelectedItems(data.map((item) => item.id));
+            setSelectedItems(data.map((item) => item.ID));
             setSelectedProducts([...data]);
           } else {
             // If unchecking "Select All," clear all selections
@@ -66,12 +79,12 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
           setSelectedItems((prevSelectedItems) => {
             if (prevSelectedItems.includes(itemId)) {
               // Remove item from selectedProducts when unchecking the checkbox
-              const updatedProducts = selectedProducts.filter((product) => product.id !== itemId);
+              const updatedProducts = selectedProducts.filter((product) => product.ID !== itemId);
               setSelectedProducts(updatedProducts);
               return prevSelectedItems.filter((id) => id !== itemId);
             } else {
               // Add item to selectedProducts when checking the checkbox
-              const selectedProduct = data.find((product) => product.id === itemId);
+              const selectedProduct = data.find((product) => product.ID === itemId);
               if (selectedProduct) {
                 setSelectedProducts([...selectedProducts, selectedProduct]);
               }
@@ -80,6 +93,10 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
           });
         }
       };
+
+      React.useEffect(() => {
+        onOpen();
+    }, []);
 
 
   return (
@@ -125,7 +142,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
 
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20, marginBottom:3 }}>
               <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text>
-              <TouchableOpacity onPress={() => handleCheckboxPress(-1)}>
+              <TouchableOpacity onPress={() => handleCheckboxPress('',-1)}>
                 <Text style={{ fontSize: 10, color: 'black' }}>
                   {selectAll ? 'Unselect All' : 'Select All'}
                 </Text>
@@ -137,8 +154,8 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
             {data.map((x, index)=> (
             <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
 
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.id) ? (
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.ID, index)} style={{ marginRight: 5 }}>
+                    {selectedItems.includes(x.ID) ? (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
                     ) : (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
@@ -149,11 +166,11 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
             //onPress={() => handleProductPress(x)} 
             style={styles.cardRow}>
                 <View style={{width:60, height:60}}>
-                    <Image source={{ uri: x.image }} style={{width:'100%', height:'100%'}} />
+                    <Image source={{ uri: x.ImgUrl }} style={{width:'100%', height:'100%'}} />
                 </View>
 
                 <View style={{}}>
-                    <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}} numberOfLines={1} ellipsizeMode="tail">{x.title}</Text>
+                    <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}} numberOfLines={1} ellipsizeMode="tail">{x.Name}</Text>
                 </View>
             </TouchableOpacity>
             </View>

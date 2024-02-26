@@ -1,15 +1,25 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Product, ProductDetail } from '../../Products/Products';
-import { Coffee } from '../DetailProduct';
+import { ProductForm } from '../../Products';
 
 interface EditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
-  selectedData: ProductDetail | null
+  onSave: (data: ProductForm) => void;
+  selectedItems: string[]
 }
 
-const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selectedData }) => {
+const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selectedItems, onSave }) => {
+
+  const handleSave = () => {
+    const updatedData: ProductForm = {
+      ID: selectedItems.join(','),
+      Action: 'delete',
+    };
+    console.log(updatedData)
+    onSave(updatedData); 
+    onClose()
+  };
 
 
   return (
@@ -27,8 +37,8 @@ const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, s
          
 
         <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
-                    <Text style={{fontSize:10, color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Are you sure want to delete {selectedData?.product.Name} ?</Text>
-                    <TouchableOpacity  onPress={onClose} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#EF4444', padding:4, borderRadius:5}}>
+                    <Text style={{fontSize:10, color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Are you sure want to delete selected ({selectedItems?.length}) proudct(s)?</Text>
+                    <TouchableOpacity  onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#EF4444', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Yes</Text>
                     </TouchableOpacity>     
 

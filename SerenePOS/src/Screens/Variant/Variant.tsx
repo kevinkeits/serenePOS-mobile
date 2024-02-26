@@ -1,38 +1,73 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
-import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native'
+import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import { ApiUrls } from '../../apiUrls/apiUrls'
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
 import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
 
-export interface Coffee {
-    id: number;
-    title: string;
-    price: number;
-    image: string;
+
+  export interface Variant {
+    ID: string;
+    Name: string;
+    Type: string;
+    Count: number;
+    ListLabel: string
   }
 
-  export interface Variants {
-    id: string;
-    name: string;
-    type: string;
-    count: number;
+  export interface VariantDetailProps {
+  details: DetailsVariant
+  options: OptionsVariant[]
+  product: ProductsVariant[]
+  }
+
+  export interface DetailsVariant {
+    ID: string;
+    Type: string
+    Name: string;
+
+  }
+
+  export interface OptionsVariant {
+    ID: string;
+    Label: string;
+    Price: string;
+  }
+  export interface ProductsVariant {
+    ID: string;
+    Name: string;
+    ImgUrl: string;
+
+  }
+
+  export interface VariantForm {
+    ID: string;
+    Action: string
+    Name?: string;
+    Type?: string;
+    optionID?: string;
+    optionLabel?: string;
+    optionPrice?: string
+    ProductID?: string
+    OptionIDDelete?: string
+
   }
 
 
 const Variant = () => {
 
-    const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
+    const [variantsData, setVariantsData] = React.useState<Variant[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [deleteMode, setDeleteMode] = React.useState(false);
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
 
     const navigation = useNavigation();
 
-    const handleNavigate = ( selectedData: Variants | null) => {
-      navigation.navigate('VariantDetail' as never, {data: selectedData} as never)
+    const handleNavigate = ( selectedID: string) => {
+      navigation.navigate('VariantDetail' as never, {id: selectedID} as never)
     };
 
       const onOpenConfirmation= () => {
@@ -44,15 +79,53 @@ const Variant = () => {
       };
 
 
-    const fetchData = async () => {
+      const fetchData = async () => {
         try {
-          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
-          const data: Coffee[] = response.data;
-          setCoffeeData(data);
+          const token = await AsyncStorage.getItem('userData');     
+          if (token) {
+            const authToken = JSON.parse(token).data.Token
+            const response = await axios.get(ApiUrls.getVariant, {
+              headers: {
+                'Authorization': `Bearer ${authToken}`
+              }
+            });           
+            const data: Variant[] = response.data.data;
+            setVariantsData(data);
+          } else {
+            console.error('No token found in AsyncStorage');
+          }
         } catch (error) {
           console.error('Error fetching data:', error);
         }
       };
+
+      const onSave = async (data: VariantForm) => {
+        try {
+          const token = await AsyncStorage.getItem('userData'); 
+          const url = ApiUrls.saveVariant
+          if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.post(url, data, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });
+          if (response.status === 200) {
+            // Registration successful
+            Alert.alert('Success', 'Saved data successful!');
+            onCloseConfirmation()
+            setDeleteMode(false)
+            fetchData()
+          } else {
+            // Registration failed
+            Alert.alert('Error', 'Saving data failed');
+          }
+        }
+        } catch (error) {
+          console.error('Error during saving:', error);
+          Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+        }
+    };
     
       const handleCheckboxPress = (itemId: string) => {
         // Toggle the selection status of the item
@@ -80,45 +153,6 @@ const Variant = () => {
         setSelectedItems([]);
       };
 
-    const data: Variants[] = [
-      {
-        id : "329cbb0e-646e-45e8-8643-22cd12245e79",
-        name: "Serving",
-        type: "1",
-        count: 0
-    },
-    {
-        id: "93ca4c5d-bd04-4855-8fc6-759b3bf9a0e4",
-        name: "Sugar",
-        type: "1",
-        count: 0
-    },
-    {
-        id: "c24c993d-6e18-4c0e-8131-5a1cd6e0ead5",
-        name: "Pilihan Es",
-        type: "2",
-        count: 0
-    },
-    {
-        id: "204b3027-ab90-4fff-8f22-d089e016aceb",
-        name: "Pilihan Kopi",
-        type: "2",
-        count: 0
-    },
-    {
-        id: "12bfefd0-75f4-489a-b7d3-a5d0c435f924",
-        name: "Pilihan Susu",
-        type: "2",
-        count: 0
-    },
-    {
-        id: "33797aa4-f3c0-4437-9871-f38278f979ba",
-        name: "Add On",
-        type: "2",
-        count: 0
-    }
-    ];
-
     React.useEffect(() => {
         fetchData();
       }, []);
@@ -126,22 +160,22 @@ const Variant = () => {
   return (
     <CommonLayout>
       <View style={{}}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:5, alignItems:'center'}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Variants</Text>
-      {deleteMode ? (
-        <View/>
-      ):(
-        <View style={{flexDirection:'row', gap:4}}>
-        <TouchableOpacity onPress={() => handleNavigate(null)} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
-            <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
-            <TrashSVG width='12' height='12' color='red'/>
-        </TouchableOpacity>
-      </View>
-      )}
-      
-      </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:5, alignItems:'center'}}>
+          <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Variants</Text>
+          {deleteMode ? (
+            <View/>
+          ):(
+            <View style={{flexDirection:'row', gap:4}}>
+            <TouchableOpacity onPress={() => handleNavigate('')} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
+                <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
+                <TrashSVG width='12' height='12' color='red'/>
+            </TouchableOpacity>
+          </View>
+          )}
+          
+          </View>
       {deleteMode && (
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20 }}>
               <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text>
@@ -153,28 +187,28 @@ const Variant = () => {
       <View>
 
 
-      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', justifyContent:'center', marginVertical:3}}>
-        {data.map((x, index)=>(
+      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center',  marginVertical:3}}>
+        {variantsData.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.id) ? (
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.ID)} style={{ marginRight: 5 }}>
+                    {selectedItems.includes(x.ID) ? (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
                     ) : (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
                     )}
                   </TouchableOpacity>
                 )}
-            <TouchableOpacity onPress={() => handleNavigate(x)} key={index} style={styles.firstRowItem}>
-                <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-                <View>
-                    <Text style={{fontWeight: "bold", color: "black", fontSize: 12}}>{x.name}</Text>
-                    <Text style={{ color: "black", fontSize: 8}}>Normal, More, Less</Text>
+            <TouchableOpacity onPress={() => handleNavigate(x.ID)} key={index} style={styles.firstRowItem}>
+                <View style={{flexDirection:'row', justifyContent:'space-between', height:'40%'}}>
+                <View >
+                    <Text style={{fontWeight: "bold", color: "black", fontSize: 9, maxWidth:'99%'}}>{x.Name}</Text>
+                    <Text style={{ color: "black", fontSize: 8, maxWidth:'99%'}}>{x.ListLabel}</Text>
                 </View>
-                    <Text style={{ color: "#2563EB", fontSize: 7, padding:3, borderWidth:0.5, borderColor:'#2563EB', borderRadius:3, width:80, height:18, textAlign:'center'}}>{x.type == "1" ? 'Single' : 'Multi'} Selection</Text>
+                    <Text style={{ color: "#2563EB", fontSize: 7, padding:3, borderWidth:0.5, borderColor:'#2563EB', borderRadius:3, width:80, height:18, textAlign:'center'}}>{x.Type == "1" ? 'Single' : 'Multi'} Selection</Text>
                 </View>
                 <View style={{marginTop:35}}>
-                  <Text style={{fontSize:7, color:'black'}}>{x.count} Linked Product</Text>
+                  <Text style={{fontSize:7, color:'black'}}>{x.Count} Linked Product</Text>
                 </View>
             </TouchableOpacity>
             </View>
@@ -195,7 +229,7 @@ const Variant = () => {
       
       </View>
       </View>
-      <ConfirmationModal isVisible={isOpenConfirmation} totalItems={selectedItems.length} onClose={onCloseConfirmation} />
+      <ConfirmationModal isVisible={isOpenConfirmation} selectedItems={selectedItems} onClose={onCloseConfirmation} onSave={onSave} />
 
       
     </CommonLayout>

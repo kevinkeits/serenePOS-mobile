@@ -11,9 +11,12 @@ import RNPickerSelect from "react-native-picker-select";
 import ImagePicker, { ImageLibraryOptions, ImagePickerResponse  } from 'react-native-image-picker';
 import DropdownSVG from '../../assets/svgs/DropdownSVG'
 import ProductModal from './ProductModal/ProductModal'
-import { Variants } from '../Variant/Variant'
-
-
+import { Variant, VariantDetailProps, VariantForm } from '../Variant/Variant'
+import { Product } from '../Products/Products'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ApiUrls } from '../../apiUrls/apiUrls'
+import { Categories } from '../Categories/Categories'
+import { v4 as uuidv4 } from 'uuid'
 
 
 
@@ -29,66 +32,167 @@ export interface Coffee {
     value: string;
   }
 
-  interface Option {
-    optionName: string;
-    price: string;
+  export interface OptionsVariant {
+    ID: string;
+    Label: string;
+    Price: string;
   }
 
+  export interface SelectedProduct {
+    ID: string;
+    Name: string;
+    ImgUrl: string
+  }
+
+  // type DetailScreenProps = {
+  //   route: { params: {  data: Variants | null } };
+  // };
+
   type DetailScreenProps = {
-    route: { params: {  data: Variants | null } };
+    route: { params: {  id: string } };
   };
 
-  const temperatureOptions = [
-    { id: 'hot', label: 'Hot' },
-    { id: 'ice', label: 'Ice' },
-    // Add more options as needed
-  ];
-
-  const sugarOptions = [
-    { id: 'normal', label: 'Normal' },
-    { id: 'moreSugar', label: 'More Sugar' },
-    { id: 'lessSugar', label: 'Less Sugar' },
-    // Add more options as needed
-  ];
-
-  const addOnOptions = [
-    { id: 'sugarSyrup', label: 'Sugar Syrup' },
-    { id: 'bobba', label: 'Bobba' },
-    { id: 'grassJelly', label: 'Grass Jelly' },
-    { id: 'milk', label: 'Milk' },
-    { id: 'cheese', label: 'Cheese' },
-    // Add more options as needed
-  ];
 
 const VariantDetail = ({ route }: DetailScreenProps) => {
 
-    const  { data }  = route.params
+    const  { id }  = route.params
 
-    const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
+    const [detailData, setDetailData] = React.useState<VariantDetailProps | null>(null);
+    const [productData, setProductData] = React.useState<Product[]>([]);
+
     const [textName, setTextName] = React.useState('');
     const [ selectedType, setSelectedType] = React.useState("");
     const [ selectedCategory, setSelectedCategory] = React.useState("");
-    const [options, setOptions] = React.useState<Option[]>([]);
+    const [options, setOptions] = React.useState<OptionsVariant[]>([]);
     const [isOpenProduct, setIsOpenProduct] = React.useState(false);
-    const [selectedProducts, setSelectedProducts] = React.useState<Coffee[]>([]);
+    const [selectedProducts, setSelectedProducts] = React.useState<SelectedProduct[]>([]);
+    const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
+    const [selectedOptionIDsDelete, setSelectedOptionIDsDelete] = React.useState<string[]>([]);
 
 
-
-
-
-  const [selectedOptionIds, setSelectedOptionIds] = React.useState<string[]>([]);
-  const [servingInputValues, setServingInputValues] = React.useState<string[]>(temperatureOptions.map(() => ''));
-  const [isServingSubmitting, setIsServingSubmitting] = React.useState(false); 
-
-  const [selectedSugarIds, setSelectedSugarIds] = React.useState<string[]>([]);
-  const [sugarInputValues, setSugarInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
-  const [isSugarSubmitting, setIsSugarSubmitting] = React.useState(false); 
-
-  const [selectedAddOnIds, setSelectedAddOnIds] = React.useState<string[]>([]);
-  const [addOnInputValues, setAddOnInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
-  const [isAddOnSubmitting, setIsAddOnSubmitting] = React.useState(false); 
 
   
+
+    const fetchCategories = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userData');     
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(ApiUrls.getCategory, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: Categories[] = response.data.data;
+          if (data){
+          fetchProduct(data[0].ID)
+          setCategoriesData(data);
+          }
+        } else {
+          console.error('No token found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+  const fetchProduct = async (categoryID: string) => {
+    try {
+      const token = await AsyncStorage.getItem('userData'); 
+      const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
+      if (token) {
+        const authToken = JSON.parse(token).data.Token
+        const response = await axios.get(categoryDetailUrl, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });           
+        const data: Product[] = response.data.data;
+        setProductData(data);
+      } else {
+        console.error('No token found in AsyncStorage');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const fetchData = async (id: string) => {
+    try {
+      const token = await AsyncStorage.getItem('userData'); 
+      const categoryDetailUrl = ApiUrls.getVariantDetail(id);    
+      if (token) {
+        const authToken = JSON.parse(token).data.Token
+        const response = await axios.get(categoryDetailUrl, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });           
+        const data: VariantDetailProps = response.data.data;
+        if (id !== '') {
+        if (data) {
+          setTextName(data.details.Name)
+          setSelectedType(data.details.Type)
+          setOptions(data.options)
+          setSelectedProducts(data.product)
+          setDetailData(data);
+          }
+          
+        }
+      }
+       else {
+        console.error('No token found in AsyncStorage');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const onSave = async (data: VariantForm) => {
+    try {
+      const token = await AsyncStorage.getItem('userData'); 
+      const url = ApiUrls.saveVariant
+      if (token) {
+      const authToken = JSON.parse(token).data.Token
+      const response = await axios.post(url, data, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+      if (response.status === 200) {
+        // Registration successful
+        Alert.alert('Success', 'Saved data successful!');
+        // onCloseConfirmation()
+        // setDeleteMode(false)
+        fetchData(id)
+        navigation.navigate('Variants' as never)    
+        } else {
+        // Registration failed
+        Alert.alert('Error', 'Saving data failed');
+      }
+    }
+    } catch (error) {
+      console.error('Error during saving:', error);
+      Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+    }
+};
+
+const handleSave = () => {
+  const updatedData: VariantForm = {
+    ID: id !== '' ? id : '',
+    Action: id !== '' ? 'edit' : 'add',
+    Name: textName,
+    Type: selectedType,
+    optionID: options.map((x: any)=> x.ID).join(','),
+    optionLabel: options.map((x: any)=> x.Label).join(','),
+    optionPrice: options.map((x: any)=> x.Price).join(','),
+    ProductID: selectedProducts.map((x: any)=> x.ID).join(','),
+    OptionIDDelete: id != '' ? selectedOptionIDsDelete.map((x: any) => x).join(',') : '',
+  };
+  console.log(updatedData)
+  // onSave(updatedData);
+};
+
 
   const onOpenProduct = () => {
     setIsOpenProduct(true);
@@ -99,126 +203,53 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
   };
  
 
-  const handleTextInputChange = (id: string, text: string) => {
-    setServingInputValues((prevValues) => {
-      const index = temperatureOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionChange = (id: string) => {
-    setSelectedOptionIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-  const handleTextInputSugarChange = (id: string, text: string) => {
-    setSugarInputValues((prevValues) => {
-      const index = sugarOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionSugarChange = (id: string) => {
-    setSelectedSugarIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-  const handleTextInputAddOnChange = (id: string, text: string) => {
-    setAddOnInputValues((prevValues) => {
-      const index = addOnOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionAddOnChange = (id: string) => {
-    setSelectedAddOnIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
   const handleAddOption = () => {
-    setOptions([...options, { optionName: '', price: '' }]);
+    const newId = uuidv4({ random: [0x10, 0x91, 0x56, 0xbe, 0xc4, 0xfb, 0xc1, 0xea, 0x71, 0xb4, 0xef, 0xe1, 0x67, 0x1c, 0x58, 0x36] });
+
+    setOptions([...options, {ID: newId, Label: '', Price: '0' }]);
   };
+
+  // const handleDeleteOption = (index: number) => {
+  //   const newOptions = [...options];
+  //   newOptions.splice(index, 1);
+  //   setOptions(newOptions);
+  // };
 
   const handleDeleteOption = (index: number) => {
+    const deletedOption = options[index];
+    setSelectedOptionIDsDelete([...selectedOptionIDsDelete, deletedOption.ID]);
     const newOptions = [...options];
     newOptions.splice(index, 1);
     setOptions(newOptions);
   };
 
-  const handleOption = (index: number, field: keyof Option, value: string) => {
+  const handleOption = (index: number, field: keyof OptionsVariant, value: string) => {
     const newOptions = [...options];
     newOptions[index][field] = value;
     setOptions(newOptions);
   };
 
-  const onSaveProducts = (selectedData: Coffee[]) => {
+  const onSaveProducts = (selectedData: SelectedProduct[]) => {
+    if (selectedData){
     setSelectedProducts(selectedData)
     setIsOpenProduct(false);
+    }
   }
  
-    
-
     const navigation = useNavigation();
 
 
-    const fetchData = async () => {
-        try {
-          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
-          const data: Coffee[] = response.data;
-          setCoffeeData(data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
-
-      const categoryOptions: CategoryOption[] = [
-        { label: 'Category 1', value: 'category1' },
-        { label: 'Category 2', value: 'category2' },
-        { label: 'Category 3', value: 'category3' },
-        // Add more categories as needed
-      ];
-
-     
-
-    
+    const categoryOptions: CategoryOption[] = [
+      { label: 'Category 1', value: 'category1' },
+      { label: 'Category 2', value: 'category2' },
+      { label: 'Category 3', value: 'category3' },
+      // Add more categories as needed
+    ];
 
 
     React.useEffect(() => {
-      fetchData()
-        if (data) {
-          setTextName(data.name)
-          setSelectedType(data.type)
-        }
+      fetchData(id)
+      fetchCategories()
       }, []);
 
   return (
@@ -228,7 +259,7 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
         {/* <TouchableOpacity onPress={()=> navigation.goBack()}>
             <Text style={{fontSize:12, fontWeight:'bold', color:'black'}}>&lt;--</Text>
         </TouchableOpacity> */}
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{data ? 'Edit' : ' Add'} Variant</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Variant</Text>
       </View>
       <View style={{}}>
        
@@ -296,14 +327,15 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
                             <TextInput
                                 style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'65%', height:25, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius:5}}
                                 placeholder="Option Name"
-                                value={option.optionName}
-                                onChangeText={(text) => handleOption(index, 'optionName', text)}
+                                value={option.Label}
+                                onChangeText={(text) => handleOption(index, 'Label', text)}
                             />
                             <TextInput
                                 style={{paddingLeft: 10, paddingVertical:5, fontSize:8, width:'30%', height:25, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius:5}}
                                 placeholder="Price"
-                                value={option.price}
-                                onChangeText={(text) => handleOption(index, 'price', text)}
+                                value={option.Price}
+                                onChangeText={(text) => handleOption(index, 'Price', text)}
+                                keyboardType="numeric"
                             />
                            
                             <TouchableOpacity onPress={() => handleDeleteOption(index)} style={{ justifyContent:'center', alignItems:'center', borderColor:'red'}}>
@@ -317,8 +349,8 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
         <View style={{borderBottomWidth:0.5, borderBottomColor:'grey', marginVertical:10}}/>
 
         <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Choose Product</Text>
-        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Category</Text>
+        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'100%', justifyContent:'center', alignItems:'center'}}>
+                    {/* <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Category</Text> */}
             <View style={{ height: 25, justifyContent: 'center', width:'60%',}}>
 
             </View>
@@ -333,9 +365,9 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
           {selectedProducts.map((x, index)=> (
             <View key={index} style={{width:60, height:100}}>
               <View style={{width:60, height:60}}>
-                    <Image source={{ uri: x.image }} style={{width:'100%', height:'100%'}} />
+                    <Image source={{ uri: x.ImgUrl }} style={{width:'100%', height:'100%'}} />
               </View>
-              <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}} numberOfLines={1} ellipsizeMode="tail">{x.title}</Text>
+              <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}} numberOfLines={1} ellipsizeMode="tail">{x.Name}</Text>
             </View>
           ))}
         </View>
@@ -343,7 +375,7 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
         )}
 
         <View style={{margin:10, width:'90%',  }}>
-                    <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
@@ -358,7 +390,7 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
       
 
       </View>
-      <ProductModal isVisible={isOpenProduct} data={coffeeData} onClose={onCloseProduct} onSave={onSaveProducts}/>
+      <ProductModal isVisible={isOpenProduct} data={productData} onClose={onCloseProduct} onSave={onSaveProducts} selectedData={selectedProducts}/>
 
       
     </CommonLayout>

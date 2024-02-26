@@ -5,61 +5,53 @@ import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert, Tex
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 
-import RNPickerSelect from "react-native-picker-select";
-import ImagePicker, { ImageLibraryOptions, ImagePickerResponse  } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ApiUrls } from '../../apiUrls/apiUrls'
 
 
 
 
+export interface OutletDetailProps {
+  details: detailsOutletProps
+}
 
-export interface Coffee {
-    id: number;
-    title: string;
-    price: number;
-    image: string;
-  }
+export interface detailsOutletProps {
+  ID: string;
+  OutletName: string;
+  IsPrimary: number;
+  Address: string;
+  PhoneNumber: string
+}
 
-  interface CustomImagePickerResponse extends ImagePickerResponse {
-    uri?: string;
-    error?: string;
-  }
+
+
+export interface OutletForm {
+  ID: string;
+  Action?: string
+  Name?: string;
+  IsPrimary?: string;
+  Address?: string;
+  PhoneNumber?: string
+}
+
 
   interface CategoryOption {
     label: string;
     value: string;
   }
 
-  const temperatureOptions = [
-    { id: 'hot', label: 'Hot' },
-    { id: 'ice', label: 'Ice' },
-    // Add more options as needed
-  ];
+  type DetailScreenProps = {
+    route: { params: {  id: string } };
+  };
 
-  const sugarOptions = [
-    { id: 'normal', label: 'Normal' },
-    { id: 'moreSugar', label: 'More Sugar' },
-    { id: 'lessSugar', label: 'Less Sugar' },
-    // Add more options as needed
-  ];
+const OutletDetail = ({ route }: DetailScreenProps) => {
 
-  const addOnOptions = [
-    { id: 'sugarSyrup', label: 'Sugar Syrup' },
-    { id: 'bobba', label: 'Bobba' },
-    { id: 'grassJelly', label: 'Grass Jelly' },
-    { id: 'milk', label: 'Milk' },
-    { id: 'cheese', label: 'Cheese' },
-    // Add more options as needed
-  ];
+  const  { id }  = route.params
 
-const OutletDetail = () => {
-
-    const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
-    const [textProductSKU, setTextProductSKU] = React.useState('');
+    const [detailData, setDetailData] = React.useState<OutletDetailProps | null>(null);
     const [textName, setTextName] = React.useState('');
-    const [textDescription, setTextDescription] = React.useState('');
-    const [textPrice, setTextPrice] = React.useState('');
     const [textPhoneNumber, setTextPhoneNumber] = React.useState('');
     const [textDetailAddress, setTextDetailAddress] = React.useState('');
 
@@ -69,117 +61,87 @@ const OutletDetail = () => {
       // Your other form fields
       paymentConfirmationFileName: '',
       paymentConfirmationFileData: '',
-    });
-    const [selectedCategory, setSelectedCategory] =  React.useState<CategoryOption | null>(null);
-    const [ language, setLanguage ] = React.useState("");
-    const [selectedImage, setSelectedImage] = React.useState<ImagePickerResponse | null>(null);
+    }); 
 
+    const [isPrimary, setIsPrimary] = React.useState('');
 
-  const [selectedOptionIds, setSelectedOptionIds] = React.useState<string[]>([]);
-  const [servingInputValues, setServingInputValues] = React.useState<string[]>(temperatureOptions.map(() => ''));
-  const [isServingSubmitting, setIsServingSubmitting] = React.useState(false); 
-
-  const [selectedSugarIds, setSelectedSugarIds] = React.useState<string[]>([]);
-  const [sugarInputValues, setSugarInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
-  const [isSugarSubmitting, setIsSugarSubmitting] = React.useState(false); 
-
-  const [selectedAddOnIds, setSelectedAddOnIds] = React.useState<string[]>([]);
-  const [addOnInputValues, setAddOnInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
-  const [isAddOnSubmitting, setIsAddOnSubmitting] = React.useState(false); 
-
-  
-
-  const handleTextInputChange = (id: string, text: string) => {
-    setServingInputValues((prevValues) => {
-      const index = temperatureOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionChange = (id: string) => {
-    setSelectedOptionIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-  const handleTextInputSugarChange = (id: string, text: string) => {
-    setSugarInputValues((prevValues) => {
-      const index = sugarOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionSugarChange = (id: string) => {
-    setSelectedSugarIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-  const handleTextInputAddOnChange = (id: string, text: string) => {
-    setAddOnInputValues((prevValues) => {
-      const index = addOnOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionAddOnChange = (id: string) => {
-    setSelectedAddOnIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-    const incrementQuantity = () => {
-        setQuantity((prevQuantity) => prevQuantity + 1);
-      };
-    
-      const decrementQuantity = () => {
-        if (quantity > 1) {
-          setQuantity((prevQuantity) => prevQuantity - 1);
-        }
-      };
-    
- 
-    
+    const handleCheckBoxToggle = () => {
+      setIsPrimary(isPrimary === 'T' ? 'F' : 'T'); // Toggle between 'T' and ''
+    };
 
     const navigation = useNavigation();
 
 
-    const fetchData = async () => {
-        try {
-          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
-          const data: Coffee[] = response.data;
-          setCoffeeData(data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
+    const fetchData = async (id: string) => {
+      try {
+        const token = await AsyncStorage.getItem('userData'); 
+        const categoryDetailUrl = ApiUrls.getOutletDetail(id);    
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(categoryDetailUrl, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: OutletDetailProps = response.data.data;
+          if (id !== '') {
+          if (data) {
+            console.log(data)
+            setTextName(data.details.OutletName)
+            setTextPhoneNumber(data.details.PhoneNumber)
+            setTextDetailAddress(data.details.Address)
+            setDetailData(data)
+            }
+            
+          }
         }
-      };
+         else {
+          console.error('No token found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const onSave = async (data: OutletForm) => {
+      try {
+        const token = await AsyncStorage.getItem('userData'); 
+        const url = ApiUrls.saveOutlet
+        if (token) {
+        const authToken = JSON.parse(token).data.Token
+        const response = await axios.post(url, data, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        if (response.status === 200) {
+          // Registration successful
+          Alert.alert('Success', 'Saved data successful!');
+          // fetchData(id)
+          navigation.navigate('Setting' as never)    
+          } else {
+          // Registration failed
+          Alert.alert('Error', 'Saving data failed');
+        }
+      }
+      } catch (error) {
+        console.error('Error during saving:', error);
+        Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+      }
+  };
+  
+  const handleSave = () => {
+    const updatedData:OutletForm = {
+      ID: id !== '' ? id : '',
+      Action: id !== '' ? 'edit' : 'add',
+      Name: textName,
+      PhoneNumber: textPhoneNumber,
+      Address: textDetailAddress,
+      IsPrimary: ''
+    };
+    console.log(updatedData)
+    onSave(updatedData);
+  };
 
       const categoryOptions: CategoryOption[] = [
         { label: 'Category 1', value: 'category1' },
@@ -187,18 +149,6 @@ const OutletDetail = () => {
         { label: 'Category 3', value: 'category3' },
         // Add more categories as needed
       ];
-
-      const outletData = 
-      { 
-        id: "080bd62c-810f-4b92-9967-0ce080bf30e8",
-        clientID: "f95c6b7c-0fbe-421d-a3b1-a695861d74f5",
-        name: "Serene",
-        phoneNumber: "85737323334",
-        planType: "1",
-        isPrimary: 1,
-        detailsAddress: "Jln. Kesehatan no.12"
-      }
-      ;
 
      
       const handleUpload = async () => {
@@ -227,10 +177,9 @@ const OutletDetail = () => {
 
 
     React.useEffect(() => {
-        fetchData();
-        setTextName(outletData.name)
-        setTextPhoneNumber(outletData.phoneNumber)
-        setTextDetailAddress(outletData.detailsAddress)
+      if(id !== ''){
+        fetchData(id);
+      }
       }, []);
 
   return (
@@ -334,7 +283,7 @@ const OutletDetail = () => {
                         />
                     </View>          
         </View>
-
+{/* 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Sub-district</Text>
                     <View
@@ -379,7 +328,26 @@ const OutletDetail = () => {
                             style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
                         />
                     </View>          
+        </View> */}
+
+<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <TouchableOpacity onPress={handleCheckBoxToggle} style={{ marginRight: 5 }}>
+        <View style={{
+          width: 20,
+          height: 20,
+          borderWidth: 1,
+          borderRadius: 4,
+          borderColor: 'black',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: isPrimary === 'T' ? 'black' : 'transparent',
+        }}>
+          {isPrimary === 'T' && <Text style={{ color: 'white' }}>✓</Text>}
         </View>
+      </TouchableOpacity>
+      <Text>Primary Address</Text>
+      <Text>{isPrimary}</Text>
+    </View>
 
        
 

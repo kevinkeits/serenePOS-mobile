@@ -8,13 +8,15 @@ import RNPickerSelect from "react-native-picker-select";
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import DropdownSVG from '../../assets/svgs/DropdownSVG'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ApiUrls } from '../../apiUrls/apiUrls'
 
 
-export interface Coffee {
-    id: number;
-    title: string;
-    price: number;
-    image: string;
+  export interface Outlet {
+    ID: string;
+    Name: string;
+    IsPrimary: number;
+    Address: string;
   }
 
   interface CategoryOption {
@@ -46,7 +48,7 @@ export interface Coffee {
 
 const Setting = () => {
 
-    const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
+    const [outletData, setOutletData] = React.useState<Outlet[]>([]);
     const [textName, setTextName] = React.useState('');
     const [textPrice, setTextPrice] = React.useState('');
     const [quantity, setQuantity] = React.useState(1);
@@ -154,14 +156,24 @@ const Setting = () => {
 
 
     const fetchData = async () => {
-        try {
-          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
-          const data: Coffee[] = response.data;
-          setCoffeeData(data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
+      try {
+        const token = await AsyncStorage.getItem('userData');     
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(ApiUrls.getOutlet, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: Outlet[] = response.data.data;
+          setOutletData(data);
+        } else {
+          console.error('No token found in AsyncStorage');
         }
-      };
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
       const categoryOptions: CategoryOption[] = [
         { label: 'Category 1', value: 'category1' },
@@ -192,6 +204,10 @@ const Setting = () => {
             // You can handle the error as per your application's requirements
           }
         }
+      };
+
+      const handleNavigate = ( selectedID: string) => {
+        navigation.navigate('OutletDetail' as never, {id: selectedID} as never)
       };
     
 
@@ -425,15 +441,18 @@ const Setting = () => {
             </View> 
 
             <Text style={{fontSize:10, fontWeight:'bold', color:'black'}}>Outlet</Text>
-          <View style={{marginTop:5, marginBottom:10, marginHorizontal:10,  width:'60%', }}>
-                  <View style={{flexDirection:'row'}}>
-                    <Text style={{fontSize:8,  marginBottom:2, color:'black', width:'10%'}}>Bogor</Text>
-                    <View style={{width:60, backgroundColor:'blue', borderRadius:5, paddingVertical:2}}>
+            {outletData.map((x, index) => (
+          <View key={index} style={{marginTop:5, marginBottom:10, marginHorizontal:10,  width:'60%', }}>
+                  <View style={{flexDirection:'row', gap:5}}>
+                    <Text style={{fontSize:8,  color:'black', width:'30%'}}>{x.Name}</Text>
+                    <View style={{width:60, height:13, backgroundColor:'blue', borderRadius:5, paddingVertical:2}}>
+                      {x.IsPrimary == 1 && (
                           <Text style={{fontSize:6, color:'white', fontWeight:'bold', textAlign:'center'}}>Primary</Text>
+                      )}
                     </View>
                   </View>
                       <TouchableOpacity
-                          onPress={() => navigation.navigate('OutletDetail' as never)}
+                          onPress={() => handleNavigate(x.ID)}
                           style={{
                               backgroundColor: textName,
                               borderColor: 'grey',
@@ -443,14 +462,15 @@ const Setting = () => {
                               justifyContent:'space-between',
                               alignItems:'center',
                               width:'80%',
-                              paddingVertical:5,
+                              paddingBottom:5,
                               paddingHorizontal:10
                           }}>
-                            <Text style={{fontSize:7}}>TEST</Text>
+                            <Text style={{fontSize:7, maxWidth:'80%'}} numberOfLines={1} ellipsizeMode="tail">{x.Address}</Text>
                             <Text style={{fontSize:8, fontWeight:'bold'}}>&gt;</Text>
 
                       </TouchableOpacity>          
           </View>
+          ))}
        
 
         
