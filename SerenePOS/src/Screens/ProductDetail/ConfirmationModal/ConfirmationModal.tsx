@@ -27,7 +27,7 @@ const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, s
          
 
         <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
-                    <Text style={{fontSize:10, color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Are you sure want to delete {selectedData?.product.Name} ?</Text>
+                    <Text style={{fontSize:10, color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Are you sure want to delete {selectedData?.product.name} ?</Text>
                     <TouchableOpacity  onPress={onClose} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#EF4444', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Yes</Text>
                     </TouchableOpacity>     

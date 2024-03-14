@@ -13,10 +13,14 @@ import { ApiUrls } from '../../apiUrls/apiUrls'
 
 
   export interface Outlet {
-    ID: string;
-    Name: string;
-    IsPrimary: number;
-    Address: string;
+    id: string;
+    outlet: string;
+    isPrimary: number;
+    address: string;
+    provinceID: string;
+    districtID: string;
+    subDistrictID: string;
+    postalCode: string;
   }
 
   interface CategoryOption {
@@ -166,6 +170,7 @@ const Setting = () => {
             }
           });           
           const data: Outlet[] = response.data.data;
+          console.log(data)
           setOutletData(data);
         } else {
           console.error('No token found in AsyncStorage');
@@ -207,6 +212,7 @@ const Setting = () => {
       };
 
       const handleNavigate = ( selectedID: string) => {
+        console.log(selectedID)
         navigation.navigate('OutletDetail' as never, {id: selectedID} as never)
       };
     
@@ -219,8 +225,10 @@ const Setting = () => {
   return (
     <CommonLayout>
       <View style={{}}>
-          <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
-          <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Setting</Text>
+      <View style={{flexDirection: 'row', gap:10,   marginRight:30, marginVertical:10, alignItems:'center'}}>
+      <Text onPress={() => navigation.navigate('Account' as never)} style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>Account</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>&gt;</Text>
+      <Text onPress={() => navigation.navigate('Setting' as never)}  style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Setting</Text>
       </View>
       <View style={{ gap:6, justifyContent:'center', alignItems:'center'}}>
 
@@ -268,7 +276,7 @@ const Setting = () => {
                       </View>          
           </View>
 
-        <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        {/* <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:8,  marginBottom:5, color:'black', width:'20%'}}>Address</Text>
                     <View
                         style={{
@@ -289,7 +297,7 @@ const Setting = () => {
                             style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%'}}
                         />
                     </View>          
-        </View>
+        </View> */}
 
         <Text style={{fontSize:10, fontWeight:'bold',  marginBottom:5, color:'black'}}>Contact Information</Text>
           <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
@@ -339,7 +347,7 @@ const Setting = () => {
                       </View>          
           </View>
 
-          <Text style={{fontSize:10, fontWeight:'bold',  marginBottom:5, color:'black'}}>Basic Setting</Text>
+          {/* <Text style={{fontSize:10, fontWeight:'bold',  marginBottom:5, color:'black'}}>Basic Setting</Text>
           <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                       <Text style={{fontSize:8,  marginBottom:5, color:'black', width:'20%'}}>Additional Description</Text>
                       <View
@@ -385,7 +393,7 @@ const Setting = () => {
                         />
                     </View>          
         </View>
-        
+         */}
         <Text style={{fontSize:10, fontWeight:'bold',  marginBottom:5, color:'black'}}>Additional Setting</Text>
           <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                       <Text style={{fontSize:8,  marginBottom:5, color:'black', width:'20%'}}>Printer</Text>
@@ -444,15 +452,15 @@ const Setting = () => {
             {outletData.map((x, index) => (
           <View key={index} style={{marginTop:5, marginBottom:10, marginHorizontal:10,  width:'60%', }}>
                   <View style={{flexDirection:'row', gap:5}}>
-                    <Text style={{fontSize:8,  color:'black', width:'30%'}}>{x.Name}</Text>
+                    <Text style={{fontSize:8,  color:'black', width:'30%'}}>{x.outlet}</Text>
                     <View style={{width:60, height:13, backgroundColor:'blue', borderRadius:5, paddingVertical:2}}>
-                      {x.IsPrimary == 1 && (
+                      {x.isPrimary == 1 && (
                           <Text style={{fontSize:6, color:'white', fontWeight:'bold', textAlign:'center'}}>Primary</Text>
                       )}
                     </View>
                   </View>
                       <TouchableOpacity
-                          onPress={() => handleNavigate(x.ID)}
+                          onPress={() => handleNavigate(x.id)}
                           style={{
                               backgroundColor: textName,
                               borderColor: 'grey',
@@ -465,7 +473,7 @@ const Setting = () => {
                               paddingBottom:5,
                               paddingHorizontal:10
                           }}>
-                            <Text style={{fontSize:7, maxWidth:'80%'}} numberOfLines={1} ellipsizeMode="tail">{x.Address}</Text>
+                            <Text style={{fontSize:7, maxWidth:'80%'}} numberOfLines={1} ellipsizeMode="tail">{x.address}</Text>
                             <Text style={{fontSize:8, fontWeight:'bold'}}>&gt;</Text>
 
                       </TouchableOpacity>          

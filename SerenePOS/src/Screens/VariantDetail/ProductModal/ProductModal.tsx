@@ -4,12 +4,6 @@ import SearchSVG from '../../../assets/svgs/SearchSVG';
 import { Product } from '../../Products/Products';
 import { SelectedProduct } from '../VariantDetail';
 
-interface Coffee {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-}
 
 export interface Categories {
     id: string;
@@ -28,6 +22,7 @@ interface EditItemModalProps {
 
 const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, onSave, selectedData}) => {
 
+
     const [quantity, setQuantity] = React.useState(1);
     const [textName, setTextName] = React.useState('');
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
@@ -37,8 +32,9 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
 
     const onOpen = () => {
       if (selectedData) {
-          const selectedItemsIds = selectedData.map(item => item.ID);
+          const selectedItemsIds = selectedData.map(item => item.id);
           setSelectedItems(selectedItemsIds);
+
           setSelectedProducts(selectedData);
       }
   };
@@ -67,7 +63,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
           setSelectAll(!selectAll);
           if (!selectAll) {
             // If checking "Select All," select all items
-            setSelectedItems(data.map((item) => item.ID));
+            setSelectedItems(data.map((item) => item.id));
             setSelectedProducts([...data]);
           } else {
             // If unchecking "Select All," clear all selections
@@ -79,12 +75,12 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
           setSelectedItems((prevSelectedItems) => {
             if (prevSelectedItems.includes(itemId)) {
               // Remove item from selectedProducts when unchecking the checkbox
-              const updatedProducts = selectedProducts.filter((product) => product.ID !== itemId);
+              const updatedProducts = selectedProducts.filter((product) => product.id !== itemId);
               setSelectedProducts(updatedProducts);
               return prevSelectedItems.filter((id) => id !== itemId);
             } else {
               // Add item to selectedProducts when checking the checkbox
-              const selectedProduct = data.find((product) => product.ID === itemId);
+              const selectedProduct = data.find((product) => product.id === itemId);
               if (selectedProduct) {
                 setSelectedProducts([...selectedProducts, selectedProduct]);
               }
@@ -95,8 +91,8 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
       };
 
       React.useEffect(() => {
-        onOpen();
-    }, []);
+        if (isVisible) onOpen()
+    }, [isVisible]);
 
 
   return (
@@ -154,24 +150,24 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
             {data.map((x, index)=> (
             <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
 
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.ID, index)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.ID) ? (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id, index)} style={{ marginRight: 5 }}>
+                    {selectedItems.includes(x.id) ? (
+                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white', backgroundColor:'blue', paddingHorizontal:2 }}>✔</Text>
                     ) : (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
+                      <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'black' }}>◻</Text>
                     )}
                   </TouchableOpacity>
             <TouchableOpacity 
-            key={index}
-            //onPress={() => handleProductPress(x)} 
-            style={styles.cardRow}>
-                <View style={{width:60, height:60}}>
-                    <Image source={{ uri: x.ImgUrl }} style={{width:'100%', height:'100%'}} />
+                key={index}
+                onPress={() => handleCheckboxPress(x.id, index)} 
+                style={styles.cardRow}>
+                <View style={{width:95, height:75}}>
+                    <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../../assets/img/no-image.png')} style={{width:'100%', height:'100%', borderRadius:5}} />
                 </View>
 
-                <View style={{}}>
-                    <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}} numberOfLines={1} ellipsizeMode="tail">{x.Name}</Text>
-                </View>
+                    <View style={{}}>
+                        <Text style={{fontSize:8, maxWidth:'95%', color:'black'}} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
+                    </View>
             </TouchableOpacity>
             </View>
             ))}
@@ -282,8 +278,8 @@ const styles = StyleSheet.create({
     //padding:10, 
     gap:5,
     // borderWidth:0.5, 
-    borderRadius:7,  
-    height:80, 
+    //borderRadius:5,  
+    height:110, 
     justifyContent:'center', 
     alignItems:'center',
     // borderColor:'#D2D2D2',

@@ -7,7 +7,7 @@ import { RadioButton } from 'react-native-paper';
 interface Props {
   isVisible: boolean;
   onClose: () => void;
-  selectedIDs: number[]
+  selectedIDs: string[]
   onSave?: (ids: string[]) => void;
 }
 

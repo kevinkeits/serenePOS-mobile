@@ -11,11 +11,11 @@ import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
 
 
   export interface Variant {
-    ID: string;
-    Name: string;
-    Type: string;
-    Count: number;
-    ListLabel: string
+    id: string;
+    name: string;
+    type: string;
+    count: number;
+    listLabel: string
   }
 
   export interface VariantDetailProps {
@@ -25,35 +25,34 @@ import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
   }
 
   export interface DetailsVariant {
-    ID: string;
-    Type: string
-    Name: string;
+    id: string;
+    type: string
+    name: string;
 
   }
 
   export interface OptionsVariant {
-    ID: string;
-    Label: string;
-    Price: string;
+    id: string;
+    label: string;
+    price: string;
   }
   export interface ProductsVariant {
-    ID: string;
-    Name: string;
-    ImgUrl: string;
+    id: string;
+    name: string;
+    imgUrl: string;
 
   }
 
   export interface VariantForm {
-    ID: string;
-    Action: string
-    Name?: string;
-    Type?: string;
+    id: string;
+    action: string
+    name?: string;
+    type?: string;
     optionID?: string;
     optionLabel?: string;
     optionPrice?: string
-    ProductID?: string
-    OptionIDDelete?: string
-
+    productID?: string
+    optionIDDelete?: string
   }
 
 
@@ -90,6 +89,7 @@ const Variant = () => {
               }
             });           
             const data: Variant[] = response.data.data;
+            console.log(data)
             setVariantsData(data);
           } else {
             console.error('No token found in AsyncStorage');
@@ -161,15 +161,15 @@ const Variant = () => {
     <CommonLayout>
       <View style={{}}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:5, alignItems:'center'}}>
-          <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Variants</Text>
+          <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Variant</Text>
           {deleteMode ? (
             <View/>
           ):(
             <View style={{flexDirection:'row', gap:4}}>
-            <TouchableOpacity onPress={() => handleNavigate('')} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
+            <TouchableOpacity onPress={() => handleNavigate('')} style={{borderWidth:0.5, paddingHorizontal:16, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: '#D2D2D2'}}>
                 <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
+            <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'#D2D2D2'}}>
                 <TrashSVG width='12' height='12' color='red'/>
             </TouchableOpacity>
           </View>
@@ -191,24 +191,24 @@ const Variant = () => {
         {variantsData.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.ID)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.ID) ? (
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
+                    {selectedItems.includes(x.id) ? (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
                     ) : (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
                     )}
                   </TouchableOpacity>
                 )}
-            <TouchableOpacity onPress={() => handleNavigate(x.ID)} key={index} style={styles.firstRowItem}>
+            <TouchableOpacity onPress={() => handleNavigate(x.id)} key={index} style={styles.firstRowItem}>
                 <View style={{flexDirection:'row', justifyContent:'space-between', height:'40%'}}>
                 <View >
-                    <Text style={{fontWeight: "bold", color: "black", fontSize: 9, maxWidth:'99%'}}>{x.Name}</Text>
-                    <Text style={{ color: "black", fontSize: 8, maxWidth:'99%'}}>{x.ListLabel}</Text>
+                    <Text style={{fontWeight: "bold", color: "black", fontSize: 9, maxWidth:'100%'}}>{x.name}</Text>
+                    <Text style={{ color: "black", fontSize: 8, maxWidth:110}}>{x.listLabel}</Text>
                 </View>
-                    <Text style={{ color: "#2563EB", fontSize: 7, padding:3, borderWidth:0.5, borderColor:'#2563EB', borderRadius:3, width:80, height:18, textAlign:'center'}}>{x.Type == "1" ? 'Single' : 'Multi'} Selection</Text>
+                    <Text style={{ color: "black", fontSize: 7, padding:3, borderWidth:0.5, borderColor:'#D2D2D2', borderRadius:3, width:80, height:18, textAlign:'center'}}>{x.type == "1" ? 'Single' : 'Multi'} Selection</Text>
                 </View>
                 <View style={{marginTop:35}}>
-                  <Text style={{fontSize:7, color:'black'}}>{x.Count} Linked Product</Text>
+                  <Text style={{fontSize:7, color:'black'}}>{x.count} Linked Product</Text>
                 </View>
             </TouchableOpacity>
             </View>

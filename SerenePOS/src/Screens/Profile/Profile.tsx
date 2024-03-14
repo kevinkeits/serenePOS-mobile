@@ -26,33 +26,45 @@ export interface Coffee {
   }
 
 
-
-  interface CategoryOption {
-    label: string;
-    value: string;
+  export interface User {
+    id: string;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    outletName: string
+    imgUrl: string
+    mimeType: string
   }
 
-  const temperatureOptions = [
-    { id: 'hot', label: 'Hot' },
-    { id: 'ice', label: 'Ice' },
-    // Add more options as needed
-  ];
+  export interface DetailUserItems {
+    id: string;
+    storeName: string;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    outletID: string
+    outletName: string
+    imgUrl: string
+    isPrimary: number
+    address: string
+  }
 
-  const sugarOptions = [
-    { id: 'normal', label: 'Normal' },
-    { id: 'moreSugar', label: 'More Sugar' },
-    { id: 'lessSugar', label: 'Less Sugar' },
-    // Add more options as needed
-  ];
+  export interface DetailOutletUserItems {
+    id: string;
+    phoneNumber: string;
+    outletName: string
+    address: string
+    provinceID: string
+    districtID: string
+    subDistrictID: string
+    postalCode: string
+  }
 
-  const addOnOptions = [
-    { id: 'sugarSyrup', label: 'Sugar Syrup' },
-    { id: 'bobba', label: 'Bobba' },
-    { id: 'grassJelly', label: 'Grass Jelly' },
-    { id: 'milk', label: 'Milk' },
-    { id: 'cheese', label: 'Cheese' },
-    // Add more options as needed
-  ];
+  export interface UserDetail {
+    details: DetailUserItems
+    outletDetails: DetailOutletUserItems
+  }
+
 
   const accountData = 
     { 
@@ -74,8 +86,11 @@ const Profile = () => {
     const [textProductSKU, setTextProductSKU] = React.useState('');
     const [textName, setTextName] = React.useState('');
     const [textEmail, setTextEmail] = React.useState('');
+    const [textOutletName, setTextOutletName] = React.useState('');
     const [textPassword, setTextPassword] = React.useState('');
     const [quantity, setQuantity] = React.useState(1);
+    const [detailData, setDetailData] = React.useState<UserDetail | null>(null);
+
 
   const [form, setForm] = React.useState({
     // Your other form fields
@@ -98,6 +113,39 @@ const Profile = () => {
       console.error('Error retrieving data from AsyncStorage:', error);
     }
   };
+
+  const fetchDataUser = async (id: string) => {
+    try {
+      const token = await AsyncStorage.getItem('userData'); 
+      const categoryDetailUrl = ApiUrls.getOutletDetail(id);    
+      if (token) {
+        const authToken = JSON.parse(token).data.Token
+        const response = await axios.get(categoryDetailUrl, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });           
+        const data: UserDetail = response.data.data;
+        if (id !== '') {
+        if (data) {
+          console.log(data)
+          setTextName(data.details.name)
+          setTextEmail(data.details.email)
+          setTextOutletName(data.details.outletName)
+          setDetailData(data)
+          }
+          
+        }
+      }
+       else {
+        console.error('No token found in AsyncStorage');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  
 
   const onLogout = async () => {
     try {

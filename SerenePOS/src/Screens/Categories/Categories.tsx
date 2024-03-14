@@ -18,18 +18,18 @@ export interface Coffee {
   }
 
   export interface Categories {
-    ID: string;
-    Name: string;
-    QtyAlert: string;
-    BGColor?: string;
+    id: string;
+    name: string;
+    qtyAlert: string;
+    bgColor?: string;
   }
 
   export interface CategoriesForm {
-    ID: string;
-    Action: string
-    Name?: string;
-    QtyAlert?: string;
-    BGColor?: string;
+    id: string;
+    action: string
+    name?: string;
+    qtyAlert?: string;
+    bgColor?: string;
   }
 
 
@@ -244,8 +244,8 @@ const Categories = () => {
         {categoriesData?.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.ID)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.ID) ? (
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
+                    {selectedItems.includes(x.id) ? (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
                     ) : (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
@@ -256,11 +256,11 @@ const Categories = () => {
             onPress={() => onOpenDetail(x)}  key={index} 
             style={[
               styles.firstRowItem,
-              {backgroundColor: x.BGColor}
+              {backgroundColor: x.bgColor}
               ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.Name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.QtyAlert} Items</Text>
+            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
+            <Text style={{ color: "white", fontSize: 9}}>{x.qtyAlert} Items</Text>
             </View>
           </TouchableOpacity>
             </View>

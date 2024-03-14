@@ -33,15 +33,15 @@ export interface Coffee {
   }
 
   export interface OptionsVariant {
-    ID: string;
-    Label: string;
-    Price: string;
+    id: string;
+    label: string;
+    price: string;
   }
 
   export interface SelectedProduct {
-    ID: string;
-    Name: string;
-    ImgUrl: string
+    id: string;
+    name: string;
+    imgUrl: string
   }
 
   // type DetailScreenProps = {
@@ -85,7 +85,7 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
           });           
           const data: Categories[] = response.data.data;
           if (data){
-          fetchProduct(data[0].ID)
+          fetchProduct(data[0].id)
           setCategoriesData(data);
           }
         } else {
@@ -99,10 +99,10 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
   const fetchProduct = async (categoryID: string) => {
     try {
       const token = await AsyncStorage.getItem('userData'); 
-      const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
+      const urls = ApiUrls.getProduct(categoryID);    
       if (token) {
         const authToken = JSON.parse(token).data.Token
-        const response = await axios.get(categoryDetailUrl, {
+        const response = await axios.get(urls, {
           headers: {
             'Authorization': `Bearer ${authToken}`
           }
@@ -131,10 +131,11 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
         const data: VariantDetailProps = response.data.data;
         if (id !== '') {
         if (data) {
-          setTextName(data.details.Name)
-          setSelectedType(data.details.Type)
+          setTextName(data.details.name)
+          setSelectedType(data.details.type)
           setOptions(data.options)
           setSelectedProducts(data.product)
+          console.log(data.product)
           setDetailData(data);
           }
           
@@ -159,9 +160,10 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
           'Authorization': `Bearer ${authToken}`
         }
       });
+      console.log(response.data)
       if (response.status === 200) {
         // Registration successful
-        Alert.alert('Success', 'Saved data successful!');
+        Alert.alert('Success', response.data.message);
         // onCloseConfirmation()
         // setDeleteMode(false)
         fetchData(id)
@@ -177,20 +179,36 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
     }
 };
 
+// const handleSave = () => {
+//   const updatedData: VariantForm = {
+//     ID: id !== '' ? id : '',
+//     Action: id !== '' ? 'edit' : 'add',
+//     Name: textName,
+//     Type: selectedType,
+//     optionID: options.map((x: any)=> x.ID).join(','),
+//     optionLabel: options.map((x: any)=> x.Label).join(','),
+//     optionPrice: options.map((x: any)=> x.Price).join(','),
+//     ProductID: selectedProducts.map((x: any)=> x.ID).join(','),
+//     OptionIDDelete: id != '' ? selectedOptionIDsDelete.map((x: any) => x).join(',') : '',
+//   };
+//   console.log(updatedData)
+//    onSave(updatedData);
+// };
+
 const handleSave = () => {
   const updatedData: VariantForm = {
-    ID: id !== '' ? id : '',
-    Action: id !== '' ? 'edit' : 'add',
-    Name: textName,
-    Type: selectedType,
-    optionID: options.map((x: any)=> x.ID).join(','),
-    optionLabel: options.map((x: any)=> x.Label).join(','),
-    optionPrice: options.map((x: any)=> x.Price).join(','),
-    ProductID: selectedProducts.map((x: any)=> x.ID).join(','),
-    OptionIDDelete: id != '' ? selectedOptionIDsDelete.map((x: any) => x).join(',') : '',
+    id: id !== '' ? id : '',
+    action: id !== '' ? 'edit' : 'add',
+    name: textName,
+    type: selectedType,
+    optionID: options.map((option) => option.id).join(','), // Extracting option IDs
+    optionLabel: options.map((option) => option.label).join(','), // Extracting option labels
+    optionPrice: options.map((option) => option.price).join(','), // Extracting option prices
+    productID: selectedProducts.map((product) => product.id).join(','), // Extracting product IDs
+    optionIDDelete: id !== '' ? selectedOptionIDsDelete.join(',') : '', // No need for mapping here
   };
-  console.log(updatedData)
-  // onSave(updatedData);
+  console.log(updatedData);
+  onSave(updatedData);
 };
 
 
@@ -206,7 +224,7 @@ const handleSave = () => {
   const handleAddOption = () => {
     const newId = uuidv4({ random: [0x10, 0x91, 0x56, 0xbe, 0xc4, 0xfb, 0xc1, 0xea, 0x71, 0xb4, 0xef, 0xe1, 0x67, 0x1c, 0x58, 0x36] });
 
-    setOptions([...options, {ID: newId, Label: '', Price: '0' }]);
+    setOptions([...options, {id: newId, label: '', price: '0' }]);
   };
 
   // const handleDeleteOption = (index: number) => {
@@ -217,15 +235,24 @@ const handleSave = () => {
 
   const handleDeleteOption = (index: number) => {
     const deletedOption = options[index];
-    setSelectedOptionIDsDelete([...selectedOptionIDsDelete, deletedOption.ID]);
+    setSelectedOptionIDsDelete([...selectedOptionIDsDelete, deletedOption.id]);
     const newOptions = [...options];
     newOptions.splice(index, 1);
     setOptions(newOptions);
   };
 
   const handleOption = (index: number, field: keyof OptionsVariant, value: string) => {
+    const numericValue = Number(value);
+    if (isNaN(numericValue)) {
+      // If value is not a valid number, handle it accordingly
+      // For example, you can set a default value or leave the field unchanged
+      // console.warn('Value must be a valid number. Field will remain unchanged.');
+      return; // Exit the function early
+    }
+  
     const newOptions = [...options];
-    newOptions[index][field] = value;
+    // Update the specific field in the option object with the numeric value
+    newOptions[index][field] = numericValue.toString(); // Convert numeric value back to string
     setOptions(newOptions);
   };
 
@@ -249,18 +276,19 @@ const handleSave = () => {
 
     React.useEffect(() => {
       fetchData(id)
-      fetchCategories()
+      //fetchCategories()
+      fetchProduct('')
       }, []);
 
   return (
     <CommonLayout>
       <View style={{}}>
-      <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
-        {/* <TouchableOpacity onPress={()=> navigation.goBack()}>
-            <Text style={{fontSize:12, fontWeight:'bold', color:'black'}}>&lt;--</Text>
-        </TouchableOpacity> */}
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Variant</Text>
+      <View style={{flexDirection: 'row', gap:10,   marginRight:30, marginVertical:10, alignItems:'center'}}>
+      <Text onPress={() => navigation.navigate('Variants' as never)} style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>Variant</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>&gt;</Text>
+      <Text   style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Variant</Text>
       </View>
+
       <View style={{}}>
        
         <View style={{width:'100%',}}>
@@ -327,16 +355,27 @@ const handleSave = () => {
                             <TextInput
                                 style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'65%', height:25, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius:5}}
                                 placeholder="Option Name"
-                                value={option.Label}
-                                onChangeText={(text) => handleOption(index, 'Label', text)}
+                                value={option.label}
+                                onChangeText={(text) => handleOption(index, 'label', text)}
                             />
-                            <TextInput
+
+          <View style={{ position: 'relative', width: '30%' }}>
+                <TextInput
+                    style={{ paddingLeft: 10, paddingVertical: 5, fontSize: 8, width: '100%', height: 25, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius: 5 }}
+                    placeholder="Price"
+                    value={'Rp ' + option.price}
+                    onChangeText={(text) => handleOption(index, 'price', text.replace('Rp', ''))}
+                    keyboardType="numeric"
+                />
+            </View>
+                            
+                            {/* <TextInput
                                 style={{paddingLeft: 10, paddingVertical:5, fontSize:8, width:'30%', height:25, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius:5}}
                                 placeholder="Price"
-                                value={option.Price}
-                                onChangeText={(text) => handleOption(index, 'Price', text)}
+                                value={option.price}
+                                onChangeText={(text) => handleOption(index, 'price', text)}
                                 keyboardType="numeric"
-                            />
+                            /> */}
                            
                             <TouchableOpacity onPress={() => handleDeleteOption(index)} style={{ justifyContent:'center', alignItems:'center', borderColor:'red'}}>
                                 <TrashSVG width='20' height='20' color='red'/>
@@ -354,20 +393,20 @@ const handleSave = () => {
             <View style={{ height: 25, justifyContent: 'center', width:'60%',}}>
 
             </View>
-            <View style={{width:'20%', alignSelf:'center', backgroundColor:'#2563EB', justifyContent:'center', alignItems:'center', height:25, borderRadius:6, marginLeft:5}}>
-                    <TouchableOpacity onPress={()=> onOpenProduct()} style={{width:'100%' }}>
-                      <Text style={{fontSize:8, color:'white', textAlign:'center'}}>Select Product</Text>
+            <View style={{width:'20%', alignSelf:'center', backgroundColor:'#2563EB', justifyContent:'center', alignItems:'center', height:25, borderRadius:6, marginLeft:5, marginBottom:10}}>
+                    <TouchableOpacity onPress={()=> onOpenProduct()} style={{width:'100%', alignItems:'center'}}>
+                      <Text style={{fontSize:8, color:'white', textAlign:'center', alignSelf:'center'}}>Select Product</Text>
                     </TouchableOpacity>
             </View>
 
         </View>
         <View style={{flexDirection:'row', gap:10, flexWrap:'wrap'}}>
           {selectedProducts.map((x, index)=> (
-            <View key={index} style={{width:60, height:100}}>
-              <View style={{width:60, height:60}}>
-                    <Image source={{ uri: x.ImgUrl }} style={{width:'100%', height:'100%'}} />
+            <View key={index} style={{width:110, height:100}}>
+              <View style={{width:95, height:85,  marginBottom:5}}>
+                    <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={{width:'100%', height:'100%', borderRadius:5}} />
               </View>
-              <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}} numberOfLines={1} ellipsizeMode="tail">{x.Name}</Text>
+              <Text style={{fontSize:8, maxWidth:'95%', color:'black', textAlign:'center'}} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
             </View>
           ))}
         </View>

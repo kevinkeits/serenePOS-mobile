@@ -1,12 +1,7 @@
 import React from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Product } from '../../../Products/Products';
 
-interface Coffee {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-}
 
 interface RadioProps {
   id: string;
@@ -16,8 +11,8 @@ interface RadioProps {
 interface EditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
-  selectedItem: Coffee | null;
-  onSave: (item: Coffee | null) => void;
+  selectedItem: Product | null;
+  onSave: (item: Product | null) => void;
 }
 
 const iceData = [
@@ -113,7 +108,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
       };
 
   
-      const handleSave = (item: Coffee | null) => {
+      const handleSave = (item: Product | null) => {
         onSave(item)
         onClose()
       }
@@ -144,7 +139,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <View style={styles.titleContainer}>
-            <Text style={styles.modalTitle}>{selectedItem?.title}</Text>
+            <Text style={styles.modalTitle}>{selectedItem?.name}</Text>
             <View style={styles.underline}></View>
           </View>
     <ScrollView>

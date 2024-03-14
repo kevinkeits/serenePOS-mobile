@@ -21,4 +21,17 @@ export const ApiUrls = {
   getOutletDetail: (id: string) => `https://serenepos.temandigital.id/api/outlet/get?ID=${id}`,
   saveOutlet: `https://serenepos.temandigital.id/api/outlet/doSave`,
 
+  getCustomer: `https://serenepos.temandigital.id/api/customer/get`,
+  getCustomerDetail: (id: string) => `https://serenepos.temandigital.id/api/customer/get?ID=${id}`,
+  saveCustomer: `https://serenepos.temandigital.id/api/customer/doSave`,
+
+  getUser: `https://serenepos.temandigital.id/api/user/get`,
+  getUserDetail: (id: string) => `https://serenepos.temandigital.id/api/user/get?ID=${id}`,
+  saveUser: `https://serenepos.temandigital.id/api/user/doSave`,
+
+  getTransaction: `https://serenepos.temandigital.id/api/transaction/get`,
+  getTransactionHistory: `https://serenepos.temandigital.id/api/transaction/getHistory`,
+  getTransactionDetail: (id: string) => `https://serenepos.temandigital.id/api/transaction/get?ID=${id}`,
+  saveTransaction: `https://serenepos.temandigital.id/api/transaction/doSave`,
+
 };

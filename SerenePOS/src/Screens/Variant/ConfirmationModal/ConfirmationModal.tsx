@@ -13,8 +13,8 @@ const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, s
 
   const handleSave = () => {
     const updatedData: VariantForm = {
-      ID: selectedItems.join(','),
-      Action: 'delete',
+      id: selectedItems.join(','),
+      action: 'delete',
     };
     onSave(updatedData); 
     onClose()

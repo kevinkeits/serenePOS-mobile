@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, StyleSheet, Text, View, Image, ScrollView, TextInput } from 'react-native';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import CommonLayout from '../../Components/CommonLayout/CommonLayout';
@@ -15,27 +15,24 @@ import CartSVG from '../../assets/svgs/CartSVG';
 import SaveSVG from '../../assets/svgs/SaveSVG';
 import TrashSVG from '../../assets/svgs/TrashSVG';
 import TransactionModal from './components/TransactionModal/TransactionModal';
+import { Product } from '../Products/Products';
+import { Categories } from '../Categories/Categories';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ApiUrls } from '../../apiUrls/apiUrls';
 
-export interface Coffee {
-    id: number;
-    title: string;
-    price: number;
-    image: string;
-  }
 
-  export interface Categories {
-    id: string;
-    name: string;
-    totalItem: string;
-    color?: string;
-  }
+
 
 const Sales = () => {
 
-    const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
-    const [selectedItems, setSelectedItems] = React.useState<Coffee[]>([]);
+    //const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
+    const [productData, setProductData] = React.useState<Product[]>([]);
+    const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
+
+
+    const [selectedItems, setSelectedItems] = React.useState<Product[]>([]);
     const [isEditModalVisible, setEditModalVisible] = React.useState(false);
-    const [selectedItemForEdit, setSelectedItemForEdit] = React.useState<Coffee | null>(null);
+    const [selectedItemForEdit, setSelectedItemForEdit] = React.useState<Product | null>(null);
     const [totalPriceState, setTotalPriceState] = React.useState(0);
     const [isOpenPayment, setIsOpenPayment] = React.useState(false);
     const [isOpenOrder, setIsOpenOrder] = React.useState(false);
@@ -61,18 +58,51 @@ const Sales = () => {
       return currentDate.toLocaleDateString(undefined, options);
     };
 
-    const fetchData = async () => {
-        try {
-          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
-          const data: Coffee[] = response.data;
+   
+    const fetchData = async (categoryID: string) => {
+      try {
+        const token = await AsyncStorage.getItem('userData'); 
+        const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(categoryDetailUrl, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: Product[] = response.data.data;
+          setProductData(data);
+          console.log('data'+data)
           setLoading(false)
-          setCoffeeData(data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
+        } else {
+          console.error('No token found in AsyncStorage');
         }
-      };
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-      const openEditModal = (item: Coffee) => {
+    const fetchCategories = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userData');     
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(ApiUrls.getCategory, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: Categories[] = response.data.data;
+          setCategoriesData(data);
+        } else {
+          console.error('No token found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+      const openEditModal = (item: Product) => {
         setSelectedItemForEdit(item);
         setEditModalVisible(true);
       };
@@ -121,7 +151,7 @@ const Sales = () => {
         setIsOpenDiscount(false);
       };
   
-      const addToSelectedItems = (item: Coffee | null) => {
+      const addToSelectedItems = (item: Product | null) => {
         if (item) {
           if (!selectedItems.some((selectedItem) => selectedItem.id === item.id)) {
             setSelectedItems((prevItems) => [...prevItems, item]);
@@ -129,12 +159,12 @@ const Sales = () => {
         }
       };
     
-      const removeFromSelectedItems = (itemId: number) => {
+      const removeFromSelectedItems = (itemId: string) => {
         setSelectedItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
       };
 
       const calculateTotalPrice = () => {
-        const subtotal = selectedItems.reduce((total, item) => total + item.price, 0);
+        const subtotal = selectedItems.reduce((total, item) => total + parseInt(item.price), 0);
         const taxRate = 0.1; 
         const tax = subtotal * taxRate;
         const discount = 0; 
@@ -151,54 +181,9 @@ const Sales = () => {
 
   const navigation = useNavigation();
 
-  const data: Categories[] = [
-    {
-    id: '1',
-    name: 'Coffee',
-    totalItem: '3',
-    color: '#7653DA',
-  },
-  {
-    id: '2',
-    name: 'Non Coffee',
-    totalItem: '5',
-    color: '#2925EB',
-  },
-  {
-    id: '3',
-    name: 'Food',
-    totalItem: '10',
-    color: '#2563EB',
-  },
-  {
-    id: '4',
-    name: 'Main Course',
-    totalItem: '8',
-    color: '#4AB8E8',
-  },
-  {
-    id: '5',
-    name: 'Signature',
-    totalItem: '8',
-    color: '#E88C4A',
-  },
-  {
-    id: '6',
-    name: 'Dessert',
-    totalItem: '9',
-    color: '#E84AD8',
-  },
-  {
-    id: '7',
-    name: 'Etc',
-    totalItem: '6',
-    color: '#E84A4A',
-  },
-];
-
 
 React.useEffect(() => {
-    fetchData();
+    fetchCategories();
   }, []);
 
 
@@ -213,17 +198,17 @@ React.useEffect(() => {
       </View>
       <View style={{height:85,}}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal:"auto", flexDirection: 'row'}}>
-        {data.map((x, index) => (
+        {categoriesData.map((x, index) => (
             <TouchableOpacity
-            onPress={() => fetchData()} 
+            onPress={() => fetchData(x.id)} 
             key={index} 
             style={[
               styles.firstRowItem,
-              {backgroundColor: x.color}
+              {backgroundColor: x.bgColor}
               ]}>
             <View style={{marginBottom:5, marginLeft: 10}}>
             <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 11}}>{x.totalItem} Items</Text>
+            <Text style={{ color: "white", fontSize: 11}}>{x.qtyAlert} Items</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -234,12 +219,12 @@ React.useEffect(() => {
       <Text style={{fontWeight:"bold", fontSize:17}}></Text>
       </View> */}
     <View style={{ alignItems: 'center', marginBottom:20, marginLeft:10, width:'100%', flexDirection:'row', flexWrap:"wrap", marginTop:5}}>
-      {coffeeData.map((x) => (
+      {productData.map((x) => (
         // <TouchableOpacity key={x.id} style={styles.card} onPress={() => addToSelectedItems(x)}>
         <TouchableOpacity key={x.id} style={styles.card} onPress={() => openEditModal(x)}>
-          <Image source={{ uri: x.image }} style={styles.image} />
-          <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{x.title}</Text>
-          <Text style={styles.price}>${x.price}</Text>
+          <Image source={{ uri: x.imgUrl }} style={styles.image} />
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
+          <Text style={styles.price}>Rp {parseInt(x.price).toLocaleString()}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -291,12 +276,12 @@ React.useEffect(() => {
         {selectedItems.map((item) => (
         <View key={item.id} style={styles.selectedItem}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-            <Text style={{ fontSize: 8, fontWeight: 'bold', maxWidth: 150  }}>{item.title}</Text>
+            <Text style={{ fontSize: 8, fontWeight: 'bold', maxWidth: 150  }}>{item.name}</Text>
             <Text style={{ fontSize: 8, marginLeft: 5 }}>x 1</Text>
           </View>
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ fontSize: 8,  maxWidth: 150  }}>Price</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {item.price}</Text>
+            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {parseInt(item.price).toLocaleString()}</Text>
           </View>
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
@@ -319,20 +304,20 @@ React.useEffect(() => {
           <View style={styles.underline}/>
         <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>Subtotal:</Text>
-            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().subtotal}</Text>
+            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().subtotal.toLocaleString()}</Text>
           </View>
           <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>Tax (10%):</Text>
-            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().tax}</Text>
+            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().tax.toLocaleString()}</Text>
           </View>
           <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>Discount:</Text>
-            <Text style={styles.totalPriceAmount}>-Rp {calculateTotalPrice().discount}</Text>
+            <Text style={styles.totalPriceAmount}>-Rp {calculateTotalPrice().discount.toLocaleString()}</Text>
           </View>
           <View style={styles.dottedUnderline} />
           <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>Total Price:</Text>
-            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().totalPrice}</Text>
+            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().totalPrice.toLocaleString()}</Text>
           </View>
           
           <TouchableOpacity style={styles.payNowButton} onPress={()=> onOpenPayment()}>
@@ -406,15 +391,15 @@ const styles = StyleSheet.create({
   firstRowItem: {
     backgroundColor:"blue",
     justifyContent: 'flex-end',
-    width:120, 
-    height:80, 
+    width:140, 
+    height:60, 
     borderRadius:10, 
     shadowColor: '#000', 
     shadowOffset: { width: 0, height: 8 }, 
     shadowOpacity: 0.3,  
     shadowRadius: 4,  
     elevation: 4,
-    margin: 5,
+    margin: 3,
   },
   scrollView: {
     flexDirection: 'row',
@@ -445,13 +430,14 @@ const styles = StyleSheet.create({
 
   },
   title: {
-    padding: 10,
+    // padding: 10,
     textAlign: 'center',
     fontSize: 8,
 
   },
   price: {
     paddingVertical: 5,
+    fontSize:10,
     textAlign: 'center',
     fontWeight: 'bold',
   },

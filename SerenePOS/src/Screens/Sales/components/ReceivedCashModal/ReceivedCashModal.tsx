@@ -61,19 +61,19 @@ const ReceivedCashModal: React.FC<Props> = ({ isVisible, onClose, totalPrice, ha
         <ScrollView>
           <View style={{  borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey',}}>
           <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>Total Bill</Text>
-          <Text style={{textAlign:'center', fontSize:15, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice}</Text>
+          <Text style={{textAlign:'center', fontSize:15, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice.toLocaleString()}</Text>
           </View>
           <View style={{  borderBottomWidth:0.5, borderStyle:'dotted', borderColor:'grey', flexDirection:'row', gap:10, paddingVertical:10, justifyContent:'center', alignItems:'center'}}>
             <TouchableOpacity onPress={() => handlePressSuggestion(textTotalPrice)} style={{borderWidth:0.5, padding:3, borderRadius:5, width:60, height:40, alignItems:'center', justifyContent:'center'}}>
-              <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>{textTotalPrice}</Text>
+              <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>{textTotalPrice.toLocaleString()}</Text>
            </TouchableOpacity>
       
            <TouchableOpacity onPress={() => handlePressSuggestion(textSuggesstionOne)} style={{borderWidth:0.5, padding:3, borderRadius:5, width:60, height:40, alignItems:'center', justifyContent:'center'}}>
-              <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>{textSuggesstionOne}</Text>
+              <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>{textSuggesstionOne.toLocaleString()}</Text>
            </TouchableOpacity>
 
            <TouchableOpacity onPress={() => handlePressSuggestion(textSuggesstionTwo)} style={{borderWidth:0.5, padding:3, borderRadius:5, width:60, height:40, alignItems:'center', justifyContent:'center'}}>
-              <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>{textSuggesstionTwo}</Text>
+              <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>{textSuggesstionTwo.toLocaleString()}</Text>
            </TouchableOpacity>
           </View>
           <View style={{marginVertical:5, gap:10, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey', paddingBottom:20}}>

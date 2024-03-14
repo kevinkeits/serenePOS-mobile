@@ -11,11 +11,11 @@ import { Categories } from '../Categories/Categories'
 import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal'
 
 export interface Product {
-    ID: string;
-    Name: string;
-    Price: string;
-    Notes: string;
-    ImgUrl: string
+    id: string;
+    name: string;
+    price: string;
+    notes: string;
+    imgUrl: string
   }
 
 export interface ProductDetail {
@@ -24,41 +24,41 @@ export interface ProductDetail {
   }
 
   export interface headerProduct {
-    ID: string;
-    ProductSKU: string
-    Name: string;
-    Price: string;
-    CategoryID: string
-    CategoryName: string
-    Qty: number
-    Notes: string;
-    ImgUrl: string
-    MimeType: string
+    id: string;
+    productSKU: string
+    name: string;
+    price: string;
+    categoryID: string
+    categoryName: string
+    qty: number
+    notes: string;
+    imgUrl: string
+    mimeType: string
  
   }
   export interface selVariantProduct {
-    VariantID: string;
-    Name: string;
-    Type: string;
-    VariantOptionID: string;
-    Label: string;
-    Price: string;
+    variantID: string;
+    name: string;
+    type: string;
+    variantOptionID: string;
+    label: string;
+    price: string;
   }
 
   export interface ProductForm {
-    ID: string;
-    Action: string
-    Name?: string;
-    Notes?: string;
-    Qty?: number;
-    Price?: number;
-    CategoryID?: string
-    ProductSKU?: string
-    ImgUrl?: string
-    MimeType?: string
-    VariantOptionID?: string
-    IsSelected?: string
-    ProductVariantOptionID?: string
+    id: string;
+    action: string
+    name?: string;
+    notes?: string;
+    qty?: number;
+    price?: number;
+    categoryID?: string
+    productSKU?: string
+    fileName?: string
+    fileData?: string
+    variantOptionID?: string
+    isSelected?: string
+    productVariantOptionID?: string
   }
 
 const Products = () => {
@@ -158,7 +158,7 @@ const Products = () => {
             Alert.alert('Success', 'Saved data successful!');
             onCloseConfirmation()
             setDeleteMode(false)
-            fetchData(categoriesData[0].ID)
+            fetchData(categoriesData[0].id)
           } else {
             // Registration failed
             Alert.alert('Error', 'Saving data failed');
@@ -227,14 +227,14 @@ const Products = () => {
       <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
         {categoriesData.map((x, index) => (
             <TouchableOpacity key={index} 
-            onPress={() => fetchData(x.ID)}
+            onPress={() => fetchData(x.id)}
             style={[
               styles.firstRowItem,
-              {backgroundColor: x.BGColor}
+              {backgroundColor: x.bgColor}
             ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.Name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.QtyAlert} Items</Text>
+            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
+            <Text style={{ color: "white", fontSize: 9}}>{x.qtyAlert} Items</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -245,8 +245,8 @@ const Products = () => {
         {productData.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.ID)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.ID) ? (
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
+                    {selectedItems.includes(x.id) ? (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
                     ) : (
                       <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
@@ -262,14 +262,14 @@ const Products = () => {
                 ):(
                     <TouchableOpacity 
                       key={index}
-                      onPress={() => handleNavigate(x.ID)} 
+                      onPress={() => handleNavigate(x.id)} 
                       style={styles.cardRow}>
                   <View style={{width:'50%'}}>
-                      <Image source={{ uri: x.ImgUrl }} style={{width:'100%', height:'100%'}} />
+                      <Image source={{ uri: x.imgUrl }} style={{width:'100%', height:'100%'}} />
                   </View>
                   <View style={{width:'50%'}}>
-                      <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.Name}</Text>
-                      <Text style={{fontSize:8, color: 'black' }}>Rp {parseInt(x.Price).toLocaleString()}</Text>
+                      <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.name}</Text>
+                      <Text style={{fontSize:8, color: 'black' }}>Rp {parseInt(x.price).toLocaleString()}</Text>
                   </View>
               </TouchableOpacity>
                 )}

@@ -61,11 +61,11 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
 
       const handleSave = () => {
         const updatedData: CategoriesForm = {
-          ID: selectedItem ? selectedItem.ID : '',
-          Action: selectedItem ? 'edit' : 'add',
-          Name: textName,
-          QtyAlert: quantity.toString(),
-          BGColor: colorSelection ?? '',
+          id: selectedItem ? selectedItem.id : '',
+          action: selectedItem ? 'edit' : 'add',
+          name: textName,
+          qtyAlert: quantity.toString(),
+          bgColor: colorSelection ?? '',
         };
         onSave(updatedData); 
       };
@@ -74,9 +74,9 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
     React.useEffect(() => {
         // Set the textName when the modal is opened
         if (selectedItem) {
-          setTextName(selectedItem.Name)
-          setQuantity(parseInt(selectedItem.QtyAlert))
-          setColorSelection(selectedItem.BGColor || null);
+          setTextName(selectedItem.name)
+          setQuantity(parseInt(selectedItem.qtyAlert))
+          setColorSelection(selectedItem.bgColor || null);
         }
     }, [selectedItem]);
 

@@ -124,16 +124,16 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
         console.log(response.data.data)
         if (id !== '') {
         if (data) {
-          setTextProductSKU(data.product.ProductSKU)
-          setTextName(data.product.Name)
-          setTextPrice(parseInt(data.product.Price).toLocaleString())
-          setSelCategory(data.product.CategoryID)
-          setQuantity(data.product.Qty)
-          setTextDescription(data.product.Notes)
+          setTextProductSKU(data.product.productSKU)
+          setTextName(data.product.name)
+          setTextPrice(parseInt(data.product.price).toLocaleString())
+          setSelCategory(data.product.categoryID)
+          setQuantity(data.product.qty)
+          setTextDescription(data.product.notes)
           if (data.variant) {
-            setSelectedVariantIds(data.variant.map((x) => x.VariantOptionID));
+            setSelectedVariantIds(data.variant.map((x) => x.variantOptionID));
       
-            setVariantInputValues(data.variant.map((x) =>parseInt(x.Price).toLocaleString())); 
+            setVariantInputValues(data.variant.map((x) =>parseInt(x.price).toLocaleString())); 
           }
         }
         setDetailData(data);
@@ -160,8 +160,8 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
         setCategoriesData(data);
 
         const modifiedData = data.map(category => ({
-          label: category.Name,
-          value: category.ID
+          label: category.name,
+          value: category.id
       }));
       setArrCategoryPicker(modifiedData)
 
@@ -186,35 +186,36 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
       });
       if (response.status === 200) {
         // Registration successful
-        Alert.alert('Success', 'Saved data successful!');
+        Alert.alert('Success', response.data.message);
         onCloseConfirmation()
         // fetchData()
       } else {
         // Registration failed
-        Alert.alert('Error', 'Saving data failed');
+        Alert.alert('Error', response.data.message);
       }
     }
     } catch (error) {
       console.error('Error during saving:', error);
+      console.log(JSON.stringify(error))
       Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
     }
 };
 
 const handleSave = () => {
   const updatedData: ProductForm = {
-    ID: id !== '' ? id : '',
-    Action: id !== '' ? 'edit' : 'add',
-    Name: textName,
-    Notes: textDescription,
-    Qty: quantity,
-    Price: parseInt(textPrice),
-    CategoryID: selCategory,
-    ProductSKU: textProductSKU,
-    ImgUrl: form.paymentConfirmationFileName,
-    MimeType: getMimeTypeFromBase64(form.paymentConfirmationFileData) ?? '',
-    VariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.VariantOptionID).join(',') : '',
-    IsSelected: '',
-    ProductVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.VariantID).join(',') : '',
+    id: id !== '' ? id : '',
+    action: id !== '' ? 'edit' : 'add',
+    name: textName,
+    notes: textDescription,
+    qty: quantity,
+    price: parseInt(textPrice),
+    categoryID: selCategory,
+    productSKU: textProductSKU,
+    fileName: form.paymentConfirmationFileName,
+    fileData: form.paymentConfirmationFileData,
+    variantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.VariantOptionID).join(',') : '',
+    isSelected: '',
+    productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.variantID).join(',') : '',
   };
   console.log(updatedData)
   onSave(updatedData);
@@ -366,11 +367,24 @@ const getMimeTypeFromBase64 = (base64String: string): string | null => {
           }
         });
       };
+
+      // const handleVariantOptionChange = (id: string) => {
+      //   setSelectedVariantIds((prevIds) => {
+      //     const isSelected = prevIds.includes(id);
+      //     if (isSelected) {
+      //       // If the ID is already selected, remove it
+      //       return prevIds.filter((prevId) => prevId !== id);
+      //     } else {
+      //       // If the ID is not selected, add it
+      //       return [...prevIds, id];
+      //     }
+      //   });
+      // };
       
       const handleVariantInputTextChange = (id: string, text: string) => {
         if (detailData) {
         setVariantInputValues((prevValues) => {
-          const index = detailData.variant.findIndex((x) => x.VariantOptionID === id);
+          const index = detailData.variant.findIndex((x) => x.variantOptionID === id);
           const newValues = [...prevValues];
           newValues[index] = text;
           return newValues;
@@ -395,7 +409,7 @@ const getMimeTypeFromBase64 = (base64String: string): string | null => {
       </View>
       <View style={{flexDirection:'row', gap:6}}>
         <View style={{width:'25%',  alignItems:'center'}}>
-          {detailData && detailData.product.ImgUrl ? (
+          {detailData && detailData.product.imgUrl ? (
             <View style={{paddingLeft:8}}>
                 {form.paymentConfirmationFileData ? (
                  <Image
@@ -405,7 +419,7 @@ const getMimeTypeFromBase64 = (base64String: string): string | null => {
                 ) : (
               
                   <Image
-                  source={{ uri: detailData.product.ImgUrl }}
+                  source={{ uri: detailData.product.imgUrl }}
                   style={{ width: 120, height: 100, borderRadius:7 }}
                 />
                 )}
@@ -574,30 +588,30 @@ const getMimeTypeFromBase64 = (base64String: string): string | null => {
         {detailData && (
           <View>
   {detailData.variant.map((x, index) => (
-    <View key={x.VariantOptionID} style={styles.rowContainer}>
+    <View key={x.variantOptionID} style={styles.rowContainer}>
       <TouchableOpacity
         style={styles.checkboxContainer}
         activeOpacity={1}
-        onPress={() => handleVariantOptionChange(x.VariantOptionID)}
+        onPress={() => handleVariantOptionChange(x.variantOptionID)}
       >
         <View style={styles.checkbox}>
-          {selectedVariantIds.includes(x.VariantOptionID) && <View style={styles.checkboxInner} />}
+          {selectedVariantIds.includes(x.variantOptionID) && <View style={styles.checkboxInner} />}
         </View>
-        <Text style={styles.checkboxLabel}>{x.Label}</Text>
+        <Text style={styles.checkboxLabel}>{x.label}</Text>
       </TouchableOpacity>
 
       <TextInput
         style={[
           styles.variantInput,
           {
-            opacity: selectedVariantIds.includes(x.VariantOptionID) ? 1 : 0.5,
-            backgroundColor: selectedVariantIds.includes(x.VariantOptionID) ? '#F5F6FF' : '#D2D2D2',
+            opacity: selectedVariantIds.includes(x.variantOptionID) ? 1 : 0.5,
+            backgroundColor: selectedVariantIds.includes(x.variantOptionID) ? '#F5F6FF' : '#D2D2D2',
           },
         ]}
-        placeholder={`Enter value for ${x.Label}`}
+        placeholder={`Enter value for ${x.label}`}
         value={variantInputValues[index]}
-        onChangeText={(text) => handleVariantInputTextChange(x.VariantOptionID, text)}
-        editable={selectedVariantIds.includes(x.VariantOptionID) && !isSubmitting}
+        onChangeText={(text) => handleVariantInputTextChange(x.variantOptionID, text)}
+        editable={selectedVariantIds.includes(x.variantOptionID) && !isSubmitting}
       />
     </View>
   ))}

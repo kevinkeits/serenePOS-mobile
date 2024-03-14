@@ -38,7 +38,7 @@ const OtherPaymentModal: React.FC<Props> = ({ isVisible, onClose, totalPrice }) 
           </View>
           <View style={{  borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey',}}>
           <Text style={{textAlign:'center', fontSize:10, marginTop:0, color: 'black'}}>Total Bill</Text>
-          <Text style={{textAlign:'center', fontSize:12, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice}</Text>
+          <Text style={{textAlign:'center', fontSize:12, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice.toLocaleString()}</Text>
           </View>
           <View style={{marginVertical:20, gap:10, paddingBottom:10}}>
             <TouchableOpacity onPress={()=> onOpenTransfer()} style={{marginHorizontal:30, flexDirection:'row', justifyContent:'space-between', backgroundColor:'#2563EB', paddingHorizontal:15, paddingVertical:7, borderRadius:5, alignItems:'center'}}>

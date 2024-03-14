@@ -31,7 +31,7 @@ const TransferModal: React.FC<Props> = ({ isVisible, onClose, totalPrice }) => {
           </View>
           <View style={{  borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey',}}>
           <Text style={{textAlign:'center', fontSize:10, marginTop:10, color: 'black'}}>Total Bill</Text>
-          <Text style={{textAlign:'center', fontSize:15, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice}</Text>
+          <Text style={{textAlign:'center', fontSize:15, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice.toLocaleString()}</Text>
           </View>
           <View style={{marginVertical:10, gap:10, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey', paddingBottom:15}}>
             <View style={{marginHorizontal:30}}>
@@ -48,6 +48,7 @@ const TransferModal: React.FC<Props> = ({ isVisible, onClose, totalPrice }) => {
                             // multiline
                             // numberOfLines={4}
                             placeholder='Type here'
+                            keyboardType="numeric"
                             maxLength={40}
                             onChangeText={text => setTextReceived(text)}
                             value={textReceived}

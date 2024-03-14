@@ -56,7 +56,7 @@ const PaymentMethodModal: React.FC<Props> = ({ isVisible, onClose, totalPrice })
           <Text style={{marginVertical:4, marginLeft: 20, fontSize:11, color:'black', fontWeight:'bold'}}>Select Payment</Text>
           <View style={{  borderBottomWidth:1, borderTopWidth:1, borderStyle:'dotted', borderColor:'grey',}}>
           <Text style={{textAlign:'center', fontSize:10, marginTop:10, color: 'black'}}>Total Bill</Text>
-          <Text style={{textAlign:'center', fontSize:15, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice}</Text>
+          <Text style={{textAlign:'center', fontSize:15, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice.toLocaleString()}</Text>
           </View>
           <View>
             <View style={{flexDirection: 'row', marginTop:10, marginBottom:10, justifyContent:'space-evenly'}}>
