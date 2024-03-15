@@ -334,12 +334,17 @@ const handleSave = () => {
     <CommonLayout>
       <ScrollView>
       <View style={{}}>
-      <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
+      <View style={{flexDirection: 'row', gap:10,   marginRight:30, marginVertical:10, alignItems:'center'}}>
+      <Text onPress={() => navigation.navigate('Products' as never)} style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>Product</Text>
+      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>&gt;</Text>
+      <Text   style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Product</Text>
+      </View>
+      {/* <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
         <TouchableOpacity onPress={()=> navigation.goBack()}>
             <Text style={{fontSize:10, fontWeight:'bold', color:'black'}}>&lt;--</Text>
         </TouchableOpacity>
       <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Product</Text>
-      </View>
+      </View> */}
       <View style={{flexDirection:'row', gap:6}}>
         <View style={{width:'25%',  alignItems:'center'}}>
           {detailData && detailData.product.imgUrl ? (
