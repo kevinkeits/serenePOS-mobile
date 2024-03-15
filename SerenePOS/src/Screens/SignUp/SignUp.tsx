@@ -169,10 +169,10 @@ const SignUp = () => {
 <View style={{backgroundColor:'white', width:'45%',   paddingBottom:10, borderRadius:7}}>
         <View style={{paddingLeft:30,}}>
       <Text style={{fontWeight: 'bold', color: 'black', fontSize: 12, marginTop:6}}>
-      Get Account Now
+      Sign Up
       </Text>
       <Text style={{color:'black', fontSize:8, marginBottom:4}}>
-      Enter your credentials to access your account
+      Get your POS ready in a minute
       </Text>
       </View>
 
@@ -183,10 +183,10 @@ const SignUp = () => {
         alignSelf: 'center', marginBottom:10}}></View>
 
      <View style={{marginBottom:5}}>
-        <Text style={{fontSize:9, color:'black', marginLeft:30}}>Name *</Text>
+        {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Name *</Text> */}
       <TextInput
         style={styles.input}
-        placeholder="Name"
+        placeholder="Your Name"
         value={name}
         onChangeText={(text) => setName(text)}
       />
@@ -194,10 +194,10 @@ const SignUp = () => {
       </View>
 
       <View style={{marginBottom:5}}>
-        <Text style={{fontSize:9, color:'black', marginLeft:30}}>Email Address *</Text>
+        {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Email Address *</Text> */}
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Your Email"
         value={email}
         onChangeText={(text) => setEmail(text)}
       />
@@ -205,7 +205,7 @@ const SignUp = () => {
       </View>
 
       <View style={{marginBottom:5}}>
-        <Text style={{fontSize:9, color:'black', marginLeft:30}}>Store Name *</Text>
+        {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Store Name *</Text> */}
       <TextInput
         style={styles.input}
         placeholder="Store Name"
@@ -217,7 +217,7 @@ const SignUp = () => {
 
 
 <View style={{marginBottom:5}}>       
-   <Text style={{fontSize:9, color:'black', marginLeft:30}}>Password *</Text>
+   {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Password *</Text> */}
       <View style={{
         width:'80%',
          height: 20,
@@ -243,7 +243,7 @@ const SignUp = () => {
   </View>
 
   <View>       
-   <Text style={{fontSize:9, color:'black', marginLeft:30}}>Re-Enter Password *</Text>
+   {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Re-Enter Password *</Text> */}
       <View style={{
         width:'80%',
          height: 20,
@@ -274,7 +274,7 @@ const SignUp = () => {
 
         <View style={styles.signupContainer}>
         <Text style={styles.signupText}>I agree to the </Text>
-        <TouchableOpacity onPress={() => handleNavigateLogin()}>
+        <TouchableOpacity>
           <Text style={styles.signupLink}>Terms & Privacy</Text>
         </TouchableOpacity>
       </View>
@@ -320,15 +320,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
    
     borderColor: '#D2D2D2',
-    padding: 6,
+    paddingVertical: 5,
+    paddingHorizontal:10,
     borderRadius:6,
     color:'black',
-    fontSize: 7,
+    fontSize: 8,
     alignSelf: 'center',
   },
   inputPassword: {
     width: '100%',
-    fontSize: 7,
+    fontSize: 8,
     paddingVertical: 5,
     paddingHorizontal:10,
     lineHeight: 30,
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
   error: {
     color: 'red',
     fontSize:7,
-    marginLeft:30, 
+    marginLeft:40, 
   },
   checkbox: {
     width: 12,

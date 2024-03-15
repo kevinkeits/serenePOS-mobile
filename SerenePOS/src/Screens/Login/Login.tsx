@@ -10,6 +10,10 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const [usernameError, setUsernameError] = useState<string>('');
+  const [passwordError, setPasswordError] = useState<string>('');
+
+
   const [showPassword, setShowPassword] = useState(false);
 
  
@@ -23,41 +27,67 @@ const Login = () => {
 
   async function handleLogin() {
     try {
-      const url = ApiUrls.doLogin
-      const credentials = {
-        Email: username, // Using the entered username
-        Password: password // Using the entered password
-      };
-  
-      const response = await axios.post(url, credentials, {
-      });
+      let isValid = true;
 
-      // const response = await fetch(url, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(credentials)
-      // });
-  
-      if (response.status === 200) {
-        // Login successful
-        if (response.data.status) {
-          await AsyncStorage.setItem('userData', JSON.stringify(response.data));
-          //console.log('Login successful:', response.data.data);
-          navigation.navigate('Home' as never);
-        } else {
-          Alert.alert('Error', response.data.message);
-        }
-
-        
-        // You can perform further actions here after successful login
+      // Email validation
+      if (!username.trim()) {
+        setUsernameError('Email is required');
+        isValid = false;
+      } else if (!/\S+@\S+\.\S+/.test(username)) {
+        setUsernameError('Invalid email format');
+        isValid = false;
       } else {
-        // Login failed
-        console.error('Login failed:', response.statusText);
-        Alert.alert('Error', 'Invalid username or password');
-        // Handle login failure
+        setUsernameError('');
       }
+
+      if (!password.trim()) {
+        setPasswordError('Password is required');
+        isValid = false;
+      } else {
+        setPasswordError('');
+      }
+      
+      if (isValid)
+      {
+        const url = ApiUrls.doLogin
+        const credentials = {
+          Email: username, // Using the entered username
+          Password: password // Using the entered password
+        };
+    
+        const response = await axios.post(url, credentials, {
+        });
+
+        // const response = await fetch(url, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify(credentials)
+        // });
+    
+        if (response.status === 200) {
+          // Login successful
+          if (response.data.status) {
+            setUsername('')
+            setPassword('')
+            await AsyncStorage.setItem('userData', JSON.stringify(response.data));
+            //console.log('Login successful:', response.data.data);
+            navigation.navigate('Home' as never);
+          } else {
+            Alert.alert('Error', response.data.message);
+          }
+
+          
+          // You can perform further actions here after successful login
+        } else {
+          // Login failed
+          console.error('Login failed:', response.statusText);
+          Alert.alert('Error', 'Invalid username or password');
+          // Handle login failure
+        }
+      }
+      
     } catch (error) {
       console.error('Error during login:', error);
       // Handle error during login
@@ -84,14 +114,11 @@ const Login = () => {
               <Text style={styles.header}>serenePOS</Text>
 
         <View style={{}}>
-      <Text style={{fontWeight: 'bold', color: 'black', fontSize: 13, marginTop:10}}>
-        Log In
-      </Text>
       <Text style={{color:'black', fontSize:10, marginVertical:7}}>
-        Enter your ID and Password
+        Login to your account
       </Text>
       </View>
-
+      
       <View style={{borderBottomWidth: 1,
         borderBottomColor: '#D2D2D2',
             width: '25%',
@@ -99,10 +126,11 @@ const Login = () => {
       
       <TextInput
         style={styles.input}
-        placeholder="Username"
+        placeholder="Email"
         value={username}
         onChangeText={(text) => setUsername(text)}
       />
+      {usernameError ? <Text style={styles.error}>{usernameError}</Text> : null}
       <View style={{
          width: '25%',
          height: 30,
@@ -124,6 +152,7 @@ const Login = () => {
           {showPassword ? <ViewSVG width='12' height='12' color="black" /> : <ViewSVG width='12' height='12' color="black" />}
         </TouchableOpacity>
       </View>
+      {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
@@ -166,6 +195,15 @@ const styles = StyleSheet.create({
     fontSize: 10,
     textAlignVertical: 'center', 
     alignSelf: 'center',
+  },
+  error: {
+    color: 'red',
+    fontSize:7,
+    textAlignVertical: 'center', 
+    alignSelf: 'center',
+    marginBottom: 10,
+    marginLeft:-110, 
+    marginTop:-7, 
   },
   inputPassword: {
     width: '100%',
