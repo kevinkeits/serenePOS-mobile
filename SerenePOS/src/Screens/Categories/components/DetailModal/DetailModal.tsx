@@ -55,7 +55,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
     const handleClose = () => {
         setTextName('')
         setQuantity(1)
-        setColorSelection('')
+        setColorSelection('#7653DA')
         onClose()
       };
 
@@ -68,10 +68,17 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
           bgColor: colorSelection ?? '',
         };
         onSave(updatedData); 
+
+        setTextName('')
+        setQuantity(1)
+        setColorSelection('#7653DA')
       };
 
       
     React.useEffect(() => {
+      setTextName('')
+      setQuantity(1)
+      setColorSelection('#7653DA')
         // Set the textName when the modal is opened
         if (selectedItem) {
           setTextName(selectedItem.name)
@@ -97,7 +104,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
                 <Text style={styles.modalTitle}>Add Category</Text>
             )}
           </View>
-          <View style={{margin:10, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
+          <View style={{margin:10, flexDirection:'row', width:'85%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'15%'}}>Name</Text>
                     <View
                         style={{
