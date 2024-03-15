@@ -152,18 +152,20 @@ const Profile = () => {
       const token = await AsyncStorage.getItem('userData'); 
       const url = ApiUrls.doLogout
       if (token) {
-      const authToken = JSON.parse(token).data.Token
-      const response = await axios.post(url, {
-        headers: {
-          'Authorization': `Bearer ${authToken}`
+        const authToken = JSON.parse(token).data.Token
+        const response = await axios.get(url, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        if (response.status === 200) {
+          Alert.alert('Success', 'Logout successful!');
+          await AsyncStorage.removeItem('userData');
+          navigation.navigate('Login' as never);
+        } else {
+          Alert.alert('Error', 'Logout failed');
         }
-      });
-      if (response.status === 200) {
-        Alert.alert('Success', 'Logout successful!');
-      } else {
-        Alert.alert('Error', 'Logout failed');
       }
-    }
     } catch (error) {
       console.error('Error during saving:', error);
       Alert.alert('Error', 'Something went wrong during Logout. Please try again.');
@@ -174,8 +176,6 @@ const Profile = () => {
   const handleLogout = async () => {
     try {
       onLogout()
-      await AsyncStorage.removeItem('userData');
-      navigation.navigate('Login' as never);
     } catch (error) {
       console.error('Error removing data from AsyncStorage:', error);
     }

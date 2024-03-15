@@ -4,6 +4,7 @@ import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } fr
 import ViewSVG from '../../assets/svgs/ViewSVG';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiUrls } from '../../apiUrls/apiUrls';
+import axios from 'axios'
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -28,22 +29,28 @@ const Login = () => {
         Password: password // Using the entered password
       };
   
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(credentials)
+      const response = await axios.post(url, credentials, {
       });
+
+      // const response = await fetch(url, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify(credentials)
+      // });
   
-      if (response.ok) {
+      if (response.status === 200) {
         // Login successful
-        const data = await response.json();
+        if (response.data.status) {
+          await AsyncStorage.setItem('userData', JSON.stringify(response.data));
+          //console.log('Login successful:', response.data.data);
+          navigation.navigate('Home' as never);
+        } else {
+          Alert.alert('Error', response.data.message);
+        }
 
-        await AsyncStorage.setItem('userData', JSON.stringify(data));
-
-        console.log('Login successful:', data);
-        navigation.navigate('Home' as never);
+        
         // You can perform further actions here after successful login
       } else {
         // Login failed
