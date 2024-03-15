@@ -134,7 +134,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
         if (data) {
           setTextProductSKU(data.product.productSKU)
           setTextName(data.product.name)
-          setTextPrice(parseInt(data.product.price).toLocaleString())
+          setTextPrice(parseInt(data.product.price).toString())
           setSelCategory(data.product.categoryID)
           setQuantity(data.product.qty)
           setTextDescription(data.product.notes)
