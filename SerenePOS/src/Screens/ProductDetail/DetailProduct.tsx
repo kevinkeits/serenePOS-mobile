@@ -15,6 +15,12 @@ import { Product, ProductDetail, ProductForm } from '../Products/Products'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ApiUrls } from '../../apiUrls/apiUrls'
 import { Categories } from '../Categories/Categories'
+import { initialProductFormdata, ProductSchema } from './constants'
+import {useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+
+
+
 
 
 
@@ -82,24 +88,26 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
 
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
 
-
-  const [selectedOptionIds, setSelectedOptionIds] = React.useState<string[]>([]);
-  const [servingInputValues, setServingInputValues] = React.useState<string[]>(temperatureOptions.map(() => ''));
-  const [isServingSubmitting, setIsServingSubmitting] = React.useState(false); 
-
-  const [selectedSugarIds, setSelectedSugarIds] = React.useState<string[]>([]);
-  const [sugarInputValues, setSugarInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
-  const [isSugarSubmitting, setIsSugarSubmitting] = React.useState(false); 
-
-  const [selectedAddOnIds, setSelectedAddOnIds] = React.useState<string[]>([]);
-  const [addOnInputValues, setAddOnInputValues] = React.useState<string[]>(sugarOptions.map(() => ''));
-  const [isAddOnSubmitting, setIsAddOnSubmitting] = React.useState(false); 
-
   const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
   const [variantInputValues, setVariantInputValues] = React.useState<string[]>(detailData?.variant.map(() => '') ?? []); 
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
 
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    register,
+    watch,
+    setValue,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm<ProductForm>({
+    defaultValues: initialProductFormdata,
+    // resolver: yupResolver(ProductSchema),
+  })
 
 
   const [form, setForm] = React.useState({
@@ -223,16 +231,6 @@ const handleSave = () => {
 };
 
 
-const getMimeTypeFromBase64 = (base64String: string): string | null => {
-  // Extract substring containing the MIME type from the base64 string
-  const mimeType = base64String.match(/^data:([A-Za-z-+\/]+);base64/);
-  if (mimeType && mimeType.length > 1) {
-    return mimeType[1]; // Return the MIME type
-  } else {
-    return null; // Return null if MIME type is not found
-  }
-}
-
 
       const onOpenConfirmation= () => {
         setIsOpenConfirmation(true);
@@ -248,72 +246,6 @@ const getMimeTypeFromBase64 = (base64String: string): string | null => {
         setTextPrice(numericValue);
       };
   
-
-  const handleTextInputChange = (id: string, text: string) => {
-    setServingInputValues((prevValues) => {
-      const index = temperatureOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionChange = (id: string) => {
-    setSelectedOptionIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-  const handleTextInputSugarChange = (id: string, text: string) => {
-    setSugarInputValues((prevValues) => {
-      const index = sugarOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionSugarChange = (id: string) => {
-    setSelectedSugarIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
-
-  const handleTextInputAddOnChange = (id: string, text: string) => {
-    setAddOnInputValues((prevValues) => {
-      const index = addOnOptions.findIndex((option) => option.id === id);
-      const newValues = [...prevValues];
-      newValues[index] = text;
-      return newValues;
-    });
-  };
-
-
-  const handleOptionAddOnChange = (id: string) => {
-    setSelectedAddOnIds((prevIds) => {
-      if (prevIds.includes(id)) {
-        // If the ID is already in the array, remove it
-        return prevIds.filter((prevId) => prevId !== id);
-      } else {
-        // If the ID is not in the array, add it
-        return [...prevIds, id];
-      }
-    });
-  };
 
     const incrementQuantity = () => {
         setQuantity((prevQuantity) => prevQuantity + 1);

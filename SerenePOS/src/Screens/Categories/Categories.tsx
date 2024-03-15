@@ -123,12 +123,13 @@ const Categories = () => {
             });
             if (response.status === 200) {
               // Registration successful
-              Alert.alert('Success', 'Saved data successful!');
+              Alert.alert('Success', response.data.message);
+              setDeleteMode(false)
               onCloseDetail()
               fetchData()
             } else {
               // Registration failed
-              Alert.alert('Error', 'Saving data failed');
+              Alert.alert('Error', response.data.message);
             }
           }
           } catch (error) {
