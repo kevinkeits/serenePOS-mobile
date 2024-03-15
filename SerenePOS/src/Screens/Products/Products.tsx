@@ -98,7 +98,6 @@ const Products = () => {
           });           
           const data: Product[] = response.data.data;
           setProductData(data);
-          console.log(data)
           setLoading(false)
         } else {
           console.error('No token found in AsyncStorage');

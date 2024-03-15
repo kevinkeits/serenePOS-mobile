@@ -8,11 +8,22 @@ interface CustomHeaderProps {
 }
 
 const CustomHeader: React.FC<CustomHeaderProps> = ({ title }) => {
+
   const navigation = useNavigation();
 
-  const openProfileDrawer = () => {
-    // Implement logic to open the profile drawer
-    console.log('Opening profile drawer');
+
+  const [textKeyword, setKeyword] = React.useState<string>('');
+
+  const handleNavigate = ( keyword: string) => {
+    navigation.navigate('Search' as never, {keyword: keyword} as never)
+  };
+
+  const handleSearch = () => {
+    if (textKeyword.trim() !== '') {
+      handleNavigate(textKeyword);
+    } else {
+      console.warn('Keyword cannot be empty');
+    }
   };
 
   return (
@@ -21,10 +32,16 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ title }) => {
         <Text style={styles.title}>serenePOS</Text>
       </TouchableOpacity>
       <View style={styles.searchContainer}>
-        <TextInput placeholder="Search..." style={styles.searchInput} />
-        <View style={{marginRight:10}}>
+        <TextInput 
+          placeholder="Search..."
+          style={styles.searchInput}
+          value={textKeyword}
+          onChangeText={setKeyword}
+          onSubmitEditing={handleSearch}
+         />
+        <TouchableOpacity style={{marginRight:10}} onPress={handleSearch}>
           <SearchSVG width='14' height='14' color='grey'/>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -41,7 +58,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#2563EB', // Header title color
+    color: '#2563EB', 
   },
   searchContainer: {
     flexDirection: 'row',
@@ -51,7 +68,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     marginTop:5,
     height: 29,
-    width: '40%',  // Adjust the width as needed
+    width: '40%',  
   },
   searchInput: {
     flex: 1,

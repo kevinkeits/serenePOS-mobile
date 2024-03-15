@@ -27,10 +27,13 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
     const [textName, setTextName] = React.useState('');
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [selectedProducts, setSelectedProducts] = React.useState<SelectedProduct[]>([]);
+    const [dataProducts, setDataProducts] = React.useState<Product[]>([]);
+
     const [selectAll, setSelectAll] = React.useState(false);
 
 
     const onOpen = () => {
+      if (data) setDataProducts(data)
       if (selectedData) {
           const selectedItemsIds = selectedData.map(item => item.id);
           setSelectedItems(selectedItemsIds);
@@ -59,10 +62,8 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
 
       const handleCheckboxPress = (itemId: string, index: number) => {
         if (index === -1) {
-          // "Select All" checkbox
           setSelectAll(!selectAll);
           if (!selectAll) {
-            // If checking "Select All," select all items
             setSelectedItems(data.map((item) => item.id));
             setSelectedProducts([...data]);
           } else {
@@ -87,6 +88,15 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
               return [...prevSelectedItems, itemId];
             }
           });
+        }
+      };
+
+      const handleSearch = () => {
+        if (textName.trim() !== '') {
+            const filteredData = data.filter((x)=> x.name.toLowerCase().includes(textName.toLowerCase()))
+            setDataProducts(filteredData)
+        } else {
+          console.warn('Keyword cannot be empty');
         }
       };
 
@@ -121,24 +131,25 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
                     marginVertical:5,
                     width:'90%'
                 }}>
-                    <View style={{paddingLeft:10}}>
+                    <TouchableOpacity style={{paddingLeft:10}} onPress={handleSearch}>
                         <SearchSVG width='14' height='14' color='grey'/>
-                    </View>
+                    </TouchableOpacity>
                         <TextInput
                             editable
                             // multiline
                             // numberOfLines={4}
                             placeholder='Search'
                             maxLength={40}
+                            onSubmitEditing={handleSearch}
                             onChangeText={text => setTextName(text)}
                             value={textName}
                             style={{ paddingVertical:0, fontSize:8, width:'100%', height:25}}
                         />
             </View>  
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20, marginBottom:3 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginHorizontal: 20, marginBottom:3 }}>
               {/* <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text> */}
-              <TouchableOpacity onPress={() => handleCheckboxPress('',-1)}>
+              <TouchableOpacity style={{}} onPress={() => handleCheckboxPress('',-1)}>
                 <Text style={{ fontSize: 10, color: 'black' }}>
                   {selectAll ? 'Unselect All' : 'Select All'}
                 </Text>
@@ -146,11 +157,11 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
             </View>
 
 <ScrollView>
-          <View style={{flexDirection:'row', flexWrap:'wrap', gap:6, justifyContent:'center', alignItems:'center'}}>
-            {data.map((x, index)=> (
+          <View style={{flexDirection:'row', flexWrap:'wrap', gap:6, marginLeft:35, alignItems:'center'}}>
+            {dataProducts.map((x, index)=> (
             <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
 
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id, index)} style={{ marginRight: 5 }}>
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id, index)} style={{}}>
                     {selectedItems.includes(x.id) ? (
                       <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', paddingHorizontal:2 }}>✔</Text>
                     ) : (

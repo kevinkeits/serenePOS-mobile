@@ -20,6 +20,7 @@ import Outlet from '../../Screens/Outlet/Outlet';
 import OutletDetail from '../../Screens/OutletDetail/OutletDetail';
 import TransactionHistoryDetail from '../../Screens/TransactionHistoryDetail/TransactionHistoryDetail';
 import SignUp from '../../Screens/SignUp/SignUp';
+import Search from '../../Screens/Search/Search';
 
 
 
@@ -49,6 +50,7 @@ const AppNavigator= () => {
         <Stack.Screen name="Outlet" component={Outlet} options={{ headerShown: false }}  />
         <Stack.Screen name="OutletDetail" component={OutletDetail} options={{ headerShown: false }}  />
         <Stack.Screen name="Setting" component={Setting} options={{ headerShown: false }}  />
+        <Stack.Screen name="Search" component={Search} options={{ headerShown: false }}  />
         <Stack.Screen name="PaymentMethod" component={PaymentMethodSetting} options={{ headerShown: false }}  />
         <Stack.Screen name="BussinessInformation" component={BussinessInfoSetting} options={{ headerShown: false }}  />
 
