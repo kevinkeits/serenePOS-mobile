@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, Button, TextInput, Platform, StyleSheet } from 'react-native';
 import CommonLayout from '../../Components/CommonLayout/CommonLayout';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import DetailModal from './components/DetailModal/DetailModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -191,6 +191,7 @@ interface GroupedTransactions {
 
   return (
     <CommonLayout>
+      <ScrollView>
         <View style={{width:'100%'}}>
             <View style={{flexDirection: 'row', gap:10,  marginRight:30, marginVertical:10, alignItems:'center'}}>
                 <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Transaction History</Text>
@@ -302,6 +303,7 @@ interface GroupedTransactions {
         
 
         </View>
+        </ScrollView>
 
         <DetailModal isVisible={isOpenDetail} selectedID={selectedID} onClose={onCloseDetail} selectedData={detailData} />
     </CommonLayout>

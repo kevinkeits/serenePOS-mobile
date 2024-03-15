@@ -239,21 +239,21 @@ const Categories = () => {
       )}
       <View>
 
-
+    <ScrollView style={{marginBottom:50}}>
       <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', marginVertical:3, marginLeft:15}}>
         {categoriesData?.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{}}>
                     {selectedItems.includes(x.id) ? (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
+                      <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', paddingHorizontal:2  }}>✔</Text>
                     ) : (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
+                      <Text style={{ fontSize: 25, color: 'black' }}>◻</Text>
                     )}
                   </TouchableOpacity>
                 )}
             <TouchableOpacity 
-            onPress={() => onOpenDetail(x)}  key={index} 
+            onPress={() => deleteMode ? handleCheckboxPress(x.id) : onOpenDetail(x)}  key={index} 
             style={[
               styles.firstRowItem,
               {backgroundColor: x.bgColor}
@@ -266,13 +266,14 @@ const Categories = () => {
             </View>
         ))}
       </View>
+    </ScrollView>
 
       {deleteMode && (
-        <View style={{  flexDirection: 'row', justifyContent:'flex-end', gap:10, width: '100%', padding: 4, }}>
+        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:30 }}>
           <TouchableOpacity onPress={()=> onOpenConfirmation()}  style={{ backgroundColor: '#EF4444', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#2563EB', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
+          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#2563EB', backgroundColor:'white', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
             <Text style={{ color: 'black', fontWeight: 'bold', fontSize:8 }}>Cancel</Text>
           </TouchableOpacity>
           

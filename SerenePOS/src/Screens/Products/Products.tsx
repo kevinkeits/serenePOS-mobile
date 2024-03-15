@@ -223,6 +223,7 @@ const Products = () => {
               </TouchableOpacity>
             </View>
       )}
+          <ScrollView style={{marginBottom:50}}>
       <View>
       <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
         {categoriesData.map((x, index) => (
@@ -241,17 +242,16 @@ const Products = () => {
       </ScrollView>
 
       <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center',  marginVertical:3}}>
-
         {productData.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
-                    {selectedItems.includes(x.id) ? (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
-                    ) : (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
-                    )}
-                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{}}>
+                  {selectedItems.includes(x.id) ? (
+                    <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', paddingHorizontal:2  }}>✔</Text>
+                  ) : (
+                    <Text style={{ fontSize: 25, color: 'black' }}>◻</Text>
+                  )}
+                </TouchableOpacity>
                 )}
 
                 {loading ? (
@@ -262,10 +262,10 @@ const Products = () => {
                 ):(
                     <TouchableOpacity 
                       key={index}
-                      onPress={() => handleNavigate(x.id)} 
+                      onPress={() => deleteMode ? handleCheckboxPress(x.id) : handleNavigate(x.id)} 
                       style={styles.cardRow}>
                   <View style={{width:'50%'}}>
-                      <Image source={{ uri: x.imgUrl }} style={{width:'100%', height:'100%'}} />
+                      <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={{width:'100%', height:'100%'}} />
                   </View>
                   <View style={{width:'50%'}}>
                       <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.name}</Text>
@@ -278,19 +278,21 @@ const Products = () => {
         ))}
       </View>
 
+    
+      
+      </View>
+      </ScrollView>
       {deleteMode && (
-        <View style={{  flexDirection: 'row', gap:10, justifyContent: 'flex-end', width: '100%', padding: 4, }}>
+        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:30}}>
           <TouchableOpacity onPress={()=> onOpenConfirmation()}  style={{ backgroundColor: '#EF4444', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#2563EB', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
+          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#2563EB', backgroundColor:'white', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
             <Text style={{ color: 'black', fontWeight: 'bold', fontSize:8 }}>Cancel</Text>
           </TouchableOpacity>
-          
         </View>
       )}
-      
-      </View>
+
 
       
 

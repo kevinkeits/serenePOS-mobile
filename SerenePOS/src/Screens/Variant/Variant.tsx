@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useIsFocused } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
 import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
@@ -64,6 +64,7 @@ const Variant = () => {
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
 
     const navigation = useNavigation();
+    const isFocused = useIsFocused();
 
     const handleNavigate = ( selectedID: string) => {
       navigation.navigate('VariantDetail' as never, {id: selectedID} as never)
@@ -79,6 +80,7 @@ const Variant = () => {
 
 
       const fetchData = async () => {
+        console.log('[Variant] fetching data')
         try {
           const token = await AsyncStorage.getItem('userData');     
           if (token) {
@@ -89,7 +91,6 @@ const Variant = () => {
               }
             });           
             const data: Variant[] = response.data.data;
-            console.log(data)
             setVariantsData(data);
           } else {
             console.error('No token found in AsyncStorage');
@@ -154,8 +155,8 @@ const Variant = () => {
       };
 
     React.useEffect(() => {
-        fetchData();
-      }, []);
+      if (isFocused) fetchData();
+      }, [isFocused]);
 
   return (
     <CommonLayout>
@@ -184,22 +185,22 @@ const Variant = () => {
               </TouchableOpacity>
             </View>
       )}
-      <View>
+      
 
-
-      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center',  marginVertical:3}}>
+      <ScrollView style={{marginBottom:50}}>
+      <View style={{flexDirection:'row',  flexWrap:'wrap', alignItems:'center',  marginVertical:7, marginLeft:7}}>
         {variantsData.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
-                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{ marginRight: 5 }}>
+                  <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{}}>
                     {selectedItems.includes(x.id) ? (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'green' }}>✔</Text>
+                      <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', paddingHorizontal:2  }}>✔</Text>
                     ) : (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'black' }}>◻</Text>
+                      <Text style={{ fontSize: 25, color: 'black' }}>◻</Text>
                     )}
                   </TouchableOpacity>
                 )}
-            <TouchableOpacity onPress={() => handleNavigate(x.id)} key={index} style={styles.firstRowItem}>
+            <TouchableOpacity onPress={() => deleteMode ? handleCheckboxPress(x.id) : handleNavigate(x.id)} key={index} style={styles.firstRowItem}>
                 <View style={{flexDirection:'row', justifyContent:'space-between', height:'40%'}}>
                 <View >
                     <Text style={{fontWeight: "bold", color: "black", fontSize: 9, maxWidth:'100%'}}>{x.name}</Text>
@@ -208,26 +209,26 @@ const Variant = () => {
                     <Text style={{ color: "black", fontSize: 7, padding:3, borderWidth:0.5, borderColor:'#D2D2D2', borderRadius:3, width:80, height:18, textAlign:'center'}}>{x.type == "1" ? 'Single' : 'Multi'} Selection</Text>
                 </View>
                 <View style={{marginTop:35}}>
-                  <Text style={{fontSize:7, color:'black'}}>{x.count} Linked Product</Text>
+                  <Text style={{fontSize:7, color:'black'}}>{x.count} Linked Product{x.count > 1 ? 's' : ''}</Text>
                 </View>
             </TouchableOpacity>
             </View>
         ))}
       </View>
-
+      </ScrollView>
       {deleteMode && (
-        <View style={{  flexDirection: 'row', justifyContent:'flex-end', gap:10, width: '100%', padding: 4, }}>
+        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:30}}>
           <TouchableOpacity onPress={()=> onOpenConfirmation()}  style={{ backgroundColor: '#EF4444', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#2563EB', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
+          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#2563EB', backgroundColor:'white', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
             <Text style={{ color: 'black', fontWeight: 'bold', fontSize:8 }}>Cancel</Text>
           </TouchableOpacity>
           
         </View>
       )}
-      
-      </View>
+
+
       </View>
       <ConfirmationModal isVisible={isOpenConfirmation} selectedItems={selectedItems} onClose={onCloseConfirmation} onSave={onSave} />
 
@@ -239,7 +240,7 @@ const Variant = () => {
 const styles = StyleSheet.create({
     firstRowItem: {
       borderWidth:0.5,
-      width:220, 
+      width:210, 
       height:90, 
       borderRadius:7, 
       borderColor: '#D2D2D2',

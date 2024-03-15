@@ -189,6 +189,7 @@ React.useEffect(() => {
 
   return (
     <CommonLayout>
+      <ScrollView>
       <View style={{flexDirection:'row'}}>
         <View style={{width: '70%'}}>
 
@@ -222,7 +223,7 @@ React.useEffect(() => {
       {productData.map((x) => (
         // <TouchableOpacity key={x.id} style={styles.card} onPress={() => addToSelectedItems(x)}>
         <TouchableOpacity key={x.id} style={styles.card} onPress={() => openEditModal(x)}>
-          <Image source={{ uri: x.imgUrl }} style={styles.image} />
+          <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={styles.image} />
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
           <Text style={styles.price}>Rp {parseInt(x.price).toLocaleString()}</Text>
         </TouchableOpacity>
@@ -376,6 +377,7 @@ React.useEffect(() => {
         {/* Side Container */}
 
     </View>
+  </ScrollView>
     <EditItemModal isVisible={isEditModalVisible} selectedItem={selectedItemForEdit} onClose={closeEditModal} onSave={addToSelectedItems} />
     <PaymentMethodModal isVisible={isOpenPayment} totalPrice={totalPriceState} onClose={onClosePayment}/>
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
@@ -426,7 +428,8 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 50,
-    borderRadius:15, 
+    borderTopRightRadius:5,
+    borderTopLeftRadius:5
 
   },
   title: {

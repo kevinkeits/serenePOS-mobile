@@ -135,7 +135,6 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
           setSelectedType(data.details.type)
           setOptions(data.options)
           setSelectedProducts(data.product)
-          console.log(data.product)
           setDetailData(data);
           }
           
@@ -160,17 +159,14 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
           'Authorization': `Bearer ${authToken}`
         }
       });
-      console.log(response.data)
+      //console.log(response.data)
       if (response.status === 200) {
         // Registration successful
         Alert.alert('Success', response.data.message);
         // onCloseConfirmation()
         // setDeleteMode(false)
-        fetchData(id)
+        //fetchData(id)
         navigation.navigate('Variants' as never)    
-        } else {
-        // Registration failed
-        Alert.alert('Error', 'Saving data failed');
       }
     }
     } catch (error) {
@@ -224,7 +220,7 @@ const handleSave = () => {
   const handleAddOption = () => {
     const newId = uuidv4({ random: [0x10, 0x91, 0x56, 0xbe, 0xc4, 0xfb, 0xc1, 0xea, 0x71, 0xb4, 0xef, 0xe1, 0x67, 0x1c, 0x58, 0x36] });
 
-    setOptions([...options, {id: newId, label: '', price: '0' }]);
+    setOptions([...options, {id: '', label: '', price: '0' }]);
   };
 
   // const handleDeleteOption = (index: number) => {
@@ -242,8 +238,7 @@ const handleSave = () => {
   };
 
   const handleOption = (index: number, field: keyof OptionsVariant, value: string) => {
-    const numericValue = Number(value);
-    if (isNaN(numericValue)) {
+    if (field == 'price' && isNaN(Number(value))) {
       // If value is not a valid number, handle it accordingly
       // For example, you can set a default value or leave the field unchanged
       // console.warn('Value must be a valid number. Field will remain unchanged.');
@@ -252,7 +247,7 @@ const handleSave = () => {
   
     const newOptions = [...options];
     // Update the specific field in the option object with the numeric value
-    newOptions[index][field] = numericValue.toString(); // Convert numeric value back to string
+    newOptions[index][field] = field == 'price' ? value.toString().trim() : value.toString(); // Convert numeric value back to string
     setOptions(newOptions);
   };
 
@@ -282,6 +277,7 @@ const handleSave = () => {
 
   return (
     <CommonLayout>
+      <ScrollView>
       <View style={{}}>
       <View style={{flexDirection: 'row', gap:10,   marginRight:30, marginVertical:10, alignItems:'center'}}>
       <Text onPress={() => navigation.navigate('Variants' as never)} style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>Variant</Text>
@@ -387,7 +383,7 @@ const handleSave = () => {
 
         <View style={{borderBottomWidth:0.5, borderBottomColor:'grey', marginVertical:10}}/>
 
-        <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Choose Product</Text>
+        <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Linked Product</Text>
         <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'100%', justifyContent:'center', alignItems:'center'}}>
                     {/* <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Category</Text> */}
             <View style={{ height: 25, justifyContent: 'center', width:'60%',}}>
@@ -429,6 +425,7 @@ const handleSave = () => {
       
 
       </View>
+      </ScrollView>
       <ProductModal isVisible={isOpenProduct} data={productData} onClose={onCloseProduct} onSave={onSaveProducts} selectedData={selectedProducts}/>
 
       

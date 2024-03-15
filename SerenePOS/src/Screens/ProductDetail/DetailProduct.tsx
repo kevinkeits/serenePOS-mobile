@@ -400,6 +400,7 @@ const getMimeTypeFromBase64 = (base64String: string): string | null => {
 
   return (
     <CommonLayout>
+      <ScrollView>
       <View style={{}}>
       <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
         <TouchableOpacity onPress={()=> navigation.goBack()}>
@@ -639,6 +640,7 @@ const getMimeTypeFromBase64 = (base64String: string): string | null => {
       
 
       </View>
+      </ScrollView>
 
       <ConfirmationModal isVisible={isOpenConfirmation} selectedData={detailData} onClose={onCloseConfirmation} />
 

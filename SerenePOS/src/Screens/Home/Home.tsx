@@ -19,19 +19,19 @@ const Home = () => {
       </View>
 
       <View style={{flexDirection:"row", gap:10, marginHorizontal:"auto", justifyContent: 'center', alignItems: 'center'}}>
-      <View style={{backgroundColor:"blue", width:150, height:100, justifyContent: 'flex-end', borderRadius:10, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3,  shadowRadius: 4,  elevation: 4}}>
+      <View style={{backgroundColor:"blue", width:150, height:80, justifyContent: 'flex-end', borderRadius:10, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3,  shadowRadius: 4,  elevation: 4}}>
         <View style={{ marginLeft:10, marginBottom:10}}>
         <Text style={{fontWeight: "bold", color: "white", fontSize: 10}}>Sales January 2024</Text>
         <Text style={{fontWeight: "bold", color: "white", fontSize: 10}}>Rp. 5,257,000</Text>
         </View>
       </View>
-      <View style={{backgroundColor:"ffffff", borderWidth:0.5, justifyContent: 'flex-end',  width:150, height:100, borderRadius:10, borderColor:'#D2D2D2'}}>
+      <View style={{backgroundColor:"ffffff", borderWidth:0.5, justifyContent: 'flex-end',  width:150, height:80, borderRadius:10, borderColor:'#D2D2D2'}}>
       <View style={{marginLeft:10, marginBottom:10}}>
         <Text style={{fontWeight: "bold", color: "black", fontSize: 10}}>Today's Sales</Text>
         <Text style={{fontWeight: "bold", color: "black", fontSize: 10}}>Rp. 85,000</Text>
         </View>
       </View>
-      <View style={{backgroundColor:"ffffff", borderWidth:0.5, justifyContent: 'flex-end',  width:150, height:100, borderRadius:10, borderColor:'#D2D2D2'}}>
+      <View style={{backgroundColor:"ffffff", borderWidth:0.5, justifyContent: 'flex-end',  width:150, height:80, borderRadius:10, borderColor:'#D2D2D2'}}>
       <View style={{ marginLeft:10, marginBottom:10}}>
         <View style={{flexDirection:"row"}}>
         {/* <Ionicons name="arrow-up" size={24} color="white"  /> */}

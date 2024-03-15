@@ -128,7 +128,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
                             editable
                             // multiline
                             // numberOfLines={4}
-                            placeholder='Search Product...'
+                            placeholder='Search'
                             maxLength={40}
                             onChangeText={text => setTextName(text)}
                             value={textName}
@@ -137,7 +137,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
             </View>  
 
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20, marginBottom:3 }}>
-              <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text>
+              {/* <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text> */}
               <TouchableOpacity onPress={() => handleCheckboxPress('',-1)}>
                 <Text style={{ fontSize: 10, color: 'black' }}>
                   {selectAll ? 'Unselect All' : 'Select All'}
@@ -152,9 +152,9 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
 
                   <TouchableOpacity onPress={() => handleCheckboxPress(x.id, index)} style={{ marginRight: 5 }}>
                     {selectedItems.includes(x.id) ? (
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white', backgroundColor:'blue', paddingHorizontal:2 }}>✔</Text>
+                      <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', paddingHorizontal:2 }}>✔</Text>
                     ) : (
-                      <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'black' }}>◻</Text>
+                      <Text style={{ fontSize: 25, color: 'black' }}>◻</Text>
                     )}
                   </TouchableOpacity>
             <TouchableOpacity 
@@ -174,11 +174,14 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
           </View>
  </ScrollView>
 
-          <View style={{marginVertical:5,  width:'90%', justifyContent:'center', alignSelf:'center' }}>
-                    <TouchableOpacity onPress={() => onSave(selectedProducts)} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Select Product</Text>
-                    </TouchableOpacity>                
-        </View>
+ {selectedItems.length > 0 && (
+  <View style={{marginVertical:5,  width:'90%', justifyContent:'center', alignSelf:'center' }}>
+  <TouchableOpacity onPress={() => onSave(selectedProducts)} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+      <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Select {selectedItems.length} Product{selectedItems.length > 1 ? 's' : ''}</Text>
+  </TouchableOpacity>                
+</View>
+ )}
+          
           
          
           <TouchableOpacity onPress={() => handleClose()} style={styles.closeButton}>

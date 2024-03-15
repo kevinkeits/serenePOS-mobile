@@ -14,9 +14,7 @@ const CommonLayout: React.FC<CommonLayoutProps> = ({ children }) => {
     <View style={styles.containerRow}>
       <Sidebar />
       <View style={styles.content}>
-        <ScrollView>
         {children}
-        </ScrollView>
         </View>
     </View>
     </View>

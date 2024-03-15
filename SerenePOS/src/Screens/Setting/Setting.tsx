@@ -224,6 +224,7 @@ const Setting = () => {
 
   return (
     <CommonLayout>
+      <ScrollView>
       <View style={{}}>
       <View style={{flexDirection: 'row', gap:10,   marginRight:30, marginVertical:10, alignItems:'center'}}>
       <Text onPress={() => navigation.navigate('Account' as never)} style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>Account</Text>
@@ -501,6 +502,7 @@ const Setting = () => {
       
 
       </View>
+    </ScrollView>
 
       
     </CommonLayout>
