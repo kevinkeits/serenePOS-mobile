@@ -391,7 +391,7 @@ const handleSave = () => {
             </View>
             <View style={{width:'20%', alignSelf:'center', backgroundColor:'#2563EB', justifyContent:'center', alignItems:'center', height:25, borderRadius:6, marginLeft:5, marginBottom:10}}>
                     <TouchableOpacity onPress={()=> onOpenProduct()} style={{width:'100%', alignItems:'center'}}>
-                      <Text style={{fontSize:8, color:'white', textAlign:'center', alignSelf:'center'}}>Select Product</Text>
+                      <Text style={{fontSize:10, fontWeight: '500',  color:'white', textAlign:'center', alignSelf:'center'}}>Select Product</Text>
                     </TouchableOpacity>
             </View>
 

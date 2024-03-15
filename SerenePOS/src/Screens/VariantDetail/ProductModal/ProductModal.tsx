@@ -188,7 +188,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
  {selectedItems.length > 0 && (
   <View style={{marginVertical:5,  width:'90%', justifyContent:'center', alignSelf:'center' }}>
   <TouchableOpacity onPress={() => onSave(selectedProducts)} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-      <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Select {selectedItems.length} Product{selectedItems.length > 1 ? 's' : ''}</Text>
+      <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Select ({selectedItems.length}) Product{selectedItems.length > 1 ? 's' : ''}</Text>
   </TouchableOpacity>                
 </View>
  )}

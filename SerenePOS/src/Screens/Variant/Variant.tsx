@@ -113,10 +113,15 @@ const Variant = () => {
           });
           if (response.status === 200) {
             // Registration successful
-            Alert.alert('Success', 'Saved data successful!');
-            onCloseConfirmation()
-            setDeleteMode(false)
-            fetchData()
+            if (response.data.status) {
+              Alert.alert('Success', response.data.message);
+              onCloseConfirmation()
+              setDeleteMode(false)
+              fetchData()
+            } else {
+              Alert.alert('Error', response.data.message);
+            }
+            
           } else {
             // Registration failed
             Alert.alert('Error', 'Saving data failed');
@@ -177,14 +182,14 @@ const Variant = () => {
           )}
           
           </View>
-      {deleteMode && (
+      {/* {deleteMode && (
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20 }}>
               <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text>
               <TouchableOpacity onPress={() => setSelectedItems([])}>
                 <Text style={{ fontSize: 12, color: 'red' }}>Clear</Text>
               </TouchableOpacity>
             </View>
-      )}
+      )} */}
       
 
       <ScrollView style={{marginBottom:50}}>
@@ -218,10 +223,10 @@ const Variant = () => {
       </ScrollView>
       {deleteMode && (
         <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:30}}>
-          <TouchableOpacity onPress={()=> onOpenConfirmation()}  style={{ backgroundColor: '#EF4444', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete</Text>
+          <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete ({selectedItems.length}) item{selectedItems.length > 1 ? 's' : ''}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#2563EB', backgroundColor:'white', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
+          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#dfdfdf', backgroundColor:'white', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
             <Text style={{ color: 'black', fontWeight: 'bold', fontSize:8 }}>Cancel</Text>
           </TouchableOpacity>
           

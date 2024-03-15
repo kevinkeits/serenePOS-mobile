@@ -104,7 +104,7 @@ const Sidebar: React.FC = () => {
         onPress={() => navigateToScreen('Variants')}
       >
         <VariantSVG width='12' height='12' color={isActive('Variants') ? 'white' : 'black'}  />
-        <Text style={[styles.menuItem, isActive('Variants') && styles.activeMenuItemText]}>Variants</Text>
+        <Text style={[styles.menuItem, isActive('Variants') && styles.activeMenuItemText]}>Variant</Text>
       </TouchableOpacity>
 
       {/* <TouchableOpacity
