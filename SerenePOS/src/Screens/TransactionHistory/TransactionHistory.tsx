@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { View, Text, Button, TextInput, Platform, StyleSheet } from 'react-native';
 import CommonLayout from '../../Components/CommonLayout/CommonLayout';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import DetailModal from './components/DetailModal/DetailModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { ApiUrls } from '../../apiUrls/apiUrls';
+import moment from 'moment';
 
 
 
@@ -82,6 +83,7 @@ interface GroupedTransactions {
   
   const TransactionHistory: React.FC = () => {
     const navigation = useNavigation();
+    const isFocused = useIsFocused();
 
     const [isOpenDetail, setIsOpenDetail] = React.useState(false);
     const [selectedID, setSelectedID] = React.useState('');
@@ -89,6 +91,7 @@ interface GroupedTransactions {
     const [detailData, setDetailData] = React.useState<TransactionDetail | null>(null);
 
     const fetchData = async () => {
+      console.log('[Transaction History] fetching data')
       try {
         const token = await AsyncStorage.getItem('userData');     
         if (token) {
@@ -147,7 +150,7 @@ interface GroupedTransactions {
       const groupedTransactions: GroupedTransactions = {};
   
       transactionData.forEach(transaction => {
-        const date = new Date(transaction.transactionDate).toDateString();
+        const date = new Date(transaction.transactionDate).toISOString().slice(0, 10);
         if (!groupedTransactions[date]) {
           groupedTransactions[date] = [];
         }
@@ -157,7 +160,7 @@ interface GroupedTransactions {
       return Object.keys(groupedTransactions).map(date => (
         <View key={date}>
           <View style={{ backgroundColor: '#E1E1E1', flexDirection: 'row', justifyContent: 'space-between', padding: 5, marginHorizontal: 10 }}>
-            <Text style={{ fontSize: 10, color: 'black', fontWeight: 'bold' }}>{date}</Text>
+            <Text style={{ fontSize: 10, color: 'black', fontWeight: 'bold' }}>{moment(date).format('dddd, MMMM Do YYYY')}</Text>
           </View>
           {groupedTransactions[date].map(transaction => (
             <TouchableOpacity onPress={() => onOpenDetail(transaction.id)} style={{ borderBottomWidth: 0.5, borderBottomColor: '#E1E1E1', gap: 5, paddingVertical: 10, paddingHorizontal: 5, marginHorizontal: 10 }} key={transaction.transactionNumber}>
@@ -184,124 +187,22 @@ interface GroupedTransactions {
     };
   
     React.useEffect(() => {
-      fetchData();
-    }, []);
+      if (isFocused) fetchData();
+    }, [isFocused]);
 
 
 
   return (
     <CommonLayout>
-      <ScrollView>
-        <View style={{width:'100%'}}>
-            <View style={{flexDirection: 'row', gap:10,  marginRight:30, marginVertical:10, alignItems:'center'}}>
-                <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Transaction History</Text>
-            </View>
-
-        {/* <View>
-                  <View style={{ backgroundColor:'#E1E1E1', flexDirection:'row', justifyContent:'space-between', padding:5, marginHorizontal:10}}>
-                      <Text style={{fontSize:10, color:'black', fontWeight:'bold'}}>Tuesday, 30 Jan 2024</Text>
-                  </View>
-                  <TouchableOpacity onPress={() => onOpenDetail('1')} style={{borderBottomWidth:0.5, borderBottomColor:'#E1E1E1',gap:5, paddingVertical:10, paddingHorizontal:5, marginHorizontal:10}}>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                        <View style={{flexDirection:'row', gap:5}}>
-                          <Text style={{fontSize:10, color:'black'}}>SE00530012024</Text>
-                          <View style={{backgroundColor: 'red', width:30,justifyContent:'center', alignItems:'center', borderRadius:5 }}>
-                            <Text style={{textAlign:'center', fontSize:6, color:'white', fontWeight:'bold'}}>Unpaid</Text>
-                          </View>
-                          </View>
-                          <Text style={{fontSize:7, color:'black'}}>30-Jan-2024 11:25:12</Text>
-                          
-                      </View>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                          <Text style={{fontSize:10, color:'black'}}>Aulia</Text>
-                          <View style={{}}></View>
-                      </View>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                          <View style={{}}></View>
-                          <Text style={{fontSize:10, color:'black',fontWeight:'bold'}}>Rp 45.000</Text>
-                      </View>                    
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={{borderBottomWidth:0.5, borderBottomColor:'#E1E1E1',gap:5, paddingVertical:10, paddingHorizontal:5, marginHorizontal:10}}>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                        <View style={{flexDirection:'row', gap:5}}>
-                          <Text style={{fontSize:10, color:'black'}}>SE00530012024</Text>
-                          <View style={{backgroundColor: 'red', width:30,justifyContent:'center', alignItems:'center', borderRadius:5 }}>
-                            <Text style={{textAlign:'center', fontSize:6, color:'white', fontWeight:'bold'}}>Unpaid</Text>
-                          </View>
-                          </View>
-                          <Text style={{fontSize:7, color:'black'}}>30-Jan-2024 11:25:12</Text>
-                          
-                      </View>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                          <Text style={{fontSize:10, color:'black'}}>Aulia</Text>
-                          <View style={{}}></View>
-                      </View>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                          <View style={{}}></View>
-                          <Text style={{fontSize:10, color:'black',fontWeight:'bold'}}>Rp 45.000</Text>
-                      </View>                    
-                  </TouchableOpacity>
+      <View style={{flexDirection: 'row', gap:10,  marginRight:30, marginVertical:10, alignItems:'center'}}>
+          <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Transaction History</Text>
       </View>
-      <View>
-                  <View style={{ backgroundColor:'#E1E1E1', flexDirection:'row', justifyContent:'space-between', padding:5, marginHorizontal:10}}>
-                      <Text style={{fontSize:10, color:'black', fontWeight:'bold'}}>Monday, 30 Jan 2024</Text>
-                  </View>
-                  <TouchableOpacity style={{borderBottomWidth:0.5, borderBottomColor:'#E1E1E1',gap:5, paddingVertical:10, paddingHorizontal:5, marginHorizontal:10}}>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                        <View style={{flexDirection:'row', gap:5}}>
-                          <Text style={{fontSize:10, color:'black'}}>SE00530012024</Text>
-                          <View style={{backgroundColor: 'red', width:30,justifyContent:'center', alignItems:'center', borderRadius:5 }}>
-                            <Text style={{textAlign:'center', fontSize:6, color:'white', fontWeight:'bold'}}>Unpaid</Text>
-                          </View>
-                          </View>
-                          <Text style={{fontSize:7, color:'black'}}>29-Jan-2024 11:25:12</Text>
-                          
-                      </View>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                          <Text style={{fontSize:10, color:'black'}}>Samuel</Text>
-                          <View style={{}}></View>
-                      </View>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                          <View style={{}}></View>
-                          <Text style={{fontSize:10, color:'black',fontWeight:'bold'}}>Rp 45.000</Text>
-                      </View>                    
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={{borderBottomWidth:0.5, borderBottomColor:'#E1E1E1',gap:5, paddingVertical:10, paddingHorizontal:5, marginHorizontal:10}}>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                        <View style={{flexDirection:'row', gap:5}}>
-                          <Text style={{fontSize:10, color:'black'}}>SE00530012024</Text>
-                          <View style={{backgroundColor: 'red', width:30,justifyContent:'center', alignItems:'center', borderRadius:5 }}>
-                            <Text style={{textAlign:'center', fontSize:6, color:'white', fontWeight:'bold'}}>Unpaid</Text>
-                          </View>
-                          </View>
-                          <Text style={{fontSize:7, color:'black'}}>29-Jan-2024 11:25:12</Text>
-                          
-                      </View>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                          <Text style={{fontSize:10, color:'black'}}>Aulia</Text>
-                          <View style={{}}></View>
-                      </View>
-                      <View style={{ flexDirection:'row', justifyContent:'space-between'}}>
-                          <View style={{}}></View>
-                          <Text style={{fontSize:10, color:'black',fontWeight:'bold'}}>Rp 45.000</Text>
-                      </View>                    
-                  </TouchableOpacity>
-      </View> */}
+      <ScrollView>
+      
+        <View style={{width:'100%'}}>
+            
       {renderTransactionByDate()}
-            {/* <View style={{marginHorizontal:10, backgroundColor:'#2563EB', width:'20%', justifyContent:'flex-end', alignSelf:'flex-end', borderRadius:5, marginBottom:10}}>
-                <TouchableOpacity style={{paddingVertical:6}}>
-                    <Text style={{color:'white', fontSize:8, textAlign:'center'}}>Print Receipt</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={{marginHorizontal:10, borderWidth:0.5, borderColor:'#2563EB', width:'20%', justifyContent:'flex-end', alignSelf:'flex-end', borderRadius:5, marginBottom:10}}>
-                <TouchableOpacity onPress={()=> navigation.goBack()} style={{paddingVertical:6}}>
-                    <Text style={{color:'black', fontSize:8, textAlign:'center'}}>Close</Text>
-                </TouchableOpacity>
-            </View> */}
-        
-
+            
         </View>
         </ScrollView>
 
