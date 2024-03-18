@@ -93,7 +93,8 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
 
   const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
-  const [variantInputValues, setVariantInputValues] = React.useState<string[]>(detailData?.variant.map(() => '') ?? []); 
+  const [variantInputValues, setVariantInputValues] = React.useState<string[]>([]); 
+  const [variantIds, setVariantIds] = React.useState<string[]>([]); 
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const [isSelectedOptions, setIsSelectedOptions] = React.useState<string[]>([]);
 
@@ -148,10 +149,11 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
           setTextDescription(data.product.notes)
           if (data.variant) {
             const variantOptionIDs = data.variant.map((x) => x.variantOptionID);
-            setSelectedVariantIds(data.variant.map((x) => x.variantOptionID));
-            setIsSelectedOptions(Array.from({ length: variantOptionIDs.length }, () => 'T'));
-      
-            setVariantInputValues(data.variant.map((x) =>parseInt(x.price).toLocaleString())); 
+            setSelectedVariantIds(data.variant.filter((x) => x.isSelected == 'T').map((x) => x.variantOptionID));
+            //setIsSelectedOptions(Array.from({ length: variantOptionIDs.length }, () => 'T'));
+            setIsSelectedOptions(data.variant.map((x) => x.isSelected));
+            setVariantIds(variantOptionIDs)
+            setVariantInputValues(data.variant.map((x) => 'Rp ' + parseInt(x.price).toLocaleString())); 
           }
         }
         setDetailData(data);
@@ -233,7 +235,7 @@ const handleSave = () => {
     fileData: form.paymentConfirmationFileData,
     variantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.variantOptionID).join(',') : '',
     isSelected: isSelectedOptions.join(','),
-    productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.variantID).join(',') : '',
+    productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.productVariantOptionID).join(',') : '',
   };
   console.log(updatedData)
   onSave(updatedData);
@@ -258,7 +260,7 @@ const renderTransactionByName = () => {
       </View>
       <View style={{marginBottom:10}}>
       {groupedVariants[name].map((name, index) => (
-         <View key={name.variantOptionID} style={styles.rowContainer}>
+         <View key={name.productVariantOptionID} style={styles.rowContainer}>
          <TouchableOpacity
            style={styles.checkboxContainer}
            activeOpacity={1}
@@ -283,9 +285,10 @@ const renderTransactionByName = () => {
              },
            ]}
            placeholder={`Enter value for ${name.label}`}
-           value={variantInputValues[index]}
-           onChangeText={(text) => handleVariantInputTextChange(name.variantOptionID, text)}
-           editable={selectedVariantIds.includes(name.variantOptionID) && !isSubmitting}
+           value={variantInputValues[variantIds.indexOf(name.variantOptionID)]}
+           //onChangeText={(text) => handleVariantInputTextChange(name.variantOptionID, text)}
+           //editable={selectedVariantIds.includes(name.variantOptionID) && !isSubmitting}
+           editable={false}
          />
        </View>
       ))}

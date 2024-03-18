@@ -38,6 +38,8 @@ export interface ProductDetail {
  
   }
   export interface selVariantProduct {
+    productVariantOptionID: string;
+    isSelected: string;
     variantID: string;
     name: string;
     type: string;
@@ -120,6 +122,7 @@ const Products = () => {
           });           
           const data: Categories[] = response.data.data;
           setCategoriesData(data);
+          if (data.length > 0) fetchData(data[0].id)
         } else {
           console.error('No token found in AsyncStorage');
         }
@@ -205,24 +208,24 @@ const Products = () => {
         <View/>
       ):(
         <View style={{flexDirection:'row', gap:4}}>
-        <TouchableOpacity onPress={() => handleNavigate('')} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: 'green'}}>
+        <TouchableOpacity onPress={() => handleNavigate('')} style={{borderWidth:0.5, paddingHorizontal:16, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: '#D2D2D2'}}>
             <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'red'}}>
+        <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'#D2D2D2'}}>
             <TrashSVG width='12' height='12' color='red'/>
         </TouchableOpacity>
       </View>
       )}
       
       </View>
-      {deleteMode && (
+      {/* {deleteMode && (
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20 }}>
               <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text>
               <TouchableOpacity onPress={() => setSelectedItems([])}>
                 <Text style={{ fontSize: 12, color: 'red' }}>Clear</Text>
               </TouchableOpacity>
             </View>
-      )}
+      )} */}
           <ScrollView style={{marginBottom:50}}>
       <View>
       <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
@@ -235,7 +238,7 @@ const Products = () => {
             ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
             <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.qtyAlert} Items</Text>
+            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -289,14 +292,15 @@ const Products = () => {
       </View>
       </ScrollView>
       {deleteMode && (
-        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:30}}>
-          <TouchableOpacity onPress={()=> onOpenConfirmation()}  style={{ backgroundColor: '#EF4444', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#2563EB', backgroundColor:'white', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
-            <Text style={{ color: 'black', fontWeight: 'bold', fontSize:8 }}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
+        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:50 }}>
+        <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
+          <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete ({selectedItems.length}) item{selectedItems.length > 1 ? 's' : ''}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#dfdfdf', backgroundColor:'white', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
+          <Text style={{ color: 'black', fontWeight: 'bold', fontSize:8 }}>Cancel</Text>
+        </TouchableOpacity>
+        
+      </View>
       )}
 
 

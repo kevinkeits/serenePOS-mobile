@@ -90,7 +90,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={isVisible}
       onRequestClose={() => handleClose()}
@@ -129,7 +129,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
         
 
         <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'15%'}}>Qty</Text>
+                <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'15%'}}>Alert when Product has Qty</Text>
                 <View style={styles.quantityContainer}>
                     <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
                     <Text style={styles.quantityButtonText}>-</Text>

@@ -359,7 +359,7 @@ const handleSave = () => {
                 <TextInput
                     style={{ paddingLeft: 10, paddingVertical: 5, fontSize: 8, width: '100%', height: 25, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius: 5 }}
                     placeholder="Price"
-                    value={'Rp ' + option.price}
+                    value={'Rp ' + parseInt(option.price.toString())}
                     onChangeText={(text) => handleOption(index, 'price', text.replace('Rp', ''))}
                     keyboardType="numeric"
                 />

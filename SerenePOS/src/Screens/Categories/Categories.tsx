@@ -21,6 +21,7 @@ export interface Coffee {
     id: string;
     name: string;
     qtyAlert: string;
+    totalItem: string;
     bgColor?: string;
   }
 
@@ -263,7 +264,7 @@ const Categories = () => {
               ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
             <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.qtyAlert} Items</Text>
+            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
             </View>
           </TouchableOpacity>
             </View>
