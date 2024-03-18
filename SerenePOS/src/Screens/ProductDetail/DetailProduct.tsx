@@ -11,7 +11,7 @@ import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
 import DropdownSVG from '../../assets/svgs/DropdownSVG'
 import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
-import { Product, ProductDetail, ProductForm } from '../Products/Products'
+import { Product, ProductDetail, ProductForm, selVariantProduct } from '../Products/Products'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ApiUrls } from '../../apiUrls/apiUrls'
 import { Categories } from '../Categories/Categories'
@@ -38,6 +38,10 @@ export interface Coffee {
   interface CategoryOptions {
     label: string;
     value: string;
+  }
+
+  interface GroupedVariant {
+    [danamete: string]: selVariantProduct[];
   }
 
   const temperatureOptions = [
@@ -91,7 +95,11 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
   const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
   const [variantInputValues, setVariantInputValues] = React.useState<string[]>(detailData?.variant.map(() => '') ?? []); 
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
+  const [isSelectedOptions, setIsSelectedOptions] = React.useState<string[]>([]);
+
   const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
+  const [groupedVariants, setGroupedVariants] = React.useState({});
+
 
 
   const {
@@ -139,7 +147,9 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
           setQuantity(data.product.qty)
           setTextDescription(data.product.notes)
           if (data.variant) {
+            const variantOptionIDs = data.variant.map((x) => x.variantOptionID);
             setSelectedVariantIds(data.variant.map((x) => x.variantOptionID));
+            setIsSelectedOptions(Array.from({ length: variantOptionIDs.length }, () => 'T'));
       
             setVariantInputValues(data.variant.map((x) =>parseInt(x.price).toLocaleString())); 
           }
@@ -221,14 +231,69 @@ const handleSave = () => {
     productSKU: textProductSKU,
     fileName: form.paymentConfirmationFileName,
     fileData: form.paymentConfirmationFileData,
-    variantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.VariantOptionID).join(',') : '',
-    isSelected: '',
+    variantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.variantOptionID).join(',') : '',
+    isSelected: isSelectedOptions.join(','),
     productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.variantID).join(',') : '',
   };
   console.log(updatedData)
   onSave(updatedData);
   navigation.navigate('Products' as never) 
 };
+
+const renderTransactionByName = () => {
+  const groupedVariants: GroupedVariant = {};
+
+  detailData?.variant.forEach(x => {
+    const name = x.name
+    if (!groupedVariants[name]) {
+      groupedVariants[name] = [];
+    }
+    groupedVariants[name].push(x);
+  });
+
+  return Object.keys(groupedVariants).map(name => (
+    <View key={name} style={{flexDirection:'row', marginLeft:10}}>
+      <View style={{width:'25%'}}>
+        <Text style={{ fontSize: 10, color: 'black' }}>{name}</Text>
+      </View>
+      <View style={{marginBottom:10}}>
+      {groupedVariants[name].map((name, index) => (
+         <View key={name.variantOptionID} style={styles.rowContainer}>
+         <TouchableOpacity
+           style={styles.checkboxContainer}
+           activeOpacity={1}
+           onPress={() => handleVariantOptionChange(name.variantOptionID)}
+         >
+           <View style={styles.checkbox}>
+             {selectedVariantIds.includes(name.variantOptionID) && 
+               <Text style={{ fontSize: 12, color: 'white', backgroundColor:'blue', width: 20,
+               height: 20,
+               borderRadius: 4, textAlign:'center' }}>✔</Text>
+             }
+           </View>
+           <Text style={styles.checkboxLabel}>{name.label}</Text>
+         </TouchableOpacity>
+   
+         <TextInput
+           style={[
+             styles.variantInput,
+             {
+               opacity: selectedVariantIds.includes(name.variantOptionID) ? 1 : 0.5,
+               backgroundColor: selectedVariantIds.includes(name.variantOptionID) ? '#F5F6FF' : '#D2D2D2',
+             },
+           ]}
+           placeholder={`Enter value for ${name.label}`}
+           value={variantInputValues[index]}
+           onChangeText={(text) => handleVariantInputTextChange(name.variantOptionID, text)}
+           editable={selectedVariantIds.includes(name.variantOptionID) && !isSubmitting}
+         />
+       </View>
+      ))}
+      </View>
+    </View>
+  ));
+};
+
 
 
 
@@ -252,9 +317,9 @@ const handleSave = () => {
       };
     
       const decrementQuantity = () => {
-        if (quantity > 1) {
+        // if (quantity > 1) {
           setQuantity((prevQuantity) => prevQuantity - 1);
-        }
+        // }
       };
     
 
@@ -288,31 +353,47 @@ const handleSave = () => {
     const navigation = useNavigation();
 
 
-      const handleVariantOptionChange = (id: string) => {
-        setSelectedVariantIds((prevIds) => {
-          if (prevIds.includes(id)) {
-            // If the ID is already in the array, remove it
-            return prevIds.filter((prevId) => prevId !== id);
-          } else {
-            // If the ID is not in the array, add it
-            return [...prevIds, id];
-          }
+    // const handleVariantOptionChange = (id: string) => {
+    //   setSelectedVariantIds((prevIds) => {
+    //     if (prevIds.includes(id)) {
+    //       // If the ID is already in the array, remove it
+    //       return prevIds.filter((prevId) => prevId !== id);
+    //     } else {
+    //       // If the ID is not in the array, add it
+    //       return [...prevIds, id];
+    //     }
+    //   });
+    // };
+    const handleVariantOptionChange = (id: string) => {
+      // Calculate the updated selectedVariantIds
+      let updatedSelectedVariantIds: string[];
+      if (selectedVariantIds.includes(id)) {
+        // If the ID is already in the array, remove it
+        updatedSelectedVariantIds = selectedVariantIds.filter((prevId) => prevId !== id);
+      } else {
+        // If the ID is not in the array, add it
+        updatedSelectedVariantIds = [...selectedVariantIds, id];
+      }
+    
+      // Update selectedVariantIds state immediately
+      setSelectedVariantIds(updatedSelectedVariantIds);
+    
+      // Calculate updated isSelectedOptions immediately
+      setIsSelectedOptions((prevOptions) => {
+        if (!detailData) {
+          // If detailData is null, return the previous options
+          return prevOptions;
+        }
+    
+        const updatedOptions = detailData.variant.map((variant) => {
+          // Check if the variant's ID is present in updatedSelectedVariantIds
+          return updatedSelectedVariantIds.includes(variant.variantOptionID) ? 'T' : 'F';
         });
-      };
+    
+        return updatedOptions;
+      });
+    };
 
-      // const handleVariantOptionChange = (id: string) => {
-      //   setSelectedVariantIds((prevIds) => {
-      //     const isSelected = prevIds.includes(id);
-      //     if (isSelected) {
-      //       // If the ID is already selected, remove it
-      //       return prevIds.filter((prevId) => prevId !== id);
-      //     } else {
-      //       // If the ID is not selected, add it
-      //       return [...prevIds, id];
-      //     }
-      //   });
-      // };
-      
       const handleVariantInputTextChange = (id: string, text: string) => {
         if (detailData) {
         setVariantInputValues((prevValues) => {
@@ -328,6 +409,7 @@ const handleSave = () => {
     React.useEffect(() => {
       fetchData(id)
       fetchCategories()
+      
       }, []);
 
   return (
@@ -518,12 +600,12 @@ const handleSave = () => {
                             // maxLength={40}
                             onChangeText={text => setTextDescription(text)}
                             value={textDescription}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%'}}
+                            style={{paddingLeft: 10, paddingVertical:3, fontSize:8, width:'80%', textAlignVertical: 'top',}}
                         />
                     </View>          
         </View>
 
-        {detailData && (
+        {/* {detailData && (
           <View>
   {detailData.variant.map((x, index) => (
     <View key={x.variantOptionID} style={styles.rowContainer}>
@@ -533,7 +615,11 @@ const handleSave = () => {
         onPress={() => handleVariantOptionChange(x.variantOptionID)}
       >
         <View style={styles.checkbox}>
-          {selectedVariantIds.includes(x.variantOptionID) && <View style={styles.checkboxInner} />}
+          {selectedVariantIds.includes(x.variantOptionID) && 
+            <Text style={{ fontSize: 12, color: 'white', backgroundColor:'blue', width: 20,
+            height: 20,
+            borderRadius: 4, textAlign:'center' }}>✔</Text>
+          }
         </View>
         <Text style={styles.checkboxLabel}>{x.label}</Text>
       </TouchableOpacity>
@@ -554,7 +640,12 @@ const handleSave = () => {
     </View>
   ))}
 </View>
-        )}
+        )} */}
+
+        <View>
+          {renderTransactionByName()}
+        </View>
+
 
         <View style={{marginHorizontal:10, marginVertical:8, width:'80%',  }}>
                     <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
@@ -657,9 +748,10 @@ const styles = StyleSheet.create({
       checkbox: {
         width: 20,
         height: 20,
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderRadius: 4,
-        borderColor: '#2563EB',
+        borderColor:'#D2D2D2',
+        backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
       },
@@ -688,7 +780,7 @@ const styles = StyleSheet.create({
 
   variantInput: {
     height: 25,
-    width: '60%',
+    width: '40%',
     borderColor: 'gray',
     paddingVertical: 5,
     paddingLeft: 8,
