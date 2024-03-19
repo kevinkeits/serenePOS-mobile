@@ -40,7 +40,7 @@ export interface Coffee {
     value: string;
   }
 
-  interface GroupedVariant {
+  export interface GroupedVariant {
     [danamete: string]: selVariantProduct[];
   }
 
@@ -268,7 +268,7 @@ const renderTransactionByName = () => {
          >
            <View style={styles.checkbox}>
              {selectedVariantIds.includes(name.variantOptionID) && 
-               <Text style={{ fontSize: 12, color: 'white', backgroundColor:'blue', width: 20,
+               <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', width: 20,
                height: 20,
                borderRadius: 4, textAlign:'center' }}>✔</Text>
              }

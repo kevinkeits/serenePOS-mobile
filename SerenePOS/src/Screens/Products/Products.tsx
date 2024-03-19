@@ -273,8 +273,8 @@ const Products = () => {
                           <Text style={{color:'white', alignSelf:'center', textAlign:'center', backgroundColor:'black', padding:5, borderRadius:5, fontSize:10 }}>Out of stock</Text>
                         </View>
                         )}
-                  <View style={{width:'50%'}}>
-                      <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={{width:'100%', height:'100%'}} />
+                  <View style={{width:'60%', marginLeft:5}}>
+                      <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={{width:'100%', height:'100%', borderRadius:5}} />
                   </View>
                   <View style={{width:'50%'}}>
                       <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.name}</Text>
@@ -330,7 +330,8 @@ const styles = StyleSheet.create({
     },
     cardRow: {
       flexDirection:'row', 
-      padding:10, 
+      paddingHorizontal:10, 
+      paddingVertical:6,
       gap:5,
       borderWidth:0.5, 
       borderRadius:7,  

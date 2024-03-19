@@ -16,6 +16,11 @@ interface RadioButtonOptionProps {
     value: string;
   }
 
+  const discountTypeData = [
+    { id: '1', label: 'Rp', additionalData: '0' },
+    { id: '2', label: '%', additionalData: '0' },
+  ];
+
 const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSave }) => {
 
 
@@ -23,6 +28,8 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
     const [textName, setTextName] = React.useState('');
     const [radioValue, setRadioValue] = React.useState('1');
     const [radioTypeValue, setRadioTypeValue] = React.useState('1');
+    const [discTypValue, setDiscTypeValue] = React.useState('');
+
 
 
     const RadioButtonOption: React.FC<RadioButtonOptionProps> = ({ label, value }) => (
@@ -46,6 +53,11 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
           <Text style={{fontSize:10, color:'black'}}>{label}</Text>
         </View>
       );
+
+      const handleDiscountTypePress = (option: string) => {
+        setDiscTypeValue(option);
+      };
+
 
   return (
     <Modal
@@ -91,10 +103,29 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                                     style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
                                 />
                             </View>
-                            <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                            {/* <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
                                 <RadioTypeOption label="Rp" value="1" />
                                 <RadioTypeOption label="%" value="2" />
-                            </View>          
+                            </View>           */}
+                            <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4 }}>
+                              {discountTypeData.map((option) => (
+                                  <TouchableOpacity
+                                    key={option.id}
+                                    style={{
+                                      flexDirection: 'row',
+                                      alignItems: 'center',
+                                      marginVertical: 8,
+                                    }}
+                                    onPress={() => handleDiscountTypePress(option.id)}
+                                  >
+                                    <Text 
+                                    style={[
+                                      {fontSize: 10, color:'black', borderWidth:0.5, width:30, borderColor:'#2563EB', borderRadius:3, height:30, textAlign:'center', paddingTop:8},
+                                      discTypValue == option.id && {backgroundColor: '#2563EB', color:'white'}
+                                  ]}>{option.label}</Text>
+                                  </TouchableOpacity>
+                                ))}
+                            </View>
                        </View>
                         <View style={{marginTop:20, marginLeft:20}}>
                         <View style={{ flexDirection:'row', gap:10,  alignItems:'center',}}>

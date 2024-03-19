@@ -15,7 +15,7 @@ import CartSVG from '../../assets/svgs/CartSVG';
 import SaveSVG from '../../assets/svgs/SaveSVG';
 import TrashSVG from '../../assets/svgs/TrashSVG';
 import TransactionModal from './components/TransactionModal/TransactionModal';
-import { Product } from '../Products/Products';
+import { Product, ProductDetail } from '../Products/Products';
 import { Categories } from '../Categories/Categories';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiUrls } from '../../apiUrls/apiUrls';
@@ -30,7 +30,7 @@ const Sales = () => {
     const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
 
 
-    const [selectedItems, setSelectedItems] = React.useState<Product[]>([]);
+    const [selectedItems, setSelectedItems] = React.useState<ProductDetail[]>([]);
     const [isEditModalVisible, setEditModalVisible] = React.useState(false);
     const [selectedItemForEdit, setSelectedItemForEdit] = React.useState<Product | null>(null);
     const [totalPriceState, setTotalPriceState] = React.useState(0);
@@ -40,6 +40,7 @@ const Sales = () => {
     const [customerName, setCustomerName] = React.useState('');
     const [isOpenTransaction, setIsOpenTransaction] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
+    const [detailData, setDetailData] = React.useState<ProductDetail | null>(null);
 
 
 
@@ -82,6 +83,46 @@ const Sales = () => {
       }
     };
 
+    const fetchDetail = async (id: string) => {
+      try {
+        const token = await AsyncStorage.getItem('userData'); 
+        const categoryDetailUrl = ApiUrls.getProductDetail(id);    
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(categoryDetailUrl, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: ProductDetail = response.data.data;
+          console.log(response.data.data)
+          if (id !== '') {
+          // if (data) {
+          //   setTextProductSKU(data.product.productSKU)
+          //   setTextName(data.product.name)
+          //   setTextPrice(parseInt(data.product.price).toString())
+          //   setSelCategory(data.product.categoryID)
+          //   setQuantity(data.product.qty)
+          //   setTextDescription(data.product.notes)
+          //   if (data.variant) {
+          //     const variantOptionIDs = data.variant.map((x) => x.variantOptionID);
+          //     setSelectedVariantIds(data.variant.filter((x) => x.isSelected == 'T').map((x) => x.variantOptionID));
+          //     //setIsSelectedOptions(Array.from({ length: variantOptionIDs.length }, () => 'T'));
+          //     setIsSelectedOptions(data.variant.map((x) => x.isSelected));
+          //     setVariantIds(variantOptionIDs)
+          //     setVariantInputValues(data.variant.map((x) => 'Rp ' + parseInt(x.price).toLocaleString())); 
+          //   }
+          // }
+          setDetailData(data);
+        }
+        } else {
+          console.error('No token found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
     const fetchCategories = async () => {
       try {
         const token = await AsyncStorage.getItem('userData');     
@@ -103,7 +144,14 @@ const Sales = () => {
     };
 
       const openEditModal = (item: Product) => {
+        fetchDetail(item.id)
         setSelectedItemForEdit(item);
+        setEditModalVisible(true);
+      };
+
+      const openEditModalCart = (item: ProductDetail) => {
+        fetchDetail(item.product.id)
+        setSelectedItemForEdit(item.product);
         setEditModalVisible(true);
       };
     
@@ -151,20 +199,20 @@ const Sales = () => {
         setIsOpenDiscount(false);
       };
   
-      const addToSelectedItems = (item: Product | null) => {
+      const addToSelectedItems = (item: ProductDetail | null) => {
         if (item) {
-          if (!selectedItems.some((selectedItem) => selectedItem.id === item.id)) {
+          if (!selectedItems.some((selectedItem) => selectedItem.product.id === item.product.id)) {
             setSelectedItems((prevItems) => [...prevItems, item]);
           }
         }
       };
     
       const removeFromSelectedItems = (itemId: string) => {
-        setSelectedItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+        setSelectedItems((prevItems) => prevItems.filter((item) => item.product.id !== itemId));
       };
 
       const calculateTotalPrice = () => {
-        const subtotal = selectedItems.reduce((total, item) => total + parseInt(item.price), 0);
+        const subtotal = selectedItems.reduce((total, item) => total + parseInt(item.product.price), 0);
         const taxRate = 0.1; 
         const tax = subtotal * taxRate;
         const discount = 0; 
@@ -189,7 +237,6 @@ React.useEffect(() => {
 
   return (
     <CommonLayout>
-      <ScrollView>
       <View style={{flexDirection:'row'}}>
         <View style={{width: '70%'}}>
 
@@ -197,7 +244,7 @@ React.useEffect(() => {
       <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Sales</Text>
       <Text style={{fontWeight:"bold", fontSize:17, }}></Text>
       </View>
-      <View style={{height:85,}}>
+      <View style={{height:65,}}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal:"auto", flexDirection: 'row'}}>
         {categoriesData.map((x, index) => (
             <TouchableOpacity
@@ -219,7 +266,8 @@ React.useEffect(() => {
       <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto"}}>Coffee</Text>
       <Text style={{fontWeight:"bold", fontSize:17}}></Text>
       </View> */}
-    <View style={{ alignItems: 'center', marginBottom:20, marginLeft:10, width:'100%', flexDirection:'row', flexWrap:"wrap", marginTop:5}}>
+      <ScrollView>
+    <View style={{ alignItems: 'center', marginBottom:85, marginLeft:10, width:'100%', flexDirection:'row', flexWrap:"wrap", marginTop:5,}}>
       {productData.map((x) => (
         // <TouchableOpacity key={x.id} style={styles.card} onPress={() => addToSelectedItems(x)}>
         <TouchableOpacity key={x.id} style={styles.card} onPress={() => openEditModal(x)}>
@@ -229,6 +277,7 @@ React.useEffect(() => {
         </TouchableOpacity>
       ))}
     </View>
+    </ScrollView>
 
     </View>
 
@@ -238,7 +287,7 @@ React.useEffect(() => {
 
 {selectedItems.length > 0 ? (
     <View style={styles.selectedItemsContainer}>
-      <View>
+      <View style={{}}>
       <Text style={{fontSize:7, marginTop:3, marginHorizontal:10,  color:'black'}}>{getCurrentDate()}</Text>
       <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:5, marginTop:7, gap:2}}>
             <TouchableOpacity onPress={()=>onOpenTransaction()}>
@@ -274,34 +323,49 @@ React.useEffect(() => {
                 </Text>
             </TouchableOpacity>
           </View>
+
+          <ScrollView style={{maxHeight:150}}>
+            <View style={{ }}>
         {selectedItems.map((item) => (
-        <View key={item.id} style={styles.selectedItem}>
+        <View key={item.product.id} style={styles.selectedItem}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-            <Text style={{ fontSize: 8, fontWeight: 'bold', maxWidth: 150  }}>{item.name}</Text>
+            <Text style={{ fontSize: 8, fontWeight: 'bold', maxWidth: 150  }}>{item.product.name}</Text>
             <Text style={{ fontSize: 8, marginLeft: 5 }}>x 1</Text>
           </View>
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ fontSize: 8,  maxWidth: 150  }}>Price</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {parseInt(item.price).toLocaleString()}</Text>
+            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {parseInt(item.product.price).toLocaleString()}</Text>
           </View>
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
             <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp 0</Text>
           </View>
+          {
+            item.variant.map((x, index)=>(
+              <View key={index}>
+                <Text style={{fontSize:7}}>
+                  {x.label}
+                </Text>
+              </View>
+            ))
+          }
 
           <View style={{flexDirection:'row', gap:4, justifyContent:'flex-end'}}>
-          <TouchableOpacity onPress={() => removeFromSelectedItems(item.id)} style={{marginTop:5}}>
+          <TouchableOpacity onPress={() => removeFromSelectedItems(item.product.id)} style={{marginTop:5}}>
             <TrashSVG width='12' height='12' color='red'/>
           </TouchableOpacity>
-            <TouchableOpacity onPress={() => openEditModal(item)} style={{marginTop:5}}>
+            <TouchableOpacity onPress={() => openEditModalCart(item)} style={{marginTop:5}}>
                <PencilSVG width='11' heigth='11' color='grey'/>
               </TouchableOpacity>
-              </View>
+          </View>
         </View>
         ))}
         </View>
+        </ScrollView>
 
-        <View>
+        </View>
+
+        <View style={{}}>
           <View style={styles.underline}/>
         <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>Subtotal:</Text>
@@ -377,11 +441,10 @@ React.useEffect(() => {
         {/* Side Container */}
 
     </View>
-  </ScrollView>
-    <EditItemModal isVisible={isEditModalVisible} selectedItem={selectedItemForEdit} onClose={closeEditModal} onSave={addToSelectedItems} />
+    <EditItemModal isVisible={isEditModalVisible} selectedItem={detailData} onClose={closeEditModal} onSave={addToSelectedItems} />
     <PaymentMethodModal isVisible={isOpenPayment} totalPrice={totalPriceState} onClose={onClosePayment}/>
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
-    <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.id)} />
+    <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.product.id)} />
     <TransactionModal isVisible={isOpenTransaction} onClose={onCloseTransaction}/>
 
 
@@ -394,7 +457,7 @@ const styles = StyleSheet.create({
     backgroundColor:"blue",
     justifyContent: 'flex-end',
     width:140, 
-    height:60, 
+    height:55, 
     borderRadius:10, 
     shadowColor: '#000', 
     shadowOffset: { width: 0, height: 8 }, 
@@ -409,11 +472,11 @@ const styles = StyleSheet.create({
   },
   card: {
     marginRight: 6,
-    borderWidth: 0.5,
+    // borderWidth: 0.5,
     marginBottom:10,
     width:105, 
     height:120, 
-    borderRadius:7,
+    // borderRadius:7,
     borderColor:'#D2D2D2', 
   },
   cardRowSkeleton: {
@@ -427,9 +490,11 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 50,
-    borderTopRightRadius:5,
-    borderTopLeftRadius:5
+    height: '60%',
+    // borderTopRightRadius:5,
+    // borderTopLeftRadius:5,
+    borderRadius:5,
+    marginBottom:3
 
   },
   title: {
@@ -445,11 +510,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   selectedItemsContainer: {
-    marginVertical: 20,
+    marginVertical: 5,
     width: '30%',
     borderRadius: 10,
     backgroundColor: '#FFF',
     shadowColor: '#000',
+     height:300,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -487,7 +553,7 @@ justifyContent: 'space-between'
     borderBottomColor: 'grey',
     borderStyle: 'dotted',  },
     deleteButton: {
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
     padding: 5,
     borderRadius: 5,
   },
@@ -508,7 +574,7 @@ justifyContent: 'space-between'
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 10,
-    marginBottom: 5
+    // marginBottom: 5
   },
   totalPriceText: {
     fontSize: 8,
@@ -521,7 +587,7 @@ justifyContent: 'space-between'
   },
   payNowButton: {
     backgroundColor: '#2563EB',
-    padding: 6,
+    padding: 2,
     borderRadius: 8,
     width: '80%',
     marginTop: 10,
@@ -537,7 +603,7 @@ justifyContent: 'space-between'
   billButton: {
     borderColor: '#E84A4A',
     borderWidth: 1,
-    padding: 6,
+    padding: 2,
     borderRadius: 8,
     width: '80%',
     alignSelf: 'center',

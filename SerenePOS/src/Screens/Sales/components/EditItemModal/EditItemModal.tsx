@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Product } from '../../../Products/Products';
+import { GroupedVariant } from '../../../ProductDetail/DetailProduct';
+import { Product, ProductDetail } from '../../../Products/Products';
 
 
 interface RadioProps {
@@ -11,8 +12,8 @@ interface RadioProps {
 interface EditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
-  selectedItem: Product | null;
-  onSave: (item: Product | null) => void;
+  selectedItem: ProductDetail | null;
+  onSave: (item: ProductDetail | null) => void;
 }
 
 const iceData = [
@@ -57,6 +58,11 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
     const [discValue, setDiscValue] = React.useState('');
     const [discTypValue, setDiscTypeValue] = React.useState('');
     const [notes, setNotes] = React.useState('');
+    const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
+    const [variantIds, setVariantIds] = React.useState<string[]>([]); 
+    const [isSelectedOptions, setIsSelectedOptions] = React.useState<string[]>([]);
+
+
 
 
 
@@ -65,27 +71,8 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
         option2: false,
       });
 
-      const [selectedIce, setSelectedIce] = React.useState<string | null>(null);
-      const [selectedSugar, setSelectedSugar] = React.useState<string | null>(null);
-      const [selectedServe, setSelectedServe] = React.useState<string | null>(null);
       const [selectedDiscount, setSelectedDiscount] = React.useState<string | null>(null);
 
-      const [selectedAddOnIds, setSelectedAddOnIds] = React.useState<string[]>([]);
-      const [addOnInputValues, setAddOnInputValues] = React.useState<string[]>(addOnOptions.map(() => ''));
-      const [isAddOnSubmitting, setIsAddOnSubmitting] = React.useState(false); 
-
-
-      const handleIcePress = (option: string) => {
-        setSelectedIce(option);
-      };
-
-      const handleSugarPress = (option: string) => {
-        setSelectedSugar(option);
-      };
-
-      const handleServePress = (option: string) => {
-        setSelectedServe(option);
-      };
 
       const handleDiscountPress = (option: string) => {
         setSelectedDiscount(option);
@@ -95,20 +82,8 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
         setDiscTypeValue(option);
       };
 
-      const handleOptionAddOnChange = (id: string) => {
-        setSelectedAddOnIds((prevIds) => {
-          if (prevIds.includes(id)) {
-            // If the ID is already in the array, remove it
-            return prevIds.filter((prevId) => prevId !== id);
-          } else {
-            // If the ID is not in the array, add it
-            return [...prevIds, id];
-          }
-        });
-      };
-
   
-      const handleSave = (item: Product | null) => {
+      const handleSave = (item: ProductDetail | null) => {
         onSave(item)
         onClose()
       }
@@ -129,6 +104,79 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
         }));
       };
 
+      const handleVariantOptionChange = (id: string) => {
+        // Calculate the updated selectedVariantIds
+        let updatedSelectedVariantIds: string[];
+        if (selectedVariantIds.includes(id)) {
+          // If the ID is already in the array, remove it
+          updatedSelectedVariantIds = selectedVariantIds.filter((prevId) => prevId !== id);
+        } else {
+          // If the ID is not in the array, add it
+          updatedSelectedVariantIds = [...selectedVariantIds, id];
+        }
+      
+        // Update selectedVariantIds state immediately
+        setSelectedVariantIds(updatedSelectedVariantIds);
+      
+        // // Calculate updated isSelectedOptions immediately
+        // setIsSelectedOptions((prevOptions) => {
+        //   if (!detailData) {
+        //     // If detailData is null, return the previous options
+        //     return prevOptions;
+        //   }
+      
+        //   const updatedOptions = detailData.variant.map((variant) => {
+        //     // Check if the variant's ID is present in updatedSelectedVariantIds
+        //     return updatedSelectedVariantIds.includes(variant.variantOptionID) ? 'T' : 'F';
+        //   });
+      
+        //   return updatedOptions;
+        // });
+      };
+
+      const renderVariantsByName = () => {
+        const groupedVariants: GroupedVariant = {};
+      
+        selectedItem?.variant.forEach(x => {
+          const name = x.name
+          if (!groupedVariants[name]) {
+            groupedVariants[name] = [];
+          }
+          groupedVariants[name].push(x);
+        });
+      
+        return Object.keys(groupedVariants).map(name => (
+          <View key={name} style={{flexDirection:'row', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
+            <View style={{width:'33%', marginTop:10}}>
+              <Text style={{ fontSize: 10, color: 'black' }}>{name}</Text>
+            </View>
+            <View style={{marginBottom:10}}>
+            {groupedVariants[name].map((name, index) => (
+               <View key={name.productVariantOptionID} style={{ flexDirection: 'row', alignItems: 'center'}}>
+               <TouchableOpacity
+                 style={styles.checkboxContainer}
+                 activeOpacity={1}
+                 onPress={() => handleVariantOptionChange(name.variantOptionID)}
+               >
+                 <View style={styles.checkbox}>
+                   {selectedVariantIds.includes(name.variantOptionID) && 
+                     <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', width: 20,
+                     height: 20,
+                     borderRadius: 4, textAlign:'center' }}>✔</Text>
+                   }
+                 </View>
+                 <Text style={styles.checkboxLabel}>{name.label}</Text>
+               </TouchableOpacity>
+               <Text style={{fontSize:8, color:'black'}}>
+                {parseInt(name.price) > 0 ? `(Rp ${parseInt(name.price).toLocaleString()})` : '(free)' } 
+               </Text>
+             </View>
+            ))}
+            </View>
+          </View>
+        ));
+      };
+
   return (
     <Modal
       animationType="slide"
@@ -139,7 +187,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <View style={styles.titleContainer}>
-            <Text style={styles.modalTitle}>{selectedItem?.name}</Text>
+            <Text style={styles.modalTitle}>{selectedItem?.product.name}</Text>
             <View style={styles.underline}></View>
           </View>
     <ScrollView>
@@ -158,81 +206,10 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
           </View>
           </View>
 
-        <View style={{flexDirection: 'row', gap:50, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
-            <Text style={{justifyContent:'center', marginTop:5, fontSize:10,  color:'black', width:'15%'}}>Ice </Text>
-            <View>
-              {iceData.map((option) => (
-                <TouchableOpacity
-                  key={option.id}
-                  style={styles.optionContainer}
-                  onPress={() => handleIcePress(option.id)}
-                >
-                  <View style={styles.radioButton}>
-                    {selectedIce === option.id && <View style={styles.innerCircle} />}
-                  </View>
-                  <Text style={styles.optionText}>{option.label}</Text>
-                  <Text style={[styles.additionalText, {marginLeft:10}]}>(Rp {option.additionalData})</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+        <View>
+          {renderVariantsByName()}
         </View>
 
-        <View style={{flexDirection: 'row', gap:50, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
-            <Text style={{justifyContent:'center', marginTop:5, fontSize:10,  color:'black', width:'15%'}}>Sugar </Text>
-            <View>
-              {sugarData.map((option) => (
-                <TouchableOpacity
-                  key={option.id}
-                  style={styles.optionContainer}
-                  onPress={() => handleSugarPress(option.id)}
-                >
-                  <View style={styles.radioButton}>
-                    {selectedSugar === option.id && <View style={styles.innerCircle} />}
-                  </View>
-                  <Text style={styles.optionText}>{option.label}</Text>
-                  <Text style={[styles.additionalText, {marginLeft:10}]}>(Rp {option.additionalData})</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-        </View>
-
-        <View style={{flexDirection: 'row', gap:50, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
-            <Text style={{justifyContent:'center', marginTop:5, fontSize:10,  color:'black', width:'15%'}}>Serve </Text>
-            <View>
-              {serveData.map((option) => (
-                <TouchableOpacity
-                  key={option.id}
-                  style={styles.optionContainer}
-                  onPress={() => handleServePress(option.id)}
-                >
-                  <View style={styles.radioButton}>
-                    {selectedServe === option.id && <View style={styles.innerCircle} />}
-                  </View>
-                  <Text style={styles.optionText}>{option.label}</Text>
-                  <Text style={[styles.additionalText, {marginLeft:10}]}>(Rp {option.additionalData})</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-        </View>
-
-        <View style={{flexDirection: 'row', gap:50, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
-            <Text style={{justifyContent:'center', marginTop:5, fontSize:10,  color:'black', width:'15%'}}>Add On </Text>
-            <View>
-              {addOnOptions.map((option) => (
-              <TouchableOpacity
-              key={option.id}
-              style={styles.checkboxContainer}
-              activeOpacity={1}
-              onPress={() => handleOptionAddOnChange(option.id)}
-            >
-              <View style={styles.checkbox}>
-                {selectedAddOnIds.includes(option.id) && <View style={styles.checkboxInner} />}
-              </View>
-              <Text style={styles.checkboxLabel}>{option.label}</Text>
-            </TouchableOpacity>
-              ))}
-            </View>
-        </View>
 
         <View style={{flexDirection: 'row', gap:50, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
             <Text style={{justifyContent:'center', marginTop:5, fontSize:10,  color:'black', width:'15%'}}>Discount </Text>
@@ -289,7 +266,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
                   <Text 
                   style={[
                     {fontSize: 8, color:'black', borderWidth:0.5, width:20, borderColor:'#2563EB', borderRadius:3, height:20, textAlign:'center', paddingTop:4},
-                    discTypValue == option.id && {backgroundColor: '#2563EB'}
+                    discTypValue == option.id && {backgroundColor: '#2563EB', color:'white'}
                 ]}>{option.label}</Text>
                 </TouchableOpacity>
               ))}
@@ -322,7 +299,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
                         setNotes(text)
                     }
                     value={notes}
-                    style={{paddingLeft: 10, paddingVertical:1, fontSize:8}}
+                    style={{paddingLeft: 5, paddingVertical:2, fontSize:8, textAlignVertical: 'top'}}
                 />
             </View>
           </View>
@@ -456,8 +433,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 10,
-    marginVertical:10,
-    width:50
+    marginVertical:8,
+    width:'50%'
   },
   checkbox: {
     width: 16,
