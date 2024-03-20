@@ -13,6 +13,8 @@ interface EditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
   selectedItem: ProductDetail | null;
+  selectedProductVariantID: string[];
+  isNewOpen: boolean;
   onSave: (item: ProductDetail | null, selectedVariantIds: string[]) => void;
 }
 
@@ -52,7 +54,7 @@ const addOnOptions = [
   // Add more options as needed
 ];
 
-const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selectedItem, onSave }) => {
+const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onClose, selectedItem, selectedProductVariantID, onSave }) => {
   const [isEdit, setIsEdit] = React.useState(false);
 
     const [quantity, setQuantity] = React.useState(1);
@@ -116,13 +118,13 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
         }));
       };
 
-      if (isVisible) setIsEdit(true)
-      else setIsEdit(false)
+      // if (isVisible) setIsEdit(true)
+      // else setIsEdit(false)
 
-      if (isEdit && selectedItem) {
-        //console.log(selectedItem)
-        setIsEdit(false)
-      }
+      // if (isEdit && selectedItem) {
+      //   //console.log(selectedItem)
+      //   setIsEdit(false)
+      // }
 
       const handleVariantOptionChange = (id: string) => {
         // Calculate the updated selectedVariantIds

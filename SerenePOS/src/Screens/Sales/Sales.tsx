@@ -43,6 +43,7 @@ const Sales = () => {
     const [customerName, setCustomerName] = React.useState('');
     const [isOpenTransaction, setIsOpenTransaction] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
+    const [isNewOpen, setIsNewOpen] = React.useState(true);
     const [detailData, setDetailData] = React.useState<ProductDetail | null>(null);
 
 
@@ -114,6 +115,7 @@ const Sales = () => {
           //     setVariantInputValues(data.variant.map((x) => 'Rp ' + parseInt(x.price).toLocaleString())); 
           //   }
           // }
+          setIsNewOpen(true)
           setDetailData(data);
         }
         } else {
@@ -146,6 +148,7 @@ const Sales = () => {
     };
 
       const openEditModal = (item: Product) => {
+        setIsNewOpen(false)
         let selectedProduct = ''
         for (let index = 0; index < selectedItems.length; index++) {
           if (selectedItems[index].product.id == item.id) {
@@ -160,6 +163,7 @@ const Sales = () => {
       };
 
       const openEditModalCart = (item: ProductDetail) => {
+        setIsNewOpen(false)
         //fetchDetail(item.product.id)
         setDetailData(item)
         setSelectedItemForEdit(item.product);
@@ -214,17 +218,16 @@ const Sales = () => {
         if (item) {
           if (!selectedItems.some((selectedItem) => selectedItem.product.id === item.product.id)) {
             setSelectedItems((prevItems) => [...prevItems, item]);
-
-            const siblingData = item.variant.map((x) => x.productVariantOptionID)
-            let removedIds = selectedVariantOptionIds;
-            for (let index = 0; index < siblingData.length; index++) {
-              removedIds = removedIds.filter((prevId) => prevId !== siblingData[index]);
-            }
-            for (let index = 0; index < selectedVariantIds.length; index++) {
-              removedIds = [...removedIds, selectedVariantIds[index]];
-            }
-            setSelectedVariantOptionIds(removedIds)
           }
+          const siblingData = item.variant.map((x) => x.productVariantOptionID)
+          let removedIds = selectedVariantOptionIds;
+          for (let index = 0; index < siblingData.length; index++) {
+            removedIds = removedIds.filter((prevId) => prevId !== siblingData[index]);
+          }
+          for (let index = 0; index < selectedVariantIds.length; index++) {
+            removedIds = [...removedIds, selectedVariantIds[index]];
+          }
+          setSelectedVariantOptionIds(removedIds)
         }
       };
     
@@ -473,7 +476,7 @@ React.useEffect(() => {
         {/* Side Container */}
 
     </View>
-    <EditItemModal isVisible={isEditModalVisible} selectedItem={detailData} onClose={closeEditModal} onSave={addToSelectedItems} />
+    <EditItemModal isNewOpen={isNewOpen} isVisible={isEditModalVisible} selectedItem={detailData} selectedProductVariantID={selectedVariantOptionIds} onClose={closeEditModal} onSave={addToSelectedItems} />
     <PaymentMethodModal isVisible={isOpenPayment} totalPrice={totalPriceState} onClose={onClosePayment}/>
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
     <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.product.id)} />
