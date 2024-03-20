@@ -35,7 +35,11 @@ export interface ProductDetail {
     notes: string;
     imgUrl: string
     mimeType: string
- 
+
+    selectedQty?: string
+    selectedNotes?: string
+    selectedDiscountType?: string
+    selectedDiscountValue?: string
   }
   export interface selVariantProduct {
     productVariantOptionID: string;
@@ -272,13 +276,14 @@ const Products = () => {
                     <TouchableOpacity 
                       key={index}
                       onPress={() => deleteMode ? handleCheckboxPress(x.id) : handleNavigate(x.id)} 
-                      style={x.qty < 1 ? [styles.cardRow, {   backgroundColor: 'black', opacity:0.5, zIndex:0 }] : styles.cardRow}>
+                      style={x.qty < 1 ? [styles.cardRow, { backgroundColor: 'black', opacity:0.5, zIndex:0 }] : styles.cardRow}>
                       
                       {x.qty < 1 && (
                         <View style={{ position:'absolute', zIndex:1, alignItems:'center'}}>
-                          <Text style={{color:'white', alignSelf:'center', textAlign:'center', backgroundColor:'black', padding:5, borderRadius:5, fontSize:10 }}>Out of stock</Text>
+                          <Text style={{color:'white', alignSelf:'center', textAlign:'center', backgroundColor:'black', padding:5, fontSize:10 }}>Out of Stock</Text>
                         </View>
                         )}
+                        
                   <View style={{width:'60%', marginLeft:5}}>
                       <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={{width:'100%', height:'100%', borderRadius:5}} />
                   </View>

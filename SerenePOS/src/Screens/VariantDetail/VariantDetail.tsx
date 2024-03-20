@@ -161,12 +161,11 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
       });
       //console.log(response.data)
       if (response.status === 200) {
-        // Registration successful
-        Alert.alert('Success', response.data.message);
-        // onCloseConfirmation()
-        // setDeleteMode(false)
-        //fetchData(id)
-        navigation.navigate('Variants' as never)    
+        if (response.data.status) {
+          navigation.navigate('Variants' as never)   
+        } else {
+          Alert.alert('Error', response.data.message);
+        }
       }
     }
     } catch (error) {
@@ -203,7 +202,7 @@ const handleSave = () => {
     productID: selectedProducts.map((product) => product.id).join(','), // Extracting product IDs
     optionIDDelete: id !== '' ? selectedOptionIDsDelete.join(',') : '', // No need for mapping here
   };
-  console.log(updatedData);
+  //console.log(updatedData);
   onSave(updatedData);
 };
 

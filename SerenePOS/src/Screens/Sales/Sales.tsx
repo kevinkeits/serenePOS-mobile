@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, StyleSheet, Text, View, Image, ScrollView, TextInput } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import CommonLayout from '../../Components/CommonLayout/CommonLayout';
@@ -24,13 +24,16 @@ import { ApiUrls } from '../../apiUrls/apiUrls';
 
 
 const Sales = () => {
-
+  const isFocused = useIsFocused();
+  
     //const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [productData, setProductData] = React.useState<Product[]>([]);
     const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
 
 
     const [selectedItems, setSelectedItems] = React.useState<ProductDetail[]>([]);
+    const [selectedVariantOptionIds, setSelectedVariantOptionIds] = React.useState<string[]>([]);
+
     const [isEditModalVisible, setEditModalVisible] = React.useState(false);
     const [selectedItemForEdit, setSelectedItemForEdit] = React.useState<Product | null>(null);
     const [totalPriceState, setTotalPriceState] = React.useState(0);
@@ -73,7 +76,6 @@ const Sales = () => {
           });           
           const data: Product[] = response.data.data;
           setProductData(data);
-          console.log('data'+data)
           setLoading(false)
         } else {
           console.error('No token found in AsyncStorage');
@@ -95,7 +97,6 @@ const Sales = () => {
             }
           });           
           const data: ProductDetail = response.data.data;
-          console.log(response.data.data)
           if (id !== '') {
           // if (data) {
           //   setTextProductSKU(data.product.productSKU)
@@ -134,6 +135,7 @@ const Sales = () => {
             }
           });           
           const data: Categories[] = response.data.data;
+          if (data.length > 0) fetchData(data[0].id)
           setCategoriesData(data);
         } else {
           console.error('No token found in AsyncStorage');
@@ -144,13 +146,22 @@ const Sales = () => {
     };
 
       const openEditModal = (item: Product) => {
-        fetchDetail(item.id)
+        let selectedProduct = ''
+        for (let index = 0; index < selectedItems.length; index++) {
+          if (selectedItems[index].product.id == item.id) {
+            selectedProduct = selectedItems[index].product.id
+            setDetailData(selectedItems[index])
+          }
+        }
+        if (selectedProduct == '') fetchDetail(item.id)
+
         setSelectedItemForEdit(item);
         setEditModalVisible(true);
       };
 
       const openEditModalCart = (item: ProductDetail) => {
-        fetchDetail(item.product.id)
+        //fetchDetail(item.product.id)
+        setDetailData(item)
         setSelectedItemForEdit(item.product);
         setEditModalVisible(true);
       };
@@ -199,16 +210,37 @@ const Sales = () => {
         setIsOpenDiscount(false);
       };
   
-      const addToSelectedItems = (item: ProductDetail | null) => {
+      const addToSelectedItems = (item: ProductDetail | null, selectedVariantIds: string[]) => {
         if (item) {
           if (!selectedItems.some((selectedItem) => selectedItem.product.id === item.product.id)) {
             setSelectedItems((prevItems) => [...prevItems, item]);
+
+            const siblingData = item.variant.map((x) => x.productVariantOptionID)
+            let removedIds = selectedVariantOptionIds;
+            for (let index = 0; index < siblingData.length; index++) {
+              removedIds = removedIds.filter((prevId) => prevId !== siblingData[index]);
+            }
+            for (let index = 0; index < selectedVariantIds.length; index++) {
+              removedIds = [...removedIds, selectedVariantIds[index]];
+            }
+            setSelectedVariantOptionIds(removedIds)
           }
         }
       };
     
-      const removeFromSelectedItems = (itemId: string) => {
-        setSelectedItems((prevItems) => prevItems.filter((item) => item.product.id !== itemId));
+      const removeFromSelectedItems = (item: ProductDetail) => {
+        const filteredProduct: ProductDetail[] = [];
+        for (let index = 0; index < selectedItems.length; index++) {
+          if (selectedItems[index].product.id != item.product.id) filteredProduct.push(selectedItems[index]);          
+        }
+        setSelectedItems(filteredProduct);
+
+        const siblingData = item.variant.map((x) => x.productVariantOptionID)
+        let removedIds = selectedVariantOptionIds;
+        for (let index = 0; index < siblingData.length; index++) {
+          removedIds = removedIds.filter((prevId) => prevId !== siblingData[index]);
+        }
+        setSelectedVariantOptionIds(removedIds)
       };
 
       const calculateTotalPrice = () => {
@@ -231,14 +263,14 @@ const Sales = () => {
 
 
 React.useEffect(() => {
-    fetchCategories();
-  }, []);
+  if (isFocused) fetchCategories();
+}, [isFocused]);
 
 
   return (
     <CommonLayout>
       <View style={{flexDirection:'row'}}>
-        <View style={{width: '70%'}}>
+        <View style={{width: '68%'}}>
 
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, }}>
       <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Sales</Text>
@@ -256,7 +288,7 @@ React.useEffect(() => {
               ]}>
             <View style={{marginBottom:5, marginLeft: 10}}>
             <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 11}}>{x.qtyAlert} Items</Text>
+            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -330,7 +362,7 @@ React.useEffect(() => {
         <View key={item.product.id} style={styles.selectedItem}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
             <Text style={{ fontSize: 8, fontWeight: 'bold', maxWidth: 150  }}>{item.product.name}</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>x 1</Text>
+            <Text style={{ fontSize: 8, marginLeft: 5 }}>x {item.product.selectedQty}</Text>
           </View>
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ fontSize: 8,  maxWidth: 150  }}>Price</Text>
@@ -338,10 +370,10 @@ React.useEffect(() => {
           </View>
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp 0</Text>
+            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {item.product.selectedDiscountType}</Text>
           </View>
           {
-            item.variant.map((x, index)=>(
+            item.variant.filter((x) => selectedVariantOptionIds.includes(x.productVariantOptionID)).map((x, index)=>(
               <View key={index}>
                 <Text style={{fontSize:7}}>
                   {x.label}
@@ -351,7 +383,7 @@ React.useEffect(() => {
           }
 
           <View style={{flexDirection:'row', gap:4, justifyContent:'flex-end'}}>
-          <TouchableOpacity onPress={() => removeFromSelectedItems(item.product.id)} style={{marginTop:5}}>
+          <TouchableOpacity onPress={() => removeFromSelectedItems(item)} style={{marginTop:5}}>
             <TrashSVG width='12' height='12' color='red'/>
           </TouchableOpacity>
             <TouchableOpacity onPress={() => openEditModalCart(item)} style={{marginTop:5}}>
@@ -398,17 +430,17 @@ React.useEffect(() => {
       ):(
         <View style={styles.selectedItemsContainerBlank}>
         <View>
-          <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:8, marginTop:7, gap:5}}>
+          <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:10, marginTop:10, gap:5}}>
             <TouchableOpacity onPress={()=>onOpenTransaction()}>
-              <ReceiptSVG width='14' height='14' color='#828282' />
+              <ReceiptSVG width='16' height='16' color='#828282' />
             </TouchableOpacity>
             <View
                         style={{
-                            backgroundColor: customerName,
+                            backgroundColor: '#fff',
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
-                            width: '85%',
+                            width: '90%',
                             height:20
                         }}>
                         <TextInput
@@ -427,7 +459,7 @@ React.useEffect(() => {
           </View>
 
           </View>
-          <View style={{marginHorizontal:8, marginTop:'50%', marginBottom:15 }}>
+          <View style={{marginHorizontal:8, marginTop:'25%' }}>
                 <CartSVG width='100' height='100' color='#A4A4A4'/>
                 <Text style={{fontSize:10, fontWeight:'bold', textAlign:'center', color:'black', marginTop:10, marginLeft:16}}> Empty Cart</Text>
                 <Text style={{fontSize:10, textAlign:'center', color:'black', marginTop:10, marginLeft:16}}>Add Product to the cart from catalog.</Text>
@@ -501,17 +533,19 @@ const styles = StyleSheet.create({
     // padding: 10,
     textAlign: 'center',
     fontSize: 8,
+    //paddingTop: 4,
 
   },
   price: {
-    paddingVertical: 5,
-    fontSize:10,
+    
+   //paddingVertical: 5,
+    fontSize:8,
     textAlign: 'center',
     fontWeight: 'bold',
   },
   selectedItemsContainer: {
     marginVertical: 5,
-    width: '30%',
+    width: '35%',
     borderRadius: 10,
     backgroundColor: '#FFF',
     shadowColor: '#000',
@@ -527,7 +561,7 @@ justifyContent: 'space-between'
   },
   selectedItemsContainerBlank: {
     marginVertical: 20,
-    width: '30%',
+    width: '35%',
     borderRadius: 10,
     backgroundColor: '#FFF',
     shadowColor: '#000',

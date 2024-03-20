@@ -13,7 +13,7 @@ interface EditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
   selectedItem: ProductDetail | null;
-  onSave: (item: ProductDetail | null) => void;
+  onSave: (item: ProductDetail | null, selectedVariantIds: string[]) => void;
 }
 
 const iceData = [
@@ -53,25 +53,21 @@ const addOnOptions = [
 ];
 
 const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selectedItem, onSave }) => {
+  const [isEdit, setIsEdit] = React.useState(false);
 
     const [quantity, setQuantity] = React.useState(1);
-    const [discValue, setDiscValue] = React.useState('');
-    const [discTypValue, setDiscTypeValue] = React.useState('');
+    const [discValue, setDiscValue] = React.useState('0');
+    const [discTypeValue, setDiscTypeValue] = React.useState('0');
     const [notes, setNotes] = React.useState('');
     const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
     const [variantIds, setVariantIds] = React.useState<string[]>([]); 
     const [isSelectedOptions, setIsSelectedOptions] = React.useState<string[]>([]);
-
-
-
-
-
     const [options, setOptions] = React.useState({
         option1: false,
         option2: false,
       });
 
-      const [selectedDiscount, setSelectedDiscount] = React.useState<string | null>(null);
+      const [selectedDiscount, setSelectedDiscount] = React.useState<string | null>('1');
 
 
       const handleDiscountPress = (option: string) => {
@@ -84,7 +80,23 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
 
   
       const handleSave = (item: ProductDetail | null) => {
-        onSave(item)
+        if (item) {
+          item.product.selectedNotes = notes;
+          item.product.selectedQty = quantity.toString()
+          item.product.selectedDiscountType = discTypeValue
+          item.product.selectedDiscountValue = discValue
+          onSave(item, selectedVariantIds)
+          closeWindow()
+        }
+      }
+
+      const closeWindow = () => {
+        setSelectedVariantIds([])
+        setQuantity(1)
+        setNotes('')
+        setSelectedDiscount('1')
+        setDiscValue('0')
+        setDiscTypeValue('0')
         onClose()
       }
     const incrementQuantity = () => {
@@ -104,6 +116,14 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
         }));
       };
 
+      if (isVisible) setIsEdit(true)
+      else setIsEdit(false)
+
+      if (isEdit && selectedItem) {
+        //console.log(selectedItem)
+        setIsEdit(false)
+      }
+
       const handleVariantOptionChange = (id: string) => {
         // Calculate the updated selectedVariantIds
         let updatedSelectedVariantIds: string[];
@@ -112,7 +132,15 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
           updatedSelectedVariantIds = selectedVariantIds.filter((prevId) => prevId !== id);
         } else {
           // If the ID is not in the array, add it
-          updatedSelectedVariantIds = [...selectedVariantIds, id];
+          let removedIds = selectedVariantIds;
+          const parentData = selectedItem?.variant.find((x) => x.productVariantOptionID == id)
+          const siblingData = selectedItem?.variant.filter((x) => x.variantID == parentData?.variantID)
+          if (siblingData) {
+            for (let index = 0; index < siblingData.length; index++) {
+              removedIds = removedIds.filter((prevId) => prevId !== siblingData[index].productVariantOptionID);
+            }
+          }
+          updatedSelectedVariantIds = [...removedIds, id];
         }
       
         // Update selectedVariantIds state immediately
@@ -137,29 +165,29 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
       const renderVariantsByName = () => {
         const groupedVariants: GroupedVariant = {};
       
-        selectedItem?.variant.forEach(x => {
-          const name = x.name
+        selectedItem?.variant.filter((x) => x.isSelected == 'T').forEach(x => {
+          const name = x.variantID
           if (!groupedVariants[name]) {
             groupedVariants[name] = [];
           }
           groupedVariants[name].push(x);
         });
       
-        return Object.keys(groupedVariants).map(name => (
-          <View key={name} style={{flexDirection:'row', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
-            <View style={{width:'33%', marginTop:10}}>
-              <Text style={{ fontSize: 10, color: 'black' }}>{name}</Text>
+        return Object.keys(groupedVariants).map(variantID => (
+          <View key={variantID} style={{flexDirection:'row', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
+            <View style={{width:'30%', marginTop:10}}>
+              <Text style={{ fontSize: 10, color: 'black' }}>{selectedItem?.variant.find((x) => x.variantID == variantID)?.name}</Text>
             </View>
             <View style={{marginBottom:10}}>
-            {groupedVariants[name].map((name, index) => (
+            {groupedVariants[variantID].map((name, index) => (
                <View key={name.productVariantOptionID} style={{ flexDirection: 'row', alignItems: 'center'}}>
                <TouchableOpacity
                  style={styles.checkboxContainer}
                  activeOpacity={1}
-                 onPress={() => handleVariantOptionChange(name.variantOptionID)}
+                 onPress={() => handleVariantOptionChange(name.productVariantOptionID)}
                >
                  <View style={styles.checkbox}>
-                   {selectedVariantIds.includes(name.variantOptionID) && 
+                   {selectedVariantIds.includes(name.productVariantOptionID) && 
                      <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', width: 20,
                      height: 20,
                      borderRadius: 4, textAlign:'center' }}>✔</Text>
@@ -179,10 +207,10 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={isVisible}
-      onRequestClose={() => onClose()}
+      onRequestClose={() => closeWindow()}
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
@@ -191,8 +219,8 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
             <View style={styles.underline}></View>
           </View>
     <ScrollView>
-          <View style={{flexDirection: 'row', justifyContent:'space-between', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
-            <Text style={{justifyContent:'center', marginTop:5, fontSize:10,  color:'black'}}>Amount </Text>
+          <View style={{ flexDirection: 'row', justifyContent:'space-between', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
+            <Text style={{justifyContent:'center', marginTop:5, fontSize:10, color:'black'}}>Amount </Text>
           <View style={styles.quantityContainer}>
             <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
               <Text style={styles.quantityButtonText}>-</Text>
@@ -232,7 +260,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
                 <View
                 style={{
                     backgroundColor: discValue,
-                    borderColor: '#D2D2D2',
+                    borderColor: '#dfdfdf',
                     borderWidth: 0.5,
                     borderRadius:5,
                     width: '60%',
@@ -261,12 +289,12 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
                   onPress={() => handleDiscountTypePress(option.id)}
                 >
                   {/* <View style={styles.radioButton}>
-                    {discTypValue === option.id && <View style={styles.innerCircle} />}
+                    {discTypeValue === option.id && <View style={styles.innerCircle} />}
                   </View> */}
                   <Text 
                   style={[
-                    {fontSize: 8, color:'black', borderWidth:0.5, width:20, borderColor:'#2563EB', borderRadius:3, height:20, textAlign:'center', paddingTop:4},
-                    discTypValue == option.id && {backgroundColor: '#2563EB', color:'white'}
+                    {fontSize: 8, color:'black', borderWidth:0.5, width:20, borderColor:'#dfdfdf', borderRadius:3, height:20, textAlign:'center', paddingTop:4},
+                    discTypeValue == option.id && {backgroundColor: '#2563EB', color:'white'}
                 ]}>{option.label}</Text>
                 </TouchableOpacity>
               ))}
@@ -312,7 +340,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, selec
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity onPress={() => onClose()} style={styles.closeButton}>
+          <TouchableOpacity onPress={() => closeWindow()} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>x</Text>
           </TouchableOpacity>
         </View>
@@ -383,7 +411,7 @@ const styles = StyleSheet.create({
   },
   quantityBorder: {
     borderWidth: 1,
-    borderColor: '#2563EB',
+    borderColor: '#dfdfdf',
     width:'50%',
     padding: 5,
     alignItems: 'center',
@@ -409,7 +437,7 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#2563EB',
+    borderColor: '#dfdfdf',
     marginRight: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -441,7 +469,7 @@ const styles = StyleSheet.create({
     height: 16,
     borderWidth: 1,
     borderRadius: 4,
-    borderColor: '#2563EB',
+    borderColor: '#dfdfdf',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -454,7 +482,7 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     marginLeft: 8,
     fontSize: 8,
-    width:50,
+    width:'100%',
     color:'black'
   },
 });

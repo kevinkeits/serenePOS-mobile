@@ -206,7 +206,6 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
       });
       if (response.status === 200) {
         if (response.data.status) {
-          Alert.alert('Success', response.data.message);
           onCloseConfirmation()
           navigation.navigate('Products' as never) 
         } else {
@@ -239,7 +238,7 @@ const handleSave = () => {
     isSelected: isSelectedOptions.join(','),
     productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.productVariantOptionID).join(',') : '',
   };
-  console.log(updatedData)
+  //console.log(updatedData)
   onSave(updatedData);
 };
 
@@ -247,20 +246,20 @@ const renderTransactionByName = () => {
   const groupedVariants: GroupedVariant = {};
 
   detailData?.variant.forEach(x => {
-    const name = x.name
+    const name = x.variantID
     if (!groupedVariants[name]) {
       groupedVariants[name] = [];
     }
     groupedVariants[name].push(x);
   });
 
-  return Object.keys(groupedVariants).map(name => (
-    <View key={name} style={{flexDirection:'row', marginLeft:10}}>
+  return Object.keys(groupedVariants).map(variantID => (
+    <View key={variantID} style={{flexDirection:'row', marginLeft:10}}>
       <View style={{width:'25%'}}>
-        <Text style={{ fontSize: 10, color: 'black' }}>{name}</Text>
+        <Text style={{ fontSize: 10, color: 'black' }}>{detailData?.variant.find((x) => x.variantID == variantID)?.name}</Text>
       </View>
       <View style={{marginBottom:10}}>
-      {groupedVariants[name].map((name, index) => (
+      {groupedVariants[variantID].map((name, index) => (
          <View key={name.productVariantOptionID} style={styles.rowContainer}>
          <TouchableOpacity
            style={styles.checkboxContainer}
