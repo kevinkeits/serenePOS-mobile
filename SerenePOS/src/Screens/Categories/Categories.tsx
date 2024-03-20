@@ -123,14 +123,15 @@ const Categories = () => {
               }
             });
             if (response.status === 200) {
-              // Registration successful
-              Alert.alert('Success', response.data.message);
-              setDeleteMode(false)
-              onCloseDetail()
-              fetchData()
+              if (response.data.status) {
+                setDeleteMode(false)
+                onCloseDetail()
+                fetchData()
+              } else {
+                Alert.alert('Error', response.data.message);
+              }
             } else {
-              // Registration failed
-              Alert.alert('Error', response.data.message);
+              Alert.alert('Error', 'Saving data failed');
             }
           }
           } catch (error) {

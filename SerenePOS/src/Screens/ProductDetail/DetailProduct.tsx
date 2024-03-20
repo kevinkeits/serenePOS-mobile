@@ -205,12 +205,14 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
         }
       });
       if (response.status === 200) {
-        // Registration successful
-        Alert.alert('Success', response.data.message);
-        onCloseConfirmation()
-        // fetchData()
+        if (response.data.status) {
+          Alert.alert('Success', response.data.message);
+          onCloseConfirmation()
+          navigation.navigate('Products' as never) 
+        } else {
+          Alert.alert('Error', response.data.message);
+        }
       } else {
-        // Registration failed
         Alert.alert('Error', response.data.message);
       }
     }
@@ -239,7 +241,6 @@ const handleSave = () => {
   };
   console.log(updatedData)
   onSave(updatedData);
-  navigation.navigate('Products' as never) 
 };
 
 const renderTransactionByName = () => {
@@ -459,9 +460,10 @@ const renderTransactionByName = () => {
                     style={{ width: 120, height: 100, borderRadius:7 }}
                   />
                 ) : (
-                  <View style={{ width: 120, height: 100, borderWidth:0.5, borderColor:'grey', borderRadius:7 }}>
-      
-                  </View>
+                  <Image
+                  source={require('../../assets/img/no-image.png')}
+                  style={{ width: 120, height: 100, borderRadius:7 }}
+                />
                 )}
       
                 <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 120, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
@@ -654,12 +656,12 @@ const renderTransactionByName = () => {
                     <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:8, color:'white', }}>Save</Text>
                     </TouchableOpacity>     
-                  {detailData && (
+                  {/* {detailData && (
                     <TouchableOpacity onPress={()=> onOpenConfirmation()} style={{flexDirection:'row', gap:5, marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: 'red', padding:4, borderRadius:5}}>
                         <TrashSVG width='12' height='12' color='red'/>
                         <Text style={{fontSize:8, color:'black',}}>Remove Product</Text>
                     </TouchableOpacity>   
-                  )}    
+                  )}     */}
         </View>
 
         </View>

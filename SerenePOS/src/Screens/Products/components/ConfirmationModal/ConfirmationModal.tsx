@@ -24,7 +24,7 @@ const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, s
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={isVisible}
       onRequestClose={() => onClose()}

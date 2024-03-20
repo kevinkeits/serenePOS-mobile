@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
 import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
@@ -65,9 +65,10 @@ export interface ProductDetail {
   }
 
 const Products = () => {
+    const isFocused = useIsFocused();
 
     const [productData, setProductData] = React.useState<Product[]>([]);
-
+    const [selectedCategory, setSelectedCategory] = React.useState<string>('');
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [deleteMode, setDeleteMode] = React.useState(false);
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
@@ -90,6 +91,7 @@ const Products = () => {
 
     const fetchData = async (categoryID: string) => {
       try {
+        setSelectedCategory(categoryID)
         const token = await AsyncStorage.getItem('userData'); 
         const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
         if (token) {
@@ -157,13 +159,14 @@ const Products = () => {
             }
           });
           if (response.status === 200) {
-            // Registration successful
-            Alert.alert('Success', 'Saved data successful!');
-            onCloseConfirmation()
-            setDeleteMode(false)
-            fetchData(categoriesData[0].id)
+            if (response.data.status) {
+              onCloseConfirmation()
+              setDeleteMode(false)
+              fetchData(selectedCategory)
+            } else {
+              Alert.alert('Error', response.data.message);
+            }
           } else {
-            // Registration failed
             Alert.alert('Error', 'Saving data failed');
           }
         }
@@ -196,8 +199,8 @@ const Products = () => {
       };
 
     React.useEffect(() => {
-        fetchCategories();
-      }, []);
+      if (isFocused) fetchCategories();
+    }, [isFocused]);
 
   return (
     <CommonLayout>
@@ -226,9 +229,7 @@ const Products = () => {
               </TouchableOpacity>
             </View>
       )} */}
-          <ScrollView style={{marginBottom:50}}>
-      <View>
-      <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
+          <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
         {categoriesData.map((x, index) => (
             <TouchableOpacity key={index} 
             onPress={() => fetchData(x.id)}
@@ -244,9 +245,14 @@ const Products = () => {
         ))}
       </ScrollView>
 
-      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center',  marginVertical:3}}>
+          <ScrollView >
+        {/* <View>
+        
+        </View> */}
+      
+      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', marginBottom: 50}}>
         {productData.map((x, index)=>(
-          <View key={index} style={{flexDirection:'row', padding:0, gap:0,  justifyContent:'center', alignItems:'center'}}>
+          <View key={index} style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
                   <TouchableOpacity onPress={() => handleCheckboxPress(x.id)} style={{}}>
                   {selectedItems.includes(x.id) ? (
@@ -278,7 +284,7 @@ const Products = () => {
                   </View>
                   <View style={{width:'50%'}}>
                       <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.name}</Text>
-                      <Text style={{fontSize:8, color: 'black' }}>Rp {parseInt(x.price).toLocaleString()}</Text>
+                      <Text style={{fontSize:6, color: 'black' }}>Rp {parseInt(x.price).toLocaleString()}</Text>
                   </View>
               </TouchableOpacity>
                 )}
@@ -286,11 +292,9 @@ const Products = () => {
             </View>
         ))}
       </View>
-
+      </ScrollView>
     
       
-      </View>
-      </ScrollView>
       {deleteMode && (
         <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:50 }}>
         <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
@@ -330,17 +334,17 @@ const styles = StyleSheet.create({
     },
     cardRow: {
       flexDirection:'row', 
-      paddingHorizontal:10, 
-      paddingVertical:6,
-      gap:5,
+      paddingHorizontal:8, 
+      //paddingVertical:6,
+      gap:8,
       borderWidth:0.5, 
       borderRadius:7,  
-      height:100, 
+      height:80, 
       justifyContent:'center', 
       alignItems:'center',
       borderColor:'#D2D2D2',
       width:140, 
-      margin: 4,
+      margin: 8,
     },
     cardRowSkeleton: {
       padding:10, 

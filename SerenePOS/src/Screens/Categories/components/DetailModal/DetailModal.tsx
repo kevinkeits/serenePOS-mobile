@@ -128,7 +128,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
         </View>
         
 
-        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        {/* <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                 <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'15%'}}>Alert when Product has Qty</Text>
                 <View style={styles.quantityContainer}>
                     <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
@@ -141,7 +141,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
                     <Text style={styles.quantityButtonText}>+</Text>
                     </TouchableOpacity>
                 </View>       
-        </View>
+        </View> */}
 
         <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'85%', justifyContent:'space-between', alignItems:'center'}}>
         <Text style={{fontSize:10,  marginBottom:5, marginLeft:8, color:'black', width:'15%'}}>Color</Text>

@@ -112,9 +112,7 @@ const Variant = () => {
             }
           });
           if (response.status === 200) {
-            // Registration successful
             if (response.data.status) {
-              Alert.alert('Success', response.data.message);
               onCloseConfirmation()
               setDeleteMode(false)
               fetchData()
@@ -123,7 +121,6 @@ const Variant = () => {
             }
             
           } else {
-            // Registration failed
             Alert.alert('Error', 'Saving data failed');
           }
         }
