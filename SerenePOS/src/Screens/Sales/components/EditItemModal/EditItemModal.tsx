@@ -55,7 +55,6 @@ const addOnOptions = [
 ];
 
 const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onClose, selectedItem, selectedProductVariantID, onSave }) => {
-  const [isEdit, setIsEdit] = React.useState(false);
 
     const [quantity, setQuantity] = React.useState(1);
     const [discValue, setDiscValue] = React.useState('0');
@@ -74,6 +73,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
 
       const handleDiscountPress = (option: string) => {
         setSelectedDiscount(option);
+        setDiscTypeValue('1');
       };
 
       const handleDiscountTypePress = (option: string) => {
@@ -85,8 +85,19 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
         if (item) {
           item.product.selectedNotes = notes;
           item.product.selectedQty = quantity.toString()
-          item.product.selectedDiscountType = discTypeValue
-          item.product.selectedDiscountValue = discValue
+          if (selectedDiscount == '2') {
+            item.product.selectedDiscountType = discTypeValue
+            item.product.selectedDiscountValue = discValue
+            if (discTypeValue == '1') {
+              item.product.selectedTotalDiscount = discValue
+            } else {
+              item.product.selectedTotalDiscount = (((parseInt(discValue) * parseInt(item.product.price)) / 100) * parseInt(quantity.toString())).toString()
+            }
+          } else {
+            item.product.selectedDiscountType = '0'
+            item.product.selectedDiscountValue = '0'
+            item.product.selectedTotalDiscount = '0'
+          }          
           onSave(item, selectedVariantIds)
           closeWindow()
         }
@@ -118,50 +129,18 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
         }));
       };
 
-      // if (isVisible) setIsEdit(true)
-      // else setIsEdit(false)
-
-      // if (isEdit && selectedItem) {
-      //   //console.log(selectedItem)
-      //   setIsEdit(false)
-      // }
-
       const handleVariantOptionChange = (id: string) => {
-        // Calculate the updated selectedVariantIds
         let updatedSelectedVariantIds: string[];
+
         if (selectedVariantIds.includes(id)) {
-          // If the ID is already in the array, remove it
-          updatedSelectedVariantIds = selectedVariantIds.filter((prevId) => prevId !== id);
+          updatedSelectedVariantIds = selectedVariantIds.filter(prevId => prevId !== id);
         } else {
-          // If the ID is not in the array, add it
-          let removedIds = selectedVariantIds;
-          const parentData = selectedItem?.variant.find((x) => x.productVariantOptionID == id)
-          const siblingData = selectedItem?.variant.filter((x) => x.variantID == parentData?.variantID)
-          if (siblingData) {
-            for (let index = 0; index < siblingData.length; index++) {
-              removedIds = removedIds.filter((prevId) => prevId !== siblingData[index].productVariantOptionID);
-            }
-          }
-          updatedSelectedVariantIds = [...removedIds, id];
+          const parentData = selectedItem?.variant.find(x => x.productVariantOptionID === id);
+          const siblingIds = parentData ? selectedItem?.variant.filter(x => x.variantID === parentData.variantID).map(x => x.productVariantOptionID) : [];
+
+          updatedSelectedVariantIds = [...selectedVariantIds.filter(prevId => !siblingIds?.includes(prevId)), id];
         }
-      
-        // Update selectedVariantIds state immediately
         setSelectedVariantIds(updatedSelectedVariantIds);
-      
-        // // Calculate updated isSelectedOptions immediately
-        // setIsSelectedOptions((prevOptions) => {
-        //   if (!detailData) {
-        //     // If detailData is null, return the previous options
-        //     return prevOptions;
-        //   }
-      
-        //   const updatedOptions = detailData.variant.map((variant) => {
-        //     // Check if the variant's ID is present in updatedSelectedVariantIds
-        //     return updatedSelectedVariantIds.includes(variant.variantOptionID) ? 'T' : 'F';
-        //   });
-      
-        //   return updatedOptions;
-        // });
       };
 
       const renderVariantsByName = () => {
@@ -206,6 +185,19 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
           </View>
         ));
       };
+
+      React.useEffect(() => {
+        if (isVisible && selectedItem) {
+          setQuantity(parseInt(selectedItem?.product.selectedQty ?? '1'));          
+          setNotes(selectedItem?.product.selectedNotes ?? '');
+          setDiscTypeValue(selectedItem?.product.selectedDiscountType ?? '0')
+          setDiscValue(selectedItem?.product.selectedDiscountValue ?? '0')
+          if (selectedItem?.product.selectedDiscountType) {
+            if (selectedItem?.product.selectedDiscountType != '0') setSelectedDiscount('2')
+          } else setSelectedDiscount('1')
+          setSelectedVariantIds(selectedItem?.variant.filter(x => selectedProductVariantID.includes(x.productVariantOptionID)).map(x => x.productVariantOptionID));
+        }
+      }, [isVisible, selectedItem]);
 
   return (
     <Modal

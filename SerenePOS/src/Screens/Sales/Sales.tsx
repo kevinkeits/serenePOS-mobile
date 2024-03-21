@@ -216,43 +216,51 @@ const Sales = () => {
   
       const addToSelectedItems = (item: ProductDetail | null, selectedVariantIds: string[]) => {
         if (item) {
-          if (!selectedItems.some((selectedItem) => selectedItem.product.id === item.product.id)) {
-            setSelectedItems((prevItems) => [...prevItems, item]);
+          if (!selectedItems.some(selectedItem => selectedItem.product.id === item.product.id)) {
+            setSelectedItems(prevItems => [...prevItems, item]);
           }
-          const siblingData = item.variant.map((x) => x.productVariantOptionID)
-          let removedIds = selectedVariantOptionIds;
-          for (let index = 0; index < siblingData.length; index++) {
-            removedIds = removedIds.filter((prevId) => prevId !== siblingData[index]);
-          }
-          for (let index = 0; index < selectedVariantIds.length; index++) {
-            removedIds = [...removedIds, selectedVariantIds[index]];
-          }
-          setSelectedVariantOptionIds(removedIds)
+      
+          const siblingData = new Set(item.variant.map(x => x.productVariantOptionID));
+          const updatedIds = new Set(selectedVariantOptionIds.filter(prevId => !siblingData.has(prevId)));
+          selectedVariantIds.forEach(id => updatedIds.add(id));
+          setSelectedVariantOptionIds([...updatedIds]);
         }
       };
     
       const removeFromSelectedItems = (item: ProductDetail) => {
-        const filteredProduct: ProductDetail[] = [];
-        for (let index = 0; index < selectedItems.length; index++) {
-          if (selectedItems[index].product.id != item.product.id) filteredProduct.push(selectedItems[index]);          
-        }
+        const filteredProduct = selectedItems.filter(x => x.product.id !== item.product.id);
         setSelectedItems(filteredProduct);
 
-        const siblingData = item.variant.map((x) => x.productVariantOptionID)
-        let removedIds = selectedVariantOptionIds;
-        for (let index = 0; index < siblingData.length; index++) {
-          removedIds = removedIds.filter((prevId) => prevId !== siblingData[index]);
-        }
-        setSelectedVariantOptionIds(removedIds)
+        const siblingData = item.variant.map(x => x.productVariantOptionID);
+        const filteredIds = selectedVariantOptionIds.filter(prevId => !siblingData.includes(prevId));
+        setSelectedVariantOptionIds(filteredIds);
+      };
+
+      const clearProduct = () => {
+        setSelectedItems([])
+        setSelectedVariantOptionIds([])
       };
 
       const calculateTotalPrice = () => {
-        const subtotal = selectedItems.reduce((total, item) => total + parseInt(item.product.price), 0);
-        const taxRate = 0.1; 
-        const tax = subtotal * taxRate;
-        const discount = 0; 
-        const totalPrice = subtotal + tax - discount;
+        let subtotal = 0
+        let discount = 0
 
+        for (let index = 0; index < selectedItems.length; index++) {
+          let unitPrice = parseInt(selectedItems[index].product.price) * parseInt(selectedItems[index].product.selectedQty ?? '1')
+          for (let x = 0; x < selectedItems[index].variant.length; x++) {
+            if (selectedVariantOptionIds.includes(selectedItems[index].variant[x].productVariantOptionID)) {
+              unitPrice += parseInt(selectedItems[index].variant[x].price) * parseInt(selectedItems[index].product.selectedQty ?? '1')
+            }
+          }
+          subtotal += unitPrice
+
+          let unitDiscount = parseInt(selectedItems[index].product.selectedTotalDiscount ?? '0') * parseInt(selectedItems[index].product.selectedQty ?? '1')
+          discount += unitDiscount
+        }
+
+        const taxRate = 0.1; 
+        const tax = (subtotal - discount) * taxRate;
+        const totalPrice = (subtotal - discount) + tax;
 
         return {
           subtotal,
@@ -364,26 +372,25 @@ React.useEffect(() => {
         {selectedItems.map((item) => (
         <View key={item.product.id} style={styles.selectedItem}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-            <Text style={{ fontSize: 8, fontWeight: 'bold', maxWidth: 150  }}>{item.product.name}</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>x {item.product.selectedQty}</Text>
+            <Text style={{ fontSize: 8, fontWeight: 'bold', maxWidth: 150  }}>{item.product.name} x {item.product.selectedQty}</Text>
+            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {parseInt(item.product.price ?? '0').toLocaleString()}</Text>
+            
           </View>
-          <View style={{ flexDirection: 'row', }}>
-            <Text style={{ fontSize: 8,  maxWidth: 150  }}>Price</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {parseInt(item.product.price).toLocaleString()}</Text>
-          </View>
-          <View style={{ flexDirection: 'row', }}>
-            <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {item.product.selectedDiscountType}</Text>
-          </View>
+          { item.product.selectedTotalDiscount != '0' && (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+              <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
+              <Text style={{ fontSize: 8, marginLeft: 5 }}>-Rp {parseInt(item.product.selectedTotalDiscount ?? '0').toLocaleString()}</Text>
+            </View>
+          )}
           {
             item.variant.filter((x) => selectedVariantOptionIds.includes(x.productVariantOptionID)).map((x, index)=>(
-              <View key={index}>
-                <Text style={{fontSize:7}}>
-                  {x.label}
-                </Text>
+              <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+                <Text style={{fontSize:7}}>{x.label}</Text>
+                <Text style={{ fontSize: 7, marginLeft: 5 }}>{parseInt(x.price) == 0 ? 'Free' : ('Rp' + parseInt(x.price).toLocaleString())} </Text>
               </View>
             ))
           }
+          <View><Text style={{fontSize:7}}>Note {item.product.selectedNotes == '' ? '-' : item.product.selectedNotes}</Text></View>
 
           <View style={{flexDirection:'row', gap:4, justifyContent:'flex-end'}}>
           <TouchableOpacity onPress={() => removeFromSelectedItems(item)} style={{marginTop:5}}>
@@ -403,20 +410,20 @@ React.useEffect(() => {
         <View style={{}}>
           <View style={styles.underline}/>
         <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceText}>Subtotal:</Text>
+            <Text style={styles.totalPriceText}>Subtotal</Text>
             <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().subtotal.toLocaleString()}</Text>
           </View>
           <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceText}>Tax (10%):</Text>
+            <Text style={styles.totalPriceText}>Tax (10%)</Text>
             <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().tax.toLocaleString()}</Text>
           </View>
           <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceText}>Discount:</Text>
+            <Text style={styles.totalPriceText}>Discount</Text>
             <Text style={styles.totalPriceAmount}>-Rp {calculateTotalPrice().discount.toLocaleString()}</Text>
           </View>
           <View style={styles.dottedUnderline} />
           <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceText}>Total Price:</Text>
+            <Text style={styles.totalPriceText}>Total Price</Text>
             <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().totalPrice.toLocaleString()}</Text>
           </View>
           
@@ -424,7 +431,7 @@ React.useEffect(() => {
             <Text style={styles.payNowButtonText}>Pay Now</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setSelectedItems([])} style={styles.billButton}>
+          <TouchableOpacity onPress={() => clearProduct()} style={styles.billButton}>
             <Text style={styles.billButtonText}>Clear</Text>
           </TouchableOpacity>
         </View>
@@ -620,7 +627,7 @@ justifyContent: 'space-between'
   totalPriceAmount: {
     fontSize: 8,
     fontWeight: 'bold',
-    color: 'green', // You can adjust the color as needed
+    //color: 'green', // You can adjust the color as needed
   },
   payNowButton: {
     backgroundColor: '#2563EB',

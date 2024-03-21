@@ -40,6 +40,7 @@ export interface ProductDetail {
     selectedNotes?: string
     selectedDiscountType?: string
     selectedDiscountValue?: string
+    selectedTotalDiscount?: string
   }
   export interface selVariantProduct {
     productVariantOptionID: string;
