@@ -105,7 +105,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
             )}
           </View>
           <View style={{margin:10, flexDirection:'row', width:'85%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'15%'}}>Name</Text>
+                    <Text style={{ marginBottom:5, width:'15%'}}>Name</Text>
                     <View
                         style={{
                             backgroundColor: textName,
@@ -116,13 +116,11 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
                         }}>
                         <TextInput
                             editable
-                            // multiline
-                            // numberOfLines={4}
                             placeholder='Type here'
                             maxLength={40}
                             onChangeText={text => setTextName(text)}
                             value={textName}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'100%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'100%', height:32}}
                         />
                     </View>          
         </View>
@@ -144,17 +142,17 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
         </View> */}
 
         <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'85%', justifyContent:'space-between', alignItems:'center'}}>
-        <Text style={{fontSize:10,  marginBottom:5, marginLeft:8, color:'black', width:'15%'}}>Color</Text>
+        <Text style={{marginBottom:5, marginLeft:8, width:'15%'}}>Color</Text>
                 {renderColorSelection()}      
         </View>
 
         <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
                     <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
+                        <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
                     <TouchableOpacity onPress={handleClose} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'black', fontWeight:'500'}}>Cancel</Text>
+                        <Text style={{color:'black', fontWeight:'500'}}>Cancel</Text>
                     </TouchableOpacity>           
         </View>
 

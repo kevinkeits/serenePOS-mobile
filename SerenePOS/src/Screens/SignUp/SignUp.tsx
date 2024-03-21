@@ -5,6 +5,7 @@ import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } fr
 import { ApiUrls } from '../../apiUrls/apiUrls';
 import TrashSVG from '../../assets/svgs/TrashSVG';
 import ViewSVG from '../../assets/svgs/ViewSVG';
+import { ScrollView } from 'react-native-gesture-handler';
 
 interface CustomCheckboxProps {
   checked: boolean;
@@ -119,9 +120,12 @@ const SignUp = () => {
         const response = await axios.post(url, userData);
 
         if (response.status === 200) {
-          // Registration successful
-          navigation.navigate('Login' as never);
-          Alert.alert('Success', 'Registration successful!');
+          if (response.data.status) {
+            navigation.navigate('Login' as never);
+            Alert.alert('Success', 'Registration successful!');
+          } else {
+            Alert.alert('Error', response.data.message);
+          }
         } else {
           // Registration failed
           Alert.alert('Error', 'Registration failed');
@@ -166,23 +170,26 @@ const SignUp = () => {
         <Text style={{fontSize:10, color:'white'}}>"Optimalkan Bisnis Anda dengan serenePOS"</Text>
             </View>
         </View>
-<View style={{backgroundColor:'white', width:'45%',   paddingBottom:10, borderRadius:7}}>
+        
+<View style={{backgroundColor:'white', width:'45%',   padding: 16, borderRadius:7}}>
+<ScrollView>
         <View style={{paddingLeft:30,}}>
-      <Text style={{fontWeight: 'bold', color: 'black', fontSize: 12, marginTop:6}}>
+      <Text style={{fontWeight: 'bold', color: 'black', marginTop:6}}>
       Sign Up
       </Text>
-      <Text style={{color:'black', fontSize:8, marginBottom:4}}>
+      {/* <Text style={{marginBottom:4}}>
       Get your POS ready in a minute
-      </Text>
+      </Text> */}
       </View>
 
       <View style={{borderBottomWidth: 1,
         borderBottomColor: '#D2D2D2',
         borderStyle:'dotted',
             width: '80%',
+            marginTop: 10,
         alignSelf: 'center', marginBottom:10}}></View>
 
-     <View style={{marginBottom:5}}>
+     <View style={{marginBottom:16}}>
         {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Name *</Text> */}
       <TextInput
         style={styles.input}
@@ -193,7 +200,7 @@ const SignUp = () => {
       {nameError ? <Text style={styles.error}>{nameError}</Text> : null}
       </View>
 
-      <View style={{marginBottom:5}}>
+      <View style={{marginBottom:16}}>
         {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Email Address *</Text> */}
       <TextInput
         style={styles.input}
@@ -204,7 +211,7 @@ const SignUp = () => {
       {emailError ? <Text style={styles.error}>{emailError}</Text> : null}
       </View>
 
-      <View style={{marginBottom:5}}>
+      <View style={{marginBottom:16}}>
         {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Store Name *</Text> */}
       <TextInput
         style={styles.input}
@@ -216,11 +223,11 @@ const SignUp = () => {
       </View>
 
 
-<View style={{marginBottom:5}}>       
+<View style={{marginBottom:16}}>       
    {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Password *</Text> */}
       <View style={{
         width:'80%',
-         height: 20,
+         height: 32,
          borderWidth: 1,
          
          borderColor: '#D2D2D2',
@@ -246,7 +253,7 @@ const SignUp = () => {
    {/* <Text style={{fontSize:9, color:'black', marginLeft:30}}>Re-Enter Password *</Text> */}
       <View style={{
         width:'80%',
-         height: 20,
+         height: 32,
          borderWidth: 1,
          
          borderColor: '#D2D2D2',
@@ -268,12 +275,12 @@ const SignUp = () => {
       {confirmPasswordError ? <Text style={styles.error}>{confirmPasswordError}</Text> : null}
   </View>
 
-  <View style={{ marginBottom: 2, marginTop:3 }}>
+  <View style={{ marginBottom: 16, marginTop:16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 30, }}>
         <CustomCheckbox checked={agreeTerms} onChange={handleAgreeTermsChange} />
 
         <View style={styles.signupContainer}>
-        <Text style={styles.signupText}>I agree to the </Text>
+        <Text style={styles.signupText}> I agree to the </Text>
         <TouchableOpacity>
           <Text style={styles.signupLink}>Terms & Privacy</Text>
         </TouchableOpacity>
@@ -293,9 +300,11 @@ const SignUp = () => {
           <Text style={styles.signupLink}>Login</Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
 </View>
 
      </View>
+     
   )}
 
 const styles = StyleSheet.create({
@@ -308,7 +317,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16, // Add padding for testing
   },
   header: {
-    fontSize: 30,
+    fontSize: 32,
     marginTop:20,
     fontWeight: 'bold',
     marginBottom: 5,
@@ -316,7 +325,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '80%',
-    height: 20,
+    height: 32,
     borderWidth: 1,
    
     borderColor: '#D2D2D2',
@@ -324,12 +333,10 @@ const styles = StyleSheet.create({
     paddingHorizontal:10,
     borderRadius:6,
     color:'black',
-    fontSize: 8,
     alignSelf: 'center',
   },
   inputPassword: {
     width: '100%',
-    fontSize: 8,
     paddingVertical: 5,
     paddingHorizontal:10,
     lineHeight: 30,
@@ -340,14 +347,13 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 6,
     marginTop: 7,
-    height:25,
+    height:32,
     alignSelf: 'center',
     alignItems: 'center'
   },
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 8,
   },
   underline: {
     borderBottomWidth: 1,
@@ -359,15 +365,13 @@ const styles = StyleSheet.create({
   signupContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 2,
+    marginTop: 16,
     alignSelf:'center'
   },
   signupText: {
-    fontSize: 9,
     color: 'black',
   },
   signupLink: {
-    fontSize: 9,
     textDecorationLine:'underline',
     color: '#2563EB',
   },
@@ -382,8 +386,8 @@ const styles = StyleSheet.create({
     marginLeft:40, 
   },
   checkbox: {
-    width: 12,
-    height: 12,
+    width: 24,
+    height: 24,
     borderWidth: 0.5,
     borderColor: '#D2D2D2',
     marginRight: 4,
@@ -394,7 +398,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2563EB',
   },
   checkmark: {
-    fontSize:7,
+    fontSize:12,
     color: 'white',
   },
 });

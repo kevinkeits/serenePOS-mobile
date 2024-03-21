@@ -18,22 +18,6 @@ interface EditItemModalProps {
   onSave: (item: ProductDetail | null, selectedVariantIds: string[]) => void;
 }
 
-const iceData = [
-  { id: 'normal', label: 'Normal', additionalData: '0' },
-  { id: 'less', label: 'Less Ice', additionalData: '0' },
-  { id: 'more', label: 'More Ice', additionalData: '3000' },
-];
-
-const sugarData = [
-  { id: 'normal', label: 'Normal', additionalData: '0' },
-  { id: 'less', label: 'Less Sugar', additionalData: '0' },
-  { id: 'more', label: 'More Sugar', additionalData: '3000' },
-];
-
-const serveData = [
-  { id: 'hot', label: 'Hot', additionalData: '0' },
-  { id: 'ice', label: 'Ice', additionalData: '0' },
-];
 
 const discountData = [
   { id: '1', label: 'No Discount', additionalData: '0' },
@@ -41,17 +25,8 @@ const discountData = [
 ];
 
 const discountTypeData = [
-  { id: '1', label: 'Rp', additionalData: '0' },
-  { id: '2', label: '%', additionalData: '0' },
-];
-
-const addOnOptions = [
-  { id: 'sugarSyrup', label: 'Sugar Syrup' },
-  { id: 'bobba', label: 'Bobba' },
-  { id: 'grassJelly', label: 'Grass Jelly' },
-  { id: 'milk', label: 'Milk' },
-  { id: 'cheese', label: 'Cheese' },
-  // Add more options as needed
+  { id: '1', label: '%', additionalData: '0' },
+  { id: '2', label: 'Rp', additionalData: '0' },
 ];
 
 const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onClose, selectedItem, selectedProductVariantID, onSave }) => {
@@ -86,12 +61,18 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
           item.product.selectedNotes = notes;
           item.product.selectedQty = quantity.toString()
           if (selectedDiscount == '2') {
-            item.product.selectedDiscountType = discTypeValue
-            item.product.selectedDiscountValue = discValue
-            if (discTypeValue == '1') {
-              item.product.selectedTotalDiscount = discValue
+            if (discValue != '0' && discValue != '') {
+              item.product.selectedDiscountType = discTypeValue
+              item.product.selectedDiscountValue = discValue
+              if (discTypeValue == '2') {
+                item.product.selectedTotalDiscount = discValue
+              } else {
+                item.product.selectedTotalDiscount = (((parseInt(discValue) * parseInt(item.product.price)) / 100) * parseInt(quantity.toString())).toString()
+              }
             } else {
-              item.product.selectedTotalDiscount = (((parseInt(discValue) * parseInt(item.product.price)) / 100) * parseInt(quantity.toString())).toString()
+              item.product.selectedDiscountType = '0'
+              item.product.selectedDiscountValue = '0'
+              item.product.selectedTotalDiscount = '0'
             }
           } else {
             item.product.selectedDiscountType = '0'
@@ -155,13 +136,13 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
         });
       
         return Object.keys(groupedVariants).map(variantID => (
-          <View key={variantID} style={{flexDirection:'row', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
+          <View key={variantID} style={{flexDirection:'row', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey', marginTop: 8}}>
             <View style={{width:'30%', marginTop:10}}>
-              <Text style={{ fontSize: 10, color: 'black' }}>{selectedItem?.variant.find((x) => x.variantID == variantID)?.name}</Text>
+              <Text style={{ color: 'black' }}>{selectedItem?.variant.find((x) => x.variantID == variantID)?.name}</Text>
             </View>
             <View style={{marginBottom:10}}>
             {groupedVariants[variantID].map((name, index) => (
-               <View key={name.productVariantOptionID} style={{ flexDirection: 'row', alignItems: 'center'}}>
+               <View key={name.productVariantOptionID} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4}}>
                <TouchableOpacity
                  style={styles.checkboxContainer}
                  activeOpacity={1}
@@ -169,14 +150,14 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
                >
                  <View style={styles.checkbox}>
                    {selectedVariantIds.includes(name.productVariantOptionID) && 
-                     <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', width: 20,
+                     <Text style={{ color: 'white', backgroundColor:'#2563EB', width: 20,
                      height: 20,
                      borderRadius: 4, textAlign:'center' }}>✔</Text>
                    }
                  </View>
                  <Text style={styles.checkboxLabel}>{name.label}</Text>
                </TouchableOpacity>
-               <Text style={{fontSize:8, color:'black'}}>
+               <Text style={{ color:'#000'}}>
                 {parseInt(name.price) > 0 ? `(Rp ${parseInt(name.price).toLocaleString()})` : '(free)' } 
                </Text>
              </View>
@@ -214,7 +195,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
           </View>
     <ScrollView>
           <View style={{ flexDirection: 'row', justifyContent:'space-between', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
-            <Text style={{justifyContent:'center', marginTop:5, fontSize:10, color:'black'}}>Amount </Text>
+            <Text style={{justifyContent:'center', marginTop:5, color:'black'}}>Amount </Text>
           <View style={styles.quantityContainer}>
             <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
               <Text style={styles.quantityButtonText}>-</Text>
@@ -234,7 +215,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
 
 
         <View style={{flexDirection: 'row', gap:50, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
-            <Text style={{justifyContent:'center', marginTop:5, fontSize:10,  color:'black', width:'15%'}}>Discount </Text>
+            <Text style={{justifyContent:'center', marginTop:5, color:'black', width:'15%'}}>Discount </Text>
             <View>
               {discountData.map((option) => (
                 <TouchableOpacity
@@ -259,7 +240,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
                     borderRadius:5,
                     width: '60%',
                     marginLeft:20,
-                    height:25,
+                    height: 24,
                     marginBottom:10
                 }}>
                 <TextInput
@@ -272,7 +253,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
                         setDiscValue(text)
                     }
                     value={discValue}
-                    style={{paddingLeft: 10, paddingVertical:1, fontSize:8}}
+                    style={{paddingLeft: 10, paddingVertical:1}}
                 />
             </View>
             <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4,  marginBottom:10, marginLeft:10 }}>
@@ -287,7 +268,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
                   </View> */}
                   <Text 
                   style={[
-                    {fontSize: 8, color:'black', borderWidth:0.5, width:20, borderColor:'#dfdfdf', borderRadius:3, height:20, textAlign:'center', paddingTop:4},
+                    {color:'black', borderWidth:0.5, marginLeft: 4, width:24, borderColor:'#dfdfdf', borderRadius:3, height:24, textAlign:'center', paddingTop:4},
                     discTypeValue == option.id && {backgroundColor: '#2563EB', color:'white'}
                 ]}>{option.label}</Text>
                 </TouchableOpacity>
@@ -299,16 +280,14 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
         </View>
 
         <View style={{flexDirection: 'row', gap:60, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey', marginTop:10}}>
-            <Text style={{justifyContent:'center', marginTop:5, fontSize:10,  color:'black'}}>Notes </Text>
+            <Text style={{justifyContent:'center', marginTop:5, color:'black'}}>Notes </Text>
             <View
                 style={{
                     backgroundColor: notes,
                     borderColor: '#D2D2D2',
                     borderWidth: 0.5,
                     borderRadius:5,
-                    width: '60%',
-                    // marginLeft:20,
-                    // height:25,
+                    width: '80%',
                     marginBottom:10
                 }}>
                 <TextInput
@@ -316,12 +295,12 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
                     multiline
                     numberOfLines={4}
                     placeholder='Type here'
-                    maxLength={40}
+                    maxLength={100}
                     onChangeText={text => 
                         setNotes(text)
                     }
                     value={notes}
-                    style={{paddingLeft: 5, paddingVertical:2, fontSize:8, textAlignVertical: 'top'}}
+                    style={{paddingLeft: 5, paddingVertical:2, textAlignVertical: 'top'}}
                 />
             </View>
           </View>
@@ -330,7 +309,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
 
           <View style={{width:'90%', marginTop:10, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
             <TouchableOpacity onPress={() => handleSave(selectedItem)} style={{width:'100%', alignItems:'center'}}>
-                <Text style={{fontSize:8, fontWeight:'bold', color: 'white'}}>Save</Text>
+                <Text style={{fontWeight:'bold', color: 'white'}}>Save</Text>
             </TouchableOpacity>
           </View>
 
@@ -351,7 +330,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '50%',
+    width: '60%',
     height: '98%',
     backgroundColor: 'white',
     padding: 20,
@@ -362,7 +341,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 10,
     color:'black',
     fontWeight: 'bold',
     marginBottom: 10,
@@ -388,7 +366,6 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     color: 'grey', // Change color to black
-    fontSize: 15,
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -398,7 +375,7 @@ const styles = StyleSheet.create({
   },
   quantityButton: {
     backgroundColor: '#2563EB',
-    padding:7,
+    padding:8,
     borderRadius: 5,
     
     marginHorizontal: 5,
@@ -407,18 +384,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#dfdfdf',
     width:'50%',
-    padding: 5,
+    padding: 8,
     alignItems: 'center',
     borderRadius: 5,
     // marginHorizontal: 5,
   },
   quantityButtonText: {
     color: 'white',
-    fontSize: 10,
     fontWeight: 'bold',
   },
   quantityText: {
-    fontSize: 10,
     fontWeight: 'bold',
   },
   optionContainer: {
@@ -427,9 +402,9 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   radioButton: {
-    width: 16,
-    height: 16,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: '#dfdfdf',
     marginRight: 8,
@@ -437,18 +412,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   innerCircle: {
-    width: 10,
-    height: 10,
-    borderRadius: 6,
+    width: 16,
+    height: 16,
+    borderRadius: 16,
     backgroundColor: '#2563EB',
   },
   optionText: {
-    fontSize: 8,
     color:'black',
     width:'40%'
   },
   additionalText: {
-    fontSize: 8,
     color:'black',
   },
   checkboxContainer: {
@@ -475,7 +448,6 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     marginLeft: 8,
-    fontSize: 8,
     width:'100%',
     color:'black'
   },

@@ -243,7 +243,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 11,
     fontWeight: 'bold',
     marginBottom: 10,
     color: 'black'
@@ -269,7 +268,6 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     color: 'grey', // Change color to black
-    fontSize: 15,
   },
   radioContainer: {
     marginLeft:20

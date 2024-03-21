@@ -40,7 +40,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ title }) => {
           onSubmitEditing={handleSearch}
          />
         <TouchableOpacity style={{marginRight:10}} onPress={handleSearch}>
-          <SearchSVG width='14' height='14' color='grey'/>
+          <SearchSVG width='16' height='16' color='grey'/>
         </TouchableOpacity>
       </View>
     </View>
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   title: {
-    fontSize: 14,
+    marginLeft: 8,
     fontWeight: 'bold',
     color: '#2563EB', 
   },
@@ -72,7 +72,8 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 8,
+    fontSize: 10,
+    paddingTop: 8,
     paddingRight: 10,
   },
 });

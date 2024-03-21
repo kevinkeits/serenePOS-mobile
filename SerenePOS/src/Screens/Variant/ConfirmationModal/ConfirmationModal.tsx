@@ -35,13 +35,13 @@ const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, s
          
 
         <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
-                    <Text style={{fontSize:10, color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Are you sure want to delete ({selectedItems.length}) variant{selectedItems.length > 1 ? 's' : ''}?</Text>
+                    <Text style={{color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Continue delete ({selectedItems.length}) variant{selectedItems.length > 1 ? 's' : ''}?</Text>
                     <TouchableOpacity  onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#EF4444', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Yes</Text>
+                        <Text style={{color:'white', fontWeight:'500'}}>Yes</Text>
                     </TouchableOpacity>     
 
                     <TouchableOpacity onPress={onClose} style={{marginVertical:5, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'black', fontWeight:'500'}}>No</Text>
+                        <Text style={{color:'black', fontWeight:'500'}}>No</Text>
                     </TouchableOpacity>           
         </View>
 
@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 11,
     fontWeight: 'bold',
     color:'black',
     marginBottom: 5,
@@ -92,7 +91,6 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     color: 'grey',
-    fontSize: 15,
   },
 
 });

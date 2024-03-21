@@ -195,7 +195,7 @@ interface GroupedTransactions {
   return (
     <CommonLayout>
       <View style={{flexDirection: 'row', gap:10,  marginRight:30, marginVertical:10, alignItems:'center'}}>
-          <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Transaction History</Text>
+          <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Transaction History</Text>
       </View>
       <ScrollView>
       
@@ -213,7 +213,6 @@ interface GroupedTransactions {
 
 const pickerSelectStyles = StyleSheet.create({
     inputIOS: {
-        fontSize: 8,
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderWidth: 0.5,
@@ -223,7 +222,6 @@ const pickerSelectStyles = StyleSheet.create({
         paddingRight: 30 // to ensure the text is never behind the icon
     },
     inputAndroid: {
-        fontSize: 8,
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderWidth: 0.5,

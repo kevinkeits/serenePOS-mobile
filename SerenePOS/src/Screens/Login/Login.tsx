@@ -72,7 +72,6 @@ const Login = () => {
             setUsername('')
             setPassword('')
             await AsyncStorage.setItem('userData', JSON.stringify(response.data));
-            //console.log('Login successful:', response.data.data);
             navigation.navigate('Home' as never);
           } else {
             Alert.alert('Error', response.data.message);
@@ -111,10 +110,11 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+      
               <Text style={styles.header}>serenePOS</Text>
 
         <View style={{}}>
-      <Text style={{color:'black', fontSize:10, marginVertical:7}}>
+      <Text style={{marginVertical:7}}>
         Login to your account
       </Text>
       </View>
@@ -133,7 +133,7 @@ const Login = () => {
       {usernameError ? <Text style={styles.error}>{usernameError}</Text> : null}
       <View style={{
          width: '25%',
-         height: 30,
+         height: 32,
          borderWidth: 1,
          marginBottom: 10,
          borderColor: '#D2D2D2',
@@ -149,7 +149,7 @@ const Login = () => {
         onChangeText={(text) => setPassword(text)}
       />
         <TouchableOpacity onPress={handleTogglePasswordVisibility} style={styles.eyeIcon}>
-          {showPassword ? <ViewSVG width='12' height='12' color="black" /> : <ViewSVG width='12' height='12' color="black" />}
+          {showPassword ? <ViewSVG width='16' height='16' color="black" /> : <ViewSVG width='16' height='16' color="black" />}
         </TouchableOpacity>
       </View>
       {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
@@ -185,14 +185,13 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '25%',
-    height: 30,
+    height: 32,
     borderWidth: 1,
     marginBottom: 10,
     borderColor: '#D2D2D2',
     paddingVertical: 5,
     paddingHorizontal:10,
     borderRadius:6,
-    fontSize: 10,
     textAlignVertical: 'center', 
     alignSelf: 'center',
   },
@@ -207,7 +206,6 @@ const styles = StyleSheet.create({
   },
   inputPassword: {
     width: '100%',
-    fontSize: 10,
     paddingVertical: 5,
     paddingHorizontal:10,
     //lineHeight: 30,
@@ -224,7 +222,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 10,
   },
   underline: {
     borderBottomWidth: 1,
@@ -239,11 +236,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   signupText: {
-    fontSize: 9,
     color: 'black',
   },
   signupLink: {
-    fontSize: 9,
     textDecorationLine:'underline',
     color: '#2563EB',
   },

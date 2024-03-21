@@ -61,7 +61,7 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
     const [productData, setProductData] = React.useState<Product[]>([]);
 
     const [textName, setTextName] = React.useState('');
-    const [ selectedType, setSelectedType] = React.useState("");
+    const [ selectedType, setSelectedType] = React.useState('1');
     const [ selectedCategory, setSelectedCategory] = React.useState("");
     const [options, setOptions] = React.useState<OptionsVariant[]>([]);
     const [isOpenProduct, setIsOpenProduct] = React.useState(false);
@@ -159,7 +159,6 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
           'Authorization': `Bearer ${authToken}`
         }
       });
-      //console.log(response.data)
       if (response.status === 200) {
         if (response.data.status) {
           navigation.navigate('Variants' as never)   
@@ -174,22 +173,6 @@ const VariantDetail = ({ route }: DetailScreenProps) => {
     }
 };
 
-// const handleSave = () => {
-//   const updatedData: VariantForm = {
-//     ID: id !== '' ? id : '',
-//     Action: id !== '' ? 'edit' : 'add',
-//     Name: textName,
-//     Type: selectedType,
-//     optionID: options.map((x: any)=> x.ID).join(','),
-//     optionLabel: options.map((x: any)=> x.Label).join(','),
-//     optionPrice: options.map((x: any)=> x.Price).join(','),
-//     ProductID: selectedProducts.map((x: any)=> x.ID).join(','),
-//     OptionIDDelete: id != '' ? selectedOptionIDsDelete.map((x: any) => x).join(',') : '',
-//   };
-//   console.log(updatedData)
-//    onSave(updatedData);
-// };
-
 const handleSave = () => {
   const updatedData: VariantForm = {
     id: id !== '' ? id : '',
@@ -202,7 +185,6 @@ const handleSave = () => {
     productID: selectedProducts.map((product) => product.id).join(','), // Extracting product IDs
     optionIDDelete: id !== '' ? selectedOptionIDsDelete.join(',') : '', // No need for mapping here
   };
-  //console.log(updatedData);
   onSave(updatedData);
 };
 
@@ -279,9 +261,9 @@ const handleSave = () => {
       <ScrollView>
       <View style={{}}>
       <View style={{flexDirection: 'row', gap:10,   marginRight:30, marginVertical:10, alignItems:'center'}}>
-      <Text onPress={() => navigation.navigate('Variants' as never)} style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>Variant</Text>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>&gt;</Text>
-      <Text   style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Variant</Text>
+      <Text onPress={() => navigation.navigate('Variants' as never)} style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>Variant</Text>
+      <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>&gt;</Text>
+      <Text   style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Variant</Text>
       </View>
 
       <View style={{}}>
@@ -289,7 +271,7 @@ const handleSave = () => {
         <View style={{width:'100%',}}>
 
         <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Name</Text>
+                    <Text style={{ marginBottom:5, width:'20%'}}>Name</Text>
                     <View
                         style={{
                             backgroundColor: textName,
@@ -306,14 +288,14 @@ const handleSave = () => {
                             maxLength={40}
                             onChangeText={text => setTextName(text)}
                             value={textName}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:32}}
                         />
                     </View>          
         </View>
 
-        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Type</Text>
-            <View style={{marginBottom: 10, height: 25, justifyContent: 'center', width:'80%',}}>
+        {/* <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'center', alignItems:'center'}}>
+                    <Text style={{marginBottom:5, width:'20%'}}>Type</Text>
+            <View style={{marginBottom: 10, height: 32, justifyContent: 'center', width:'80%',}}>
             <RNPickerSelect
                 onValueChange={(x) => 
                   setSelectedType(x)}
@@ -334,12 +316,12 @@ const handleSave = () => {
 
 
             </View>        
-        </View>
+        </View> */}
 
 {(selectedType == '1' || selectedType == '2') && (
   <View>
         <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Options</Text>
+                    <Text style={{marginBottom:5, width:'20%'}}>Options</Text>
                     <View style={{width:'80%'}}>
                         <TouchableOpacity onPress={handleAddOption} style={styles.addButton}>
                             <Text style={styles.buttonText}>+</Text>
@@ -348,7 +330,7 @@ const handleSave = () => {
                         {options.map((option, index) => (
                             <View key={index} style={styles.optionRow}>
                             <TextInput
-                                style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'65%', height:25, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius:5}}
+                                style={{paddingLeft: 10, paddingVertical:0, width:'65%', height:32, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius:5}}
                                 placeholder="Option Name"
                                 value={option.label}
                                 onChangeText={(text) => handleOption(index, 'label', text)}
@@ -356,22 +338,13 @@ const handleSave = () => {
 
           <View style={{ position: 'relative', width: '30%' }}>
                 <TextInput
-                    style={{ paddingLeft: 10, paddingVertical: 5, fontSize: 8, width: '100%', height: 25, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius: 5 }}
+                    style={{ paddingLeft: 10, paddingVertical: 5, width: '100%', height: 32, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius: 5 }}
                     placeholder="Price"
                     value={'Rp ' + parseInt(option.price.toString())}
                     onChangeText={(text) => handleOption(index, 'price', text.replace('Rp', ''))}
                     keyboardType="numeric"
                 />
             </View>
-                            
-                            {/* <TextInput
-                                style={{paddingLeft: 10, paddingVertical:5, fontSize:8, width:'30%', height:25, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius:5}}
-                                placeholder="Price"
-                                value={option.price}
-                                onChangeText={(text) => handleOption(index, 'price', text)}
-                                keyboardType="numeric"
-                            /> */}
-                           
                             <TouchableOpacity onPress={() => handleDeleteOption(index)} style={{ justifyContent:'center', alignItems:'center', borderColor:'red'}}>
                                 <TrashSVG width='20' height='20' color='red'/>
                             </TouchableOpacity>             
@@ -382,15 +355,14 @@ const handleSave = () => {
 
         <View style={{borderBottomWidth:0.5, borderBottomColor:'grey', marginVertical:10}}/>
 
-        <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Linked Product</Text>
+        <Text style={{fontWeight:"bold", marginVertical: "auto", color:'black'}}>Linked Product</Text>
         <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'100%', justifyContent:'center', alignItems:'center'}}>
-                    {/* <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Category</Text> */}
             <View style={{ height: 25, justifyContent: 'center', width:'60%',}}>
 
             </View>
             <View style={{width:'20%', alignSelf:'center', backgroundColor:'#2563EB', justifyContent:'center', alignItems:'center', height:25, borderRadius:6, marginLeft:5, marginBottom:10}}>
                     <TouchableOpacity onPress={()=> onOpenProduct()} style={{width:'100%', alignItems:'center'}}>
-                      <Text style={{fontSize:10, fontWeight: '500',  color:'white', textAlign:'center', alignSelf:'center'}}>Select Product</Text>
+                      <Text style={{color:'white', textAlign:'center', alignSelf:'center'}}>Select Product</Text>
                     </TouchableOpacity>
             </View>
 
@@ -401,7 +373,7 @@ const handleSave = () => {
               <View style={{width:95, height:85,  marginBottom:5}}>
                     <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={{width:'100%', height:'100%', borderRadius:5}} />
               </View>
-              <Text style={{fontSize:8, maxWidth:'95%', color:'black', textAlign:'center'}} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
+              <Text style={{fontSize:10, maxWidth:'95%', textAlign:'center'}} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
             </View>
           ))}
         </View>
@@ -410,11 +382,11 @@ const handleSave = () => {
 
         <View style={{margin:10, width:'90%',  }}>
                     <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
+                        <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
                     <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'black', fontWeight:'500'}}>Cancel</Text>
+                        <Text style={{color:'black', fontWeight:'500'}}>Cancel</Text>
                     </TouchableOpacity>       
         </View>
 
@@ -478,7 +450,7 @@ const styles = StyleSheet.create({
       },
       quantityButtonText: {
         color: 'white',
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: 'bold',
       },
       quantityText: {
@@ -517,7 +489,6 @@ const styles = StyleSheet.create({
       },
       checkboxLabel: {
         marginLeft: 8,
-        fontSize: 8,
         width:50,
         color:'black'
       },
@@ -527,7 +498,6 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         paddingVertical:5,
         paddingLeft: 8,
-        fontSize: 8,
         borderRadius:7,
         marginLeft:20
       },
@@ -558,7 +528,6 @@ const styles = StyleSheet.create({
 
   const pickerSelectStyles = StyleSheet.create({
     inputIOS: {
-        fontSize: 8,
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderWidth: 0.5,
@@ -568,7 +537,6 @@ const styles = StyleSheet.create({
         paddingRight: 30 // to ensure the text is never behind the icon
     },
     inputAndroid: {
-        fontSize: 8,
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderWidth: 0.5,

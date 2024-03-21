@@ -132,7 +132,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
                     width:'90%'
                 }}>
                     <TouchableOpacity style={{paddingLeft:10}} onPress={handleSearch}>
-                        <SearchSVG width='14' height='14' color='grey'/>
+                        <SearchSVG width='16' height='16' color='grey'/>
                     </TouchableOpacity>
                         <TextInput
                             editable
@@ -143,14 +143,14 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
                             onSubmitEditing={handleSearch}
                             onChangeText={text => setTextName(text)}
                             value={textName}
-                            style={{ paddingVertical:0, fontSize:8, width:'100%', height:25}}
+                            style={{ paddingVertical:0, width:'100%', height:32}}
                         />
             </View>  
 
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginHorizontal: 20, marginBottom:3 }}>
               {/* <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text> */}
               <TouchableOpacity style={{}} onPress={() => handleCheckboxPress('',-1)}>
-                <Text style={{ fontSize: 10, color: 'black' }}>
+                <Text style={{ color: 'black' }}>
                   {selectAll ? 'Unselect All' : 'Select All'}
                 </Text>
               </TouchableOpacity>
@@ -165,7 +165,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
                     {selectedItems.includes(x.id) ? (
                       <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', paddingHorizontal:2 }}>✔</Text>
                     ) : (
-                      <Text style={{ fontSize: 25, color: 'black' }}>◻</Text>
+                      <Text style={{ fontSize: 24, color: 'black' }}>◻</Text>
                     )}
                   </TouchableOpacity>
             <TouchableOpacity 
@@ -177,7 +177,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
                 </View>
 
                     <View style={{}}>
-                        <Text style={{fontSize:8, maxWidth:'95%', color:'black'}} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
+                        <Text style={{fontSize:10, maxWidth:'95%'}} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
                     </View>
             </TouchableOpacity>
             </View>
@@ -227,7 +227,6 @@ const styles = StyleSheet.create({
     marginLeft:10
   },
   modalTitle: {
-    fontSize: 11,
     fontWeight: 'bold',
     color:'black',
     marginBottom: 5,
@@ -252,7 +251,6 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     color: 'grey', // Change color to black
-    fontSize: 15,
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -280,11 +278,9 @@ const styles = StyleSheet.create({
   },
   quantityButtonText: {
     color: 'white',
-    fontSize: 10,
     fontWeight: 'bold',
   },
   quantityText: {
-    fontSize: 10,
     fontWeight: 'bold',
   },
   cardRow: {

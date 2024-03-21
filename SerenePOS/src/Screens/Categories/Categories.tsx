@@ -219,16 +219,16 @@ const Categories = () => {
     <CommonLayout>
       <View style={{}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:5, alignItems:'center'}}>
-        <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Categories</Text>
+        <Text style={{fontWeight:"bold",  marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Categories</Text>
         {deleteMode ? (
           <View/>
         ):(
           <View style={{flexDirection:'row', gap:4}}>
           <TouchableOpacity onPress={() => onOpenDetail()} style={{borderWidth:0.5, paddingHorizontal:16, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: '#D2D2D2'}}>
-              <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
+              <Text style={{fontWeight:'bold', fontSize: 16, color:'black'}}>+</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'#D2D2D2'}}>
-              <TrashSVG width='12' height='12' color='red'/>
+              <TrashSVG width='16' height='16' color='red'/>
           </TouchableOpacity>
         </View>
         )}
@@ -253,7 +253,7 @@ const Categories = () => {
                     {selectedItems.includes(x.id) ? (
                       <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', paddingHorizontal:2  }}>✔</Text>
                     ) : (
-                      <Text style={{ fontSize: 25, color: 'black' }}>◻</Text>
+                      <Text style={{ fontSize: 24, color: 'black' }}>◻</Text>
                     )}
                   </TouchableOpacity>
                 )}
@@ -264,8 +264,8 @@ const Categories = () => {
               {backgroundColor: x.bgColor}
               ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
+            <Text style={{fontWeight: "bold", color: "white"}}>{x.name}</Text>
+            <Text style={{ color: "white", fontSize: 10}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
             </View>
           </TouchableOpacity>
             </View>
@@ -273,16 +273,16 @@ const Categories = () => {
       </View>
     </ScrollView>
 
-      {deleteMode && (
-        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:50 }}>
-          <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete ({selectedItems.length}) item{selectedItems.length > 1 ? 's' : ''}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#dfdfdf', backgroundColor:'white', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
-            <Text style={{ color: 'black', fontWeight: 'bold', fontSize:8 }}>Cancel</Text>
-          </TouchableOpacity>
-          
-        </View>
+    {deleteMode && (
+        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:0 }}>
+        <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:24, justifyContent:'center', alignItems:'center' }}>
+          <Text style={{ color: '#fff' }}>Delete ({selectedItems.length}) item{selectedItems.length > 1 ? 's' : ''}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#dfdfdf', backgroundColor:'white', borderRadius: 5, width:'45%', height:24, justifyContent:'center', alignItems:'center' }}>
+          <Text style={{ color: 'black' }}>Cancel</Text>
+        </TouchableOpacity>
+        
+      </View>
       )}
       
       </View>

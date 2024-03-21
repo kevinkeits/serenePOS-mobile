@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, StyleSheet, Text, View, Image, ScrollView, TextInput } from 'react-native';
+import { Dimensions, Button, StyleSheet, Text, View, Image, ScrollView, TextInput } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
@@ -21,9 +21,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiUrls } from '../../apiUrls/apiUrls';
 
 
-
+const windowDimensions = Dimensions.get('window');
+const screenDimensions = Dimensions.get('screen');
 
 const Sales = () => {
+  const [dimensions, setDimensions] = React.useState({
+    window: windowDimensions,
+    screen: screenDimensions,
+  });
+
   const isFocused = useIsFocused();
   
     //const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
@@ -66,6 +72,7 @@ const Sales = () => {
    
     const fetchData = async (categoryID: string) => {
       try {
+        console.log('[Sales] fetching product')
         const token = await AsyncStorage.getItem('userData'); 
         const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
         if (token) {
@@ -285,10 +292,9 @@ React.useEffect(() => {
         <View style={{width: '68%'}}>
 
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, }}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", color:'black'}}>Sales</Text>
-      <Text style={{fontWeight:"bold", fontSize:17, }}></Text>
+      <Text style={{fontWeight:"bold", marginVertical: "auto", color:'black'}}>Sales</Text>
       </View>
-      <View style={{height:65,}}>
+      <View style={{height:65}}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal:"auto", flexDirection: 'row'}}>
         {categoriesData.map((x, index) => (
             <TouchableOpacity
@@ -299,21 +305,16 @@ React.useEffect(() => {
               {backgroundColor: x.bgColor}
               ]}>
             <View style={{marginBottom:5, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
+            <Text style={{fontWeight: "bold", color: "white", fontSize: 13}}>{x.name}</Text>
+            <Text style={{ color: "white", fontSize: 10}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
             </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
       </View>
-      {/* <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginTop:5}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto"}}>Coffee</Text>
-      <Text style={{fontWeight:"bold", fontSize:17}}></Text>
-      </View> */}
       <ScrollView>
     <View style={{ alignItems: 'center', marginBottom:85, marginLeft:10, width:'100%', flexDirection:'row', flexWrap:"wrap", marginTop:5,}}>
       {productData.map((x) => (
-        // <TouchableOpacity key={x.id} style={styles.card} onPress={() => addToSelectedItems(x)}>
         <TouchableOpacity key={x.id} style={styles.card} onPress={() => openEditModal(x)}>
           <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={styles.image} />
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
@@ -331,11 +332,11 @@ React.useEffect(() => {
 
 {selectedItems.length > 0 ? (
     <View style={styles.selectedItemsContainer}>
-      <View style={{}}>
-      <Text style={{fontSize:7, marginTop:3, marginHorizontal:10,  color:'black'}}>{getCurrentDate()}</Text>
+      <View>
+      <Text style={{fontSize:8, marginTop:4, marginBottom: 4, marginHorizontal:10,  color:'black'}}>{getCurrentDate()}</Text>
       <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:5, marginTop:7, gap:2}}>
             <TouchableOpacity onPress={()=>onOpenTransaction()}>
-              <ReceiptSVG width='14' height='14' color='#828282' />
+              <ReceiptSVG width='24' height='24' color='#828282' />
             </TouchableOpacity>
                         <View
                         style={{
@@ -343,14 +344,12 @@ React.useEffect(() => {
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
-                            width: '67%',
-                            height:20
+                            width: '50%',
+                            height:24
                         }}>
                         <TextInput
                             editable
-                            // multiline
-                            // numberOfLines={4}
-                            placeholder='Type here'
+                            placeholder='Customer Name'
                             maxLength={40}
                             onChangeText={text => 
                                 setCustomerName(text)
@@ -359,46 +358,49 @@ React.useEffect(() => {
                             style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
                         />
                     </View>  
-                    <SaveSVG width='14' height='14' color='#828282' />
+                    <View style={{marginLeft: 8}}>
+                      <SaveSVG width='25' height='25' color='#828282' />
+                    </View>
 
-            <TouchableOpacity>
-              <Text style={{fontSize:6}} onPress={()=> onOpenDiscount()}>
-                <DiscountSVG width='16' heigth='16'/>
-                </Text>
+            <TouchableOpacity onPress={()=> onOpenDiscount()}>
+              <View style={{marginLeft:8}} >
+                <DiscountSVG width='24' heigth='24'/>
+              </View>
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={{maxHeight:150}}>
+          <ScrollView style={{maxHeight:(dimensions.window.height / 3)}}>
             <View style={{ }}>
         {selectedItems.map((item) => (
         <View key={item.product.id} style={styles.selectedItem}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-            <Text style={{ fontSize: 8, fontWeight: 'bold', maxWidth: 150  }}>{item.product.name} x {item.product.selectedQty}</Text>
-            <Text style={{ fontSize: 8, marginLeft: 5 }}>Rp {parseInt(item.product.price ?? '0').toLocaleString()}</Text>
+            <Text style={{ fontSize: 10, fontWeight: 'bold', maxWidth: 150  }}>{item.product.name} x {item.product.selectedQty}</Text>
+            <Text style={{ fontSize: 10, marginLeft: 5 }}>Rp {parseInt(item.product.price ?? '0').toLocaleString()}</Text>
             
           </View>
           { item.product.selectedTotalDiscount != '0' && (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
               <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
               <Text style={{ fontSize: 8, marginLeft: 5 }}>-Rp {parseInt(item.product.selectedTotalDiscount ?? '0').toLocaleString()}</Text>
             </View>
           )}
           {
             item.variant.filter((x) => selectedVariantOptionIds.includes(x.productVariantOptionID)).map((x, index)=>(
-              <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-                <Text style={{fontSize:7}}>{x.label}</Text>
-                <Text style={{ fontSize: 7, marginLeft: 5 }}>{parseInt(x.price) == 0 ? 'Free' : ('Rp' + parseInt(x.price).toLocaleString())} </Text>
+              <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+                <Text style={{fontSize: 9}}>{x.label}</Text>
+                <Text style={{ fontSize: 9, marginLeft: 5 }}>{parseInt(x.price) == 0 ? 'Free' : ('Rp' + parseInt(x.price).toLocaleString())} </Text>
               </View>
             ))
           }
-          <View><Text style={{fontSize:7}}>Note {item.product.selectedNotes == '' ? '-' : item.product.selectedNotes}</Text></View>
+          <View style={{marginTop: 4}}><Text style={{fontSize: 9}}>Note {item.product.selectedNotes == '' ? '-' : item.product.selectedNotes}</Text></View>
 
           <View style={{flexDirection:'row', gap:4, justifyContent:'flex-end'}}>
-          <TouchableOpacity onPress={() => removeFromSelectedItems(item)} style={{marginTop:5}}>
-            <TrashSVG width='12' height='12' color='red'/>
+          <TouchableOpacity onPress={() => openEditModalCart(item)} style={{marginTop:5, marginRight: 16}}>
+          <PencilSVG width='16' heigth='16' color='grey'/>
+           
           </TouchableOpacity>
-            <TouchableOpacity onPress={() => openEditModalCart(item)} style={{marginTop:5}}>
-               <PencilSVG width='11' heigth='11' color='grey'/>
+            <TouchableOpacity onPress={() => removeFromSelectedItems(item)} style={{marginTop:5, marginRight: 8}}>
+            <TrashSVG width='16' height='16' color='red'/>
               </TouchableOpacity>
           </View>
         </View>
@@ -408,25 +410,34 @@ React.useEffect(() => {
 
         </View>
 
+        <ScrollView>
         <View style={{}}>
-          <View style={styles.underline}/>
-        <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceText}>Subtotal</Text>
-            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().subtotal.toLocaleString()}</Text>
-          </View>
-          <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceText}>Tax (10%)</Text>
-            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().tax.toLocaleString()}</Text>
-          </View>
-          <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceText}>Discount</Text>
-            <Text style={styles.totalPriceAmount}>-Rp {calculateTotalPrice().discount.toLocaleString()}</Text>
-          </View>
-          <View style={styles.dottedUnderline} />
-          <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceText}>Total Price</Text>
-            <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().totalPrice.toLocaleString()}</Text>
-          </View>
+          {dimensions.window.height > 500 && (
+            <View>
+            <View style={styles.underline}/>
+            <View style={styles.totalPriceContainer}>
+                <Text style={styles.totalPriceText}>Subtotal</Text>
+                <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().subtotal.toLocaleString()}</Text>
+              </View>
+              <View style={styles.totalPriceContainer}>
+                <Text style={styles.totalPriceText}>Tax (10%)</Text>
+                <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().tax.toLocaleString()}</Text>
+              </View>
+              { calculateTotalPrice().discount > 0 && (
+                <View style={styles.totalPriceContainer}>
+                  <Text style={styles.totalPriceText}>Discount</Text>
+                  <Text style={styles.totalPriceAmount}>-Rp {calculateTotalPrice().discount.toLocaleString()}</Text>
+                </View>
+              ) }
+              
+              <View style={styles.dottedUnderline} />
+              <View style={styles.totalPriceContainer}>
+                <Text style={styles.totalPriceText}>Total</Text>
+                <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().totalPrice.toLocaleString()}</Text>
+              </View>
+              </View>
+          )}
+          
           
           <TouchableOpacity style={styles.payNowButton} onPress={()=> onOpenPayment()}>
             <Text style={styles.payNowButtonText}>Pay Now</Text>
@@ -436,6 +447,7 @@ React.useEffect(() => {
             <Text style={styles.billButtonText}>Clear</Text>
           </TouchableOpacity>
         </View>
+        </ScrollView>
 
       </View>
       ):(
@@ -443,28 +455,19 @@ React.useEffect(() => {
         <View>
           <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:10, marginTop:10, gap:5}}>
             <TouchableOpacity onPress={()=>onOpenTransaction()}>
-              <ReceiptSVG width='16' height='16' color='#828282' />
+              <ReceiptSVG width='24' height='24' color='#828282' />
             </TouchableOpacity>
             <View
                         style={{
                             backgroundColor: '#fff',
-                            borderColor: '#D2D2D2',
+                            borderColor: '#fff',
                             borderWidth: 0.5,
                             borderRadius:5,
                             width: '90%',
                             height:20
                         }}>
                         <TextInput
-                            editable
-                            // multiline
-                            // numberOfLines={4}
-                            placeholder='Type here'
-                            maxLength={40}
-                            onChangeText={text => 
-                                setCustomerName(text)
-                            }
-                            value={customerName}
-                            style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
+                            editable={false}
                         />
                     </View>  
           </View>
@@ -472,8 +475,8 @@ React.useEffect(() => {
           </View>
           <View style={{marginHorizontal:8, marginTop:'25%' }}>
                 <CartSVG width='100' height='100' color='#A4A4A4'/>
-                <Text style={{fontSize:10, fontWeight:'bold', textAlign:'center', color:'black', marginTop:10, marginLeft:16}}> Empty Cart</Text>
-                <Text style={{fontSize:10, textAlign:'center', color:'black', marginTop:10, marginLeft:16}}>Add Product to the cart from catalog.</Text>
+                <Text style={{fontWeight:'bold', textAlign:'center', color:'black', marginTop:10, marginLeft:16}}> Empty Cart</Text>
+                <Text style={{textAlign:'center', color:'black', marginTop:10, marginLeft:16}}>Add Product to the cart from catalog.</Text>
           </View>
 
   
@@ -534,30 +537,25 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '60%',
-    // borderTopRightRadius:5,
-    // borderTopLeftRadius:5,
     borderRadius:5,
     marginBottom:3
 
   },
   title: {
-    // padding: 10,
     textAlign: 'center',
-    fontSize: 8,
-    //paddingTop: 4,
-
+    fontSize: 10,
   },
   price: {
-    
-   //paddingVertical: 5,
-    fontSize:8,
+    fontSize:10,
     textAlign: 'center',
     fontWeight: 'bold',
   },
   selectedItemsContainer: {
     marginVertical: 5,
-    width: '35%',
+    width: '34%',
+    padding: 10,
     borderRadius: 10,
+    minHeight: '100%',
     backgroundColor: '#FFF',
     shadowColor: '#000',
      height:300,
@@ -572,8 +570,9 @@ justifyContent: 'space-between'
   },
   selectedItemsContainerBlank: {
     marginVertical: 20,
-    width: '35%',
+    width: '34%',
     borderRadius: 10,
+    minHeight: '100%',
     backgroundColor: '#FFF',
     shadowColor: '#000',
     shadowOffset: {
@@ -585,79 +584,56 @@ justifyContent: 'space-between'
     elevation: 5,
     alignItems:'center'
   },
-  selectedItemsTitle: {
-    fontWeight: 'bold',
-    fontSize: 10,
-    marginLeft:10,
-    marginTop:10
-  },
   selectedItem: {
-    // alignItems: 'center',
     padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: 'grey',
     borderStyle: 'dotted',  },
     deleteButton: {
-    // backgroundColor: 'red',
     padding: 5,
     borderRadius: 5,
-  },
-  deleteButtonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 8,
-    fontWeight: 'bold',
-  },
-  selectedItemImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
   },
   totalPriceContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 10,
-    // marginBottom: 5
   },
   totalPriceText: {
-    fontSize: 8,
-    fontWeight: 'bold',
+    marginTop: 4,
   },
   totalPriceAmount: {
-    fontSize: 8,
     fontWeight: 'bold',
-    //color: 'green', // You can adjust the color as needed
   },
   payNowButton: {
     backgroundColor: '#2563EB',
     padding: 2,
     borderRadius: 8,
-    width: '80%',
-    marginTop: 10,
+    width: '95%',
+    marginTop: 20,
+    height: 24,
     alignSelf: 'center',
     alignItems:'center',
     marginBottom:5
   },
   payNowButtonText: {
     color: 'white',
-    fontSize: 9,
     fontWeight: 'bold',
   },
   billButton: {
-    borderColor: '#E84A4A',
+    borderColor: '#dfdfdf',
+    marginTop: 4,
     borderWidth: 1,
     padding: 2,
     borderRadius: 8,
-    width: '80%',
+    width: '95%',
+    height: 24,
     alignSelf: 'center',
     alignItems:'center',
     marginBottom:10
   },
   billButtonText: {
     color: 'black',
-    fontSize: 9,
   },
   underline: {
     borderBottomWidth: 1,
@@ -670,27 +646,8 @@ justifyContent: 'space-between'
     borderBottomColor: 'grey',
     borderStyle: 'dotted',
     marginBottom: 5,
-    marginHorizontal:5
-
-  },
-  editButton: {
-    backgroundColor: 'orange',
-    padding: 8,
-    borderRadius: 5,
-    //marginTop: 5,
-  },
-  editButtonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 8,
-    fontWeight: 'bold',
-  },
-  inputPassword: {
-    width: '100%',
-    fontSize: 10,
-    paddingVertical: 5,
-    paddingHorizontal:10,
-    lineHeight: 30,
+    marginHorizontal:5,
+    marginTop: 8,
   },
 });
 

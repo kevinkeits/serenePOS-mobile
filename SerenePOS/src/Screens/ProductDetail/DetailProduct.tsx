@@ -138,7 +138,6 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
           }
         });           
         const data: ProductDetail = response.data.data;
-        console.log(response.data.data)
         if (id !== '') {
         if (data) {
           setTextProductSKU(data.product.productSKU)
@@ -217,7 +216,6 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
     }
     } catch (error) {
       console.error('Error during saving:', error);
-      console.log(JSON.stringify(error))
       Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
     }
 };
@@ -238,7 +236,6 @@ const handleSave = () => {
     isSelected: isSelectedOptions.join(','),
     productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.productVariantOptionID).join(',') : '',
   };
-  //console.log(updatedData)
   onSave(updatedData);
 };
 
@@ -255,8 +252,8 @@ const renderTransactionByName = () => {
 
   return Object.keys(groupedVariants).map(variantID => (
     <View key={variantID} style={{flexDirection:'row', marginLeft:10}}>
-      <View style={{width:'25%'}}>
-        <Text style={{ fontSize: 10, color: 'black' }}>{detailData?.variant.find((x) => x.variantID == variantID)?.name}</Text>
+      <View style={{width:'20%'}}>
+        <Text style={{ }}>{detailData?.variant.find((x) => x.variantID == variantID)?.name}</Text>
       </View>
       <View style={{marginBottom:10}}>
       {groupedVariants[variantID].map((name, index) => (
@@ -268,7 +265,7 @@ const renderTransactionByName = () => {
          >
            <View style={styles.checkbox}>
              {selectedVariantIds.includes(name.variantOptionID) && 
-               <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', width: 20,
+               <Text style={{ color: 'white', backgroundColor:'#2563EB', width: 20,
                height: 20,
                borderRadius: 4, textAlign:'center' }}>✔</Text>
              }
@@ -420,9 +417,9 @@ const renderTransactionByName = () => {
       <ScrollView>
       <View style={{}}>
       <View style={{flexDirection: 'row', gap:10,   marginRight:30, marginVertical:10, alignItems:'center'}}>
-      <Text onPress={() => navigation.navigate('Products' as never)} style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>Product</Text>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>&gt;</Text>
-      <Text   style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Product</Text>
+      <Text onPress={() => navigation.navigate('Products' as never)} style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>Product</Text>
+      <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>&gt;</Text>
+      <Text   style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Product</Text>
       </View>
       {/* <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
         <TouchableOpacity onPress={()=> navigation.goBack()}>
@@ -448,7 +445,7 @@ const renderTransactionByName = () => {
                 )}
 
                 <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 120, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
-                                  <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
+                                  <Text style={{color:'white', fontWeight:'500'}}>Upload Image</Text>
                 </TouchableOpacity>   
               </View>
               ):(
@@ -466,7 +463,7 @@ const renderTransactionByName = () => {
                 )}
       
                 <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 120, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
-                                  <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
+                                  <Text style={{color:'white', fontWeight:'500'}}>Upload Image</Text>
                 </TouchableOpacity>   
               </View>
           )}
@@ -476,7 +473,7 @@ const renderTransactionByName = () => {
         </View>
         <View style={{width:'85%',}}>
         <View style={{marginHorizontal:10, marginBottom:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Product SKU</Text>
+                    <Text style={{ marginBottom:5, width:'20%'}}>Product SKU</Text>
                     <View
                         style={{
                             backgroundColor: textProductSKU,
@@ -492,12 +489,12 @@ const renderTransactionByName = () => {
                             maxLength={40}
                             onChangeText={text => setTextProductSKU(text)}
                             value={textProductSKU}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:32}}
                         />
                     </View>          
         </View>
         <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Name</Text>
+                    <Text style={{ marginBottom:5, width:'20%'}}>Name</Text>
                     <View
                         style={{
                             backgroundColor: textName,
@@ -514,16 +511,16 @@ const renderTransactionByName = () => {
                             maxLength={40}
                             onChangeText={text => setTextName(text)}
                             value={textName}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:32}}
                         />
                     </View>          
         </View>
 
         <View style={{ marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Category</Text>
+                    <Text style={{marginBottom:5, width:'20%'}}>Category</Text>
             <View style={{flex: 1,
             justifyContent: 'center',
-            height:25,
+            height:32,
             width:'100%',
             }}>
 
@@ -544,7 +541,7 @@ const renderTransactionByName = () => {
         </View>
 
         <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Qty</Text>
+                    <Text style={{marginBottom:5, width:'20%'}}>Qty</Text>
                 <View style={{flexDirection: 'row', justifyContent:'space-between', }}>
 
             <View style={styles.quantityContainer}>
@@ -563,7 +560,7 @@ const renderTransactionByName = () => {
         </View>
 
         <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Price</Text>
+                    <Text style={{marginBottom:5, width:'20%'}}>Price</Text>
                     <View
                         style={{
                             backgroundColor: textPrice,
@@ -581,13 +578,13 @@ const renderTransactionByName = () => {
                             keyboardType="numeric"
                             onChangeText={onChangePrice}
                             value={textPrice}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:32}}
                         />
                     </View>          
         </View>
 
         <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%',  }}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Descriptions</Text>
+                    <Text style={{ marginBottom:5, width:'20%'}}>Description</Text>
                     <View
                         style={{
                             backgroundColor: textDescription,
@@ -604,7 +601,7 @@ const renderTransactionByName = () => {
                             // maxLength={40}
                             onChangeText={text => setTextDescription(text)}
                             value={textDescription}
-                            style={{paddingLeft: 10, paddingVertical:3, fontSize:8, width:'80%', textAlignVertical: 'top',}}
+                            style={{paddingLeft: 10, paddingVertical:3, width:'80%', textAlignVertical: 'top',}}
                         />
                     </View>          
         </View>
@@ -653,14 +650,11 @@ const renderTransactionByName = () => {
 
         <View style={{marginHorizontal:10, marginVertical:8, width:'80%',  }}>
                     <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:8, color:'white', }}>Save</Text>
+                        <Text style={{color:'white', }}>Save</Text>
                     </TouchableOpacity>     
-                  {/* {detailData && (
-                    <TouchableOpacity onPress={()=> onOpenConfirmation()} style={{flexDirection:'row', gap:5, marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: 'red', padding:4, borderRadius:5}}>
-                        <TrashSVG width='12' height='12' color='red'/>
-                        <Text style={{fontSize:8, color:'black',}}>Remove Product</Text>
+                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{flexDirection:'row', gap:5, marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#dfdfdf', padding:4, borderRadius:5}}>
+                        <Text style={{color:'black',}}>Cancel</Text>
                     </TouchableOpacity>   
-                  )}     */}
         </View>
 
         </View>
@@ -674,7 +668,6 @@ const renderTransactionByName = () => {
       </View>
       </ScrollView>
 
-      <ConfirmationModal isVisible={isOpenConfirmation} selectedData={detailData} onClose={onCloseConfirmation} />
 
       
     </CommonLayout>
@@ -731,7 +724,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
       },
       quantityText: {
-        fontSize: 10,
         fontWeight: 'bold',
       },
       dropdownButton: {
@@ -747,7 +739,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginRight: 10,
-        width:50
+        width:'30%'
       },
       checkbox: {
         width: 20,
@@ -767,17 +759,16 @@ const styles = StyleSheet.create({
       },
       checkboxLabel: {
         marginLeft: 8,
-        fontSize: 8,
-        width:50,
+        //fontSize: 8,
+        //width:'30%',
         color:'black'
       },
       servingInput: {
         height: 25,
-        width: '60%',
+        width: '30%',
         borderColor: 'gray',
         paddingVertical:5,
         paddingLeft: 8,
-        fontSize: 8,
         borderRadius:7,
         marginLeft:20
       },
@@ -788,16 +779,15 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     paddingVertical: 5,
     paddingLeft: 8,
-    fontSize: 8,
     borderRadius: 7,
     marginLeft: 20,
+    color: 'black'
   },
     
   });
 
   const pickerSelectStyles = StyleSheet.create({
     inputIOS: {
-        fontSize: 8,
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderWidth: 0.5,
@@ -807,7 +797,6 @@ const styles = StyleSheet.create({
         paddingRight: 30 // to ensure the text is never behind the icon
     },
     inputAndroid: {
-        fontSize: 8,
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderWidth: 0.5,

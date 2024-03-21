@@ -59,7 +59,7 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('Home')}
       >
-        <DashboardSVG width='12' heigth='12' color={isActive('Home') ? 'white' : 'black'}  />
+        <DashboardSVG width='24' heigth='24' color={isActive('Home') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Home') && styles.activeMenuItemText]}>Dashboard</Text>
       </TouchableOpacity>
 
@@ -70,19 +70,19 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('Sales')}
       >
-        <SalesSVG width='12' heigth='12' color={isActive('Sales') ? 'white' : 'black'}  />
+        <SalesSVG width='24' heigth='24' color={isActive('Sales') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Sales') && styles.activeMenuItemText]}>Sales</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[
           styles.menuItemContainer,
-          isActive('Products') && styles.activeMenuItemContainer,
+          (isActive('Products') || isActive('ProductDetail')) && styles.activeMenuItemContainer,
         ]}
         onPress={() => navigateToScreen('Products')}
       >
-        <ProductSVG width='12' heigth='12' color={isActive('Products') ? 'white' : 'black'}  />
-        <Text style={[styles.menuItem, isActive('Products') && styles.activeMenuItemText]}>Products</Text>
+        <ProductSVG width='24' heigth='24' color={(isActive('Products') || isActive('ProductDetail')) ? 'white' : 'black'}  />
+        <Text style={[styles.menuItem, (isActive('Products') || isActive('ProductDetail')) && styles.activeMenuItemText]}>Products</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -92,19 +92,19 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('Categories')}
       >
-        <CategoriesSVG width='12' height='12' color={isActive('Categories') ? 'white' : 'black'}  />
+        <CategoriesSVG width='24' height='24' color={isActive('Categories') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('Categories') && styles.activeMenuItemText]}>Categories</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[
           styles.menuItemContainer,
-          isActive('Variants') && styles.activeMenuItemContainer,
+          (isActive('Variants') || isActive('VariantDetail')) && styles.activeMenuItemContainer,
         ]}
         onPress={() => navigateToScreen('Variants')}
       >
-        <VariantSVG width='12' height='12' color={isActive('Variants') ? 'white' : 'black'}  />
-        <Text style={[styles.menuItem, isActive('Variants') && styles.activeMenuItemText]}>Variant</Text>
+        <VariantSVG width='24' height='24' color={(isActive('Variants') || isActive('VariantDetail')) ? 'white' : 'black'}  />
+        <Text style={[styles.menuItem, (isActive('Variants') || isActive('VariantDetail')) && styles.activeMenuItemText]}>Variant</Text>
       </TouchableOpacity>
 
       {/* <TouchableOpacity
@@ -125,7 +125,7 @@ const Sidebar: React.FC = () => {
         ]}
         onPress={() => navigateToScreen('TransactionHistory')}
       >
-        <TransactionHistorySVG width='12' height='12' color={isActive('TransactionHistory') ? 'white' : 'black'}  />
+        <TransactionHistorySVG width='24' height='24' color={isActive('TransactionHistory') ? 'white' : 'black'}  />
         <Text style={[styles.menuItem, isActive('TransactionHistory') && styles.activeMenuItemText]}>Transaction History</Text>
       </TouchableOpacity>
 
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10, // Border radius only on the top right
     borderBottomRightRadius: 10, 
     // borderRadius: 5,
-    marginBottom: 2,
+    marginBottom: 8,
     flexDirection: 'row',
     paddingLeft: 10
   },
@@ -212,13 +212,11 @@ const styles = StyleSheet.create({
   },
   menuItem: {
     color: 'black',
-    fontSize: 10,
     paddingVertical: 6,
     paddingHorizontal:8
   },
   menuAccountItem: {
     color: 'black',
-    fontSize: 8,
     paddingVertical: 6,
     paddingHorizontal:8
   },
@@ -228,7 +226,7 @@ const styles = StyleSheet.create({
   circleAvatar: {
     width: 20,
     height: 20,
-    fontSize:6,
+    fontSize: 10,
     padding:5,
     borderRadius: 20,
     backgroundColor: '#E1F0DA', // Change this to your desired background color

@@ -96,6 +96,7 @@ const Products = () => {
 
     const fetchData = async (categoryID: string) => {
       try {
+        console.log('[Product] fetching data')
         setSelectedCategory(categoryID)
         const token = await AsyncStorage.getItem('userData'); 
         const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
@@ -119,6 +120,7 @@ const Products = () => {
 
     const fetchCategories = async () => {
       try {
+        console.log('[Product] fetching category')
         const token = await AsyncStorage.getItem('userData');     
         if (token) {
           const authToken = JSON.parse(token).data.Token
@@ -194,11 +196,6 @@ const Products = () => {
         setSelectedItems([]);
       };
 
-      // const handleNavigate = ( selectedData: ProductDetail | null) => {
-      //   console.log(selectedData)
-      //   navigation.navigate('ProductDetail' as never, {data: selectedData} as never)
-      // };
-
       const handleNavigate = ( selectedId: string) => {
         navigation.navigate('ProductDetail' as never, {id: selectedId} as never)
       };
@@ -211,16 +208,16 @@ const Products = () => {
     <CommonLayout>
       <View style={{}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:5, alignItems:'center'}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Products</Text>
+      <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Products</Text>
       {deleteMode ? (
         <View/>
       ):(
         <View style={{flexDirection:'row', gap:4}}>
         <TouchableOpacity onPress={() => handleNavigate('')} style={{borderWidth:0.5, paddingHorizontal:16, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: '#D2D2D2'}}>
-            <Text style={{fontWeight:'bold', fontSize:14, color:'black'}}>+</Text>
+            <Text style={{fontWeight:'bold', fontSize:16, color:'black'}}>+</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'#D2D2D2'}}>
-            <TrashSVG width='12' height='12' color='red'/>
+            <TrashSVG width='16' height='16' color='red'/>
         </TouchableOpacity>
       </View>
       )}
@@ -243,8 +240,8 @@ const Products = () => {
               {backgroundColor: x.bgColor}
             ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 12}}>{x.name}</Text>
-            <Text style={{ color: "white", fontSize: 9}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
+            <Text style={{fontWeight: "bold", color: "white", fontSize: 13}}>{x.name}</Text>
+            <Text style={{ color: "white", fontSize: 10}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -263,7 +260,7 @@ const Products = () => {
                   {selectedItems.includes(x.id) ? (
                     <Text style={{ fontSize: 12, color: 'white', backgroundColor:'#2563EB', paddingHorizontal:2  }}>✔</Text>
                   ) : (
-                    <Text style={{ fontSize: 25, color: 'black' }}>◻</Text>
+                    <Text style={{ fontSize: 24, color: 'black' }}>◻</Text>
                   )}
                 </TouchableOpacity>
                 )}
@@ -288,9 +285,9 @@ const Products = () => {
                   <View style={{width:'60%', marginLeft:5}}>
                       <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={{width:'100%', height:'100%', borderRadius:5}} />
                   </View>
-                  <View style={{width:'50%'}}>
-                      <Text style={{fontSize:8, fontWeight:'bold', maxWidth:'95%', color:'black'}}>{x.name}</Text>
-                      <Text style={{fontSize:6, color: 'black' }}>Rp {parseInt(x.price).toLocaleString()}</Text>
+                  <View style={{width:'50%', paddingRight: 5}}>
+                      <Text style={{fontSize:10, fontWeight:'bold', maxWidth:'100%', color:'black'}}>{x.name}</Text>
+                      <Text style={{fontSize:10, color: 'black' }}>Rp {parseInt(x.price).toLocaleString()}</Text>
                   </View>
               </TouchableOpacity>
                 )}
@@ -302,12 +299,12 @@ const Products = () => {
     
       
       {deleteMode && (
-        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:50 }}>
-        <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
-          <Text style={{ color: '#fff', fontWeight: 'bold', fontSize:8 }}>Delete ({selectedItems.length}) item{selectedItems.length > 1 ? 's' : ''}</Text>
+        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:0 }}>
+        <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:24, justifyContent:'center', alignItems:'center' }}>
+          <Text style={{ color: '#fff' }}>Delete ({selectedItems.length}) item{selectedItems.length > 1 ? 's' : ''}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#dfdfdf', backgroundColor:'white', borderRadius: 5, width:'45%', height:20, justifyContent:'center', alignItems:'center' }}>
-          <Text style={{ color: 'black', fontWeight: 'bold', fontSize:8 }}>Cancel</Text>
+        <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#dfdfdf', backgroundColor:'white', borderRadius: 5, width:'45%', height:24, justifyContent:'center', alignItems:'center' }}>
+          <Text style={{ color: 'black' }}>Cancel</Text>
         </TouchableOpacity>
         
       </View>
