@@ -242,26 +242,27 @@ const Sales = () => {
       };
 
       const calculateTotalPrice = () => {
-        let subtotal = 0
-        let discount = 0
 
-        for (let index = 0; index < selectedItems.length; index++) {
-          let unitPrice = parseInt(selectedItems[index].product.price) * parseInt(selectedItems[index].product.selectedQty ?? '1')
-          for (let x = 0; x < selectedItems[index].variant.length; x++) {
-            if (selectedVariantOptionIds.includes(selectedItems[index].variant[x].productVariantOptionID)) {
-              unitPrice += parseInt(selectedItems[index].variant[x].price) * parseInt(selectedItems[index].product.selectedQty ?? '1')
+        const { subtotal, discount } = selectedItems.reduce((acc, currentItem) => {
+          const unitPrice = parseInt(currentItem.product.price) * parseInt(currentItem.product.selectedQty ?? '1');
+          const variantPrice = currentItem.variant.reduce((variantTotal, variantItem) => {
+            if (selectedVariantOptionIds.includes(variantItem.productVariantOptionID)) {
+              return variantTotal + (parseInt(variantItem.price) * parseInt(currentItem.product.selectedQty ?? '1'));
             }
-          }
-          subtotal += unitPrice
-
-          let unitDiscount = parseInt(selectedItems[index].product.selectedTotalDiscount ?? '0') * parseInt(selectedItems[index].product.selectedQty ?? '1')
-          discount += unitDiscount
-        }
-
-        const taxRate = 0.1; 
+            return variantTotal;
+          }, 0);
+          const unitDiscount = parseInt(currentItem.product.selectedTotalDiscount ?? '0') * parseInt(currentItem.product.selectedQty ?? '1');
+          
+          return {
+            subtotal: acc.subtotal + unitPrice + variantPrice,
+            discount: acc.discount + unitDiscount
+          };
+        }, { subtotal: 0, discount: 0 });
+      
+        const taxRate = 0.1;
         const tax = (subtotal - discount) * taxRate;
         const totalPrice = (subtotal - discount) + tax;
-
+      
         return {
           subtotal,
           tax,
