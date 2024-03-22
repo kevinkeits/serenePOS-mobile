@@ -358,7 +358,7 @@ const handleSave = () => {
                 <View>
         <View style={{borderBottomWidth:0.5, borderBottomColor:'grey', marginVertical:10}}/>
 
-        <Text style={{fontWeight:"bold", marginVertical: "auto", color:'black'}}>Linked Product</Text>
+        <Text style={{fontWeight:"bold", marginVertical: "auto", color:'black'}}>({detailData?.product.length}) Linked Product{detailData ? (detailData?.product.length > 1 ? 's' : '') : ''}</Text>
         <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'100%', justifyContent:'center', alignItems:'center'}}>
             <View style={{ height: 25, justifyContent: 'center', width:'60%',}}>
 

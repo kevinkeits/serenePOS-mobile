@@ -91,12 +91,14 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
         }
       };
 
-      const handleSearch = () => {
-        if (textName.trim() !== '') {
-            const filteredData = data.filter((x)=> x.name.toLowerCase().includes(textName.toLowerCase()))
+      const handleSearch = (keyword: string) => {
+        setTextName(keyword)
+        if (keyword.trim() !== '') {
+            const filteredData = data.filter((x)=> x.name.toLowerCase().includes(keyword.toLowerCase()))
             setDataProducts(filteredData)
         } else {
-          console.warn('Keyword cannot be empty');
+          //console.warn('Keyword cannot be empty');
+            setDataProducts(data)
         }
       };
 
@@ -140,21 +142,21 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
                             // numberOfLines={4}
                             placeholder='Search'
                             maxLength={40}
-                            onSubmitEditing={handleSearch}
-                            onChangeText={text => setTextName(text)}
+                            //onSubmitEditing={handleSearch}
+                            //onChangeText={handleSearch}
+                            onChangeText={text => handleSearch(text)}
                             value={textName}
                             style={{ paddingVertical:0, width:'100%', height:32}}
                         />
             </View>  
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginHorizontal: 20, marginBottom:3 }}>
-              {/* <Text style={{ fontSize: 10, marginRight: 5, color: 'black' }}>selected {selectedItems.length} product(s)</Text> */}
+          {/* <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginHorizontal: 20, marginBottom:3 }}>
               <TouchableOpacity style={{}} onPress={() => handleCheckboxPress('',-1)}>
                 <Text style={{ color: 'black' }}>
                   {selectAll ? 'Unselect All' : 'Select All'}
                 </Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
 
 <ScrollView>
           <View style={{flexDirection:'row', flexWrap:'wrap', gap:6, marginLeft:35, alignItems:'center'}}>
@@ -187,8 +189,8 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
 
  {selectedItems.length > 0 && (
   <View style={{marginVertical:5,  width:'90%', justifyContent:'center', alignSelf:'center' }}>
-  <TouchableOpacity onPress={() => onSave(selectedProducts)} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-      <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Select ({selectedItems.length}) Product{selectedItems.length > 1 ? 's' : ''}</Text>
+  <TouchableOpacity onPress={() => onSave(selectedProducts)} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, height: 32}}>
+      <Text style={{color:'white'}}>Select ({selectedItems.length}) Product{selectedItems.length > 1 ? 's' : ''}</Text>
   </TouchableOpacity>                
 </View>
  )}
@@ -196,7 +198,7 @@ const ProductModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, data, 
           
          
           <TouchableOpacity onPress={() => handleClose()} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>x</Text>
+            <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
           
       </View>

@@ -250,7 +250,7 @@ const Products = () => {
               {backgroundColor: x.bgColor}
             ]}>
             <View style={{marginBottom:10, marginLeft: 10}}>
-            <Text style={{fontWeight: "bold", color: "white", fontSize: 13}}>{x.name}</Text>
+            <Text style={{fontWeight: "bold", color: "white"}}>{x.name}</Text>
             <Text style={{ color: "white", fontSize: 10}}>{x.totalItem} Item{parseInt(x.totalItem) > 0 ? 's' : ''}</Text>
             </View>
           </TouchableOpacity>
@@ -262,7 +262,7 @@ const Products = () => {
         
         </View> */}
       
-      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', marginBottom: (dimensions.window.height / 3)}}>
+      <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center',  marginBottom: (dimensions.window.height / 3)}}>
         {productData.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
             {deleteMode && (
