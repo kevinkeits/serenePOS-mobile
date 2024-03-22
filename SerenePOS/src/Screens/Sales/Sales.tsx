@@ -47,7 +47,11 @@ const Sales = () => {
 
 
     const [selectedItems, setSelectedItems] = React.useState<ProductDetail[]>([]);
+    const [selectedProductVariantOptionIds, setSelectedProductVariantOptionIds] = React.useState<string[]>([]);
+
     const [selectedVariantOptionIds, setSelectedVariantOptionIds] = React.useState<string[]>([]);
+    const [selectedVariantLabel, setSelectedVariantLabel] = React.useState<string[]>([]);
+    const [selectedVariantPrice, setSelectedVariantPrice] = React.useState<string[]>([]);
 
     const [isEditModalVisible, setEditModalVisible] = React.useState(false);
     const [selectedItemForEdit, setSelectedItemForEdit] = React.useState<Product | null>(null);
@@ -179,7 +183,8 @@ const Sales = () => {
               'Authorization': `Bearer ${authToken}`
             }
           });           
-          const data: Categories[] = response.data.data;
+          let data: Categories[] = response.data.data;
+          data = data.filter((x) => parseInt(x.totalItem) > 0)
           if (data.length > 0) fetchData(data[0].id)
           setCategoriesData(data);
         } else {
@@ -264,10 +269,37 @@ const Sales = () => {
             setSelectedItems(prevItems => [...prevItems, item]);
           }
       
-          const siblingData = new Set(item.variant.map(x => x.productVariantOptionID));
-          const updatedIds = new Set(selectedVariantOptionIds.filter(prevId => !siblingData.has(prevId)));
-          selectedVariantIds.forEach(id => updatedIds.add(id));
-          setSelectedVariantOptionIds([...updatedIds]);
+          const siblingDataProductVariant = new Set(item.variant.map(x => x.productVariantOptionID));
+          const updatedProductVariantIds = new Set(selectedProductVariantOptionIds.filter(prevId => !siblingDataProductVariant.has(prevId)));
+          selectedVariantIds.forEach(id => updatedProductVariantIds.add(id));
+          setSelectedProductVariantOptionIds([...updatedProductVariantIds]);
+
+          const siblingDataVariant = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID));
+          const updatedVariantIds = new Set(selectedVariantOptionIds.filter(prevId => !siblingDataVariant.has(prevId)));
+          for (let index = 0; index < selectedVariantIds.length; index++) {
+            updatedVariantIds.add(item.product.id + '~' + item.variant.find((x) => x.productVariantOptionID == selectedVariantIds[index])?.variantOptionID)
+          }
+          setSelectedVariantOptionIds([...updatedVariantIds]);
+
+          const siblingDataVariantLabel = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID + '~' + x.label));
+          const updatedVariantLabel = new Set(selectedVariantLabel.filter(prevId => !siblingDataVariantLabel.has(prevId)));
+          for (let index = 0; index < selectedVariantIds.length; index++) {
+            const refData = item.variant.find((x) => x.productVariantOptionID == selectedVariantIds[index])
+            updatedVariantLabel.add(item.product.id + '~' + refData?.variantOptionID + '~' + refData?.label)
+          }
+          console.log(updatedVariantLabel)
+          setSelectedVariantLabel([...updatedVariantLabel]);
+
+          const siblingDataVariantPrice = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID + '~' + x.price));
+          const updatedVariantPrice = new Set(selectedVariantLabel.filter(prevId => !siblingDataVariantPrice.has(prevId)));
+          for (let index = 0; index < selectedVariantIds.length; index++) {
+            const refData = item.variant.find((x) => x.productVariantOptionID == selectedVariantIds[index])
+            updatedVariantPrice.add(item.product.id + '~' + refData?.variantOptionID + '~' + refData?.price)
+          }
+          console.log(updatedVariantPrice)
+          setSelectedVariantPrice([...updatedVariantPrice]);
+
+          
         }
       };
     
@@ -276,13 +308,13 @@ const Sales = () => {
         setSelectedItems(filteredProduct);
 
         const siblingData = item.variant.map(x => x.productVariantOptionID);
-        const filteredIds = selectedVariantOptionIds.filter(prevId => !siblingData.includes(prevId));
-        setSelectedVariantOptionIds(filteredIds);
+        const filteredIds = selectedProductVariantOptionIds.filter(prevId => !siblingData.includes(prevId));
+        setSelectedProductVariantOptionIds(filteredIds);
       };
 
       const clearProduct = () => {
         setSelectedItems([])
-        setSelectedVariantOptionIds([])
+        setSelectedProductVariantOptionIds([])
       };
 
       const calculateTotalPrice = () => {
@@ -290,7 +322,7 @@ const Sales = () => {
         const { subtotal, discount } = selectedItems.reduce((acc, currentItem) => {
           const unitPrice = parseInt(currentItem.product.price) * parseInt(currentItem.product.selectedQty ?? '1');
           const variantPrice = currentItem.variant.reduce((variantTotal, variantItem) => {
-            if (selectedVariantOptionIds.includes(variantItem.productVariantOptionID)) {
+            if (selectedProductVariantOptionIds.includes(variantItem.productVariantOptionID)) {
               return variantTotal + (parseInt(variantItem.price) * parseInt(currentItem.product.selectedQty ?? '1'));
             }
             return variantTotal;
@@ -432,7 +464,7 @@ React.useEffect(() => {
             </View>
           )}
           {
-            item.variant.filter((x) => selectedVariantOptionIds.includes(x.productVariantOptionID)).map((x, index)=>(
+            item.variant.filter((x) => selectedProductVariantOptionIds.includes(x.productVariantOptionID)).map((x, index)=>(
               <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
                 <Text style={{fontSize: 9}}>{x.label}</Text>
                 <Text style={{ fontSize: 9, marginLeft: 5 }}>{parseInt(x.price) == 0 ? 'Free' : ('Rp' + parseInt(x.price).toLocaleString())} </Text>
@@ -542,7 +574,7 @@ React.useEffect(() => {
         {/* Side Container */}
 
     </View>
-    <EditItemModal isNewOpen={isNewOpen} isVisible={isEditModalVisible} selectedItem={detailData} selectedProductVariantID={selectedVariantOptionIds} onClose={closeEditModal} onSave={addToSelectedItems} />
+    <EditItemModal isNewOpen={isNewOpen} isVisible={isEditModalVisible} selectedItem={detailData} selectedProductVariantID={selectedProductVariantOptionIds} onClose={closeEditModal} onSave={addToSelectedItems} />
 
     <PaymentMethodModal 
     isVisible={isOpenPayment} 
@@ -562,7 +594,7 @@ React.useEffect(() => {
     discountProduct={selectedItems.map(x => x.product.selectedDiscountValue).join(',')}
     notesProduct={selectedItems.map(x => x.product.selectedNotes).join(',')}
     // transactionProductID={selectedItems.map(x => x.product.id).join(',')}
-    transactionProductIDVariant={selectedVariantOptionIds.join(',')}
+    transactionProductIDVariant={selectedProductVariantOptionIds.join(',')}
     variantOptionID={selectedItems.map(x => x.variant.map(x => x.variantOptionID)).join(',')}
     variantLabel={selectedItems.map(x => x.variant.map(x => x.label)).join(',')}
     variantPrice={selectedItems.map(x => x.variant.map(x => parseInt(x.price).toString())).join(',')}
