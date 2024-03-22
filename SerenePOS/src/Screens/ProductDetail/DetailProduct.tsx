@@ -121,44 +121,48 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
 
   const [form, setForm] = React.useState({
     // Your other form fields
-    paymentConfirmationFileName: '',
-    paymentConfirmationFileData: '',
+    fileName: '',
+    fileData: '',
   });
 
 
   const fetchData = async (id: string) => {
     try {
-      const token = await AsyncStorage.getItem('userData'); 
-      const categoryDetailUrl = ApiUrls.getProductDetail(id);    
-      if (token) {
-        const authToken = JSON.parse(token).data.Token
-        const response = await axios.get(categoryDetailUrl, {
-          headers: {
-            'Authorization': `Bearer ${authToken}`
+      if (id != '') {
+        const token = await AsyncStorage.getItem('userData'); 
+        const categoryDetailUrl = ApiUrls.getProductDetail(id);    
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(categoryDetailUrl, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: ProductDetail = response.data.data;
+          if (id !== '') {
+          if (data) {
+            setTextProductSKU(data.product.productSKU)
+            setTextName(data.product.name)
+            setTextPrice(parseInt(data.product.price).toString())
+            setSelCategory(data.product.categoryID)
+            setQuantity(data.product.qty)
+            setTextDescription(data.product.notes)
+            if (data.variant) {
+              const variantOptionIDs = data.variant.map((x) => x.variantOptionID);
+              setSelectedVariantIds(data.variant.filter((x) => x.isSelected == 'T').map((x) => x.variantOptionID));
+              //setIsSelectedOptions(Array.from({ length: variantOptionIDs.length }, () => 'T'));
+              setIsSelectedOptions(data.variant.map((x) => x.isSelected));
+              setVariantIds(variantOptionIDs)
+              setVariantInputValues(data.variant.map((x) => 'Rp ' + parseInt(x.price).toLocaleString())); 
+            }
           }
-        });           
-        const data: ProductDetail = response.data.data;
-        if (id !== '') {
-        if (data) {
-          setTextProductSKU(data.product.productSKU)
-          setTextName(data.product.name)
-          setTextPrice(parseInt(data.product.price).toString())
-          setSelCategory(data.product.categoryID)
-          setQuantity(data.product.qty)
-          setTextDescription(data.product.notes)
-          if (data.variant) {
-            const variantOptionIDs = data.variant.map((x) => x.variantOptionID);
-            setSelectedVariantIds(data.variant.filter((x) => x.isSelected == 'T').map((x) => x.variantOptionID));
-            //setIsSelectedOptions(Array.from({ length: variantOptionIDs.length }, () => 'T'));
-            setIsSelectedOptions(data.variant.map((x) => x.isSelected));
-            setVariantIds(variantOptionIDs)
-            setVariantInputValues(data.variant.map((x) => 'Rp ' + parseInt(x.price).toLocaleString())); 
-          }
+          setDetailData(data);
         }
-        setDetailData(data);
-      }
+        } else {
+          console.error('No token found in AsyncStorage');
+        }
       } else {
-        console.error('No token found in AsyncStorage');
+        setTextPrice('0')
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -176,6 +180,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
           }
         });           
         const data: Categories[] = response.data.data;
+        //data = data.filter((x) => parseInt(x.totalItem) > 0)
         setCategoriesData(data);
 
         const modifiedData = data.map(category => ({
@@ -206,7 +211,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
       if (response.status === 200) {
         if (response.data.status) {
           onCloseConfirmation()
-          navigation.navigate('Products' as never) 
+          navigation.goBack()
         } else {
           Alert.alert('Error', response.data.message);
         }
@@ -230,8 +235,8 @@ const handleSave = () => {
     price: parseInt(textPrice),
     categoryID: selCategory,
     productSKU: textProductSKU,
-    fileName: form.paymentConfirmationFileName,
-    fileData: form.paymentConfirmationFileData,
+    fileName: form.fileName,
+    fileData: form.fileData,
     variantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.variantOptionID).join(',') : '',
     isSelected: isSelectedOptions.join(','),
     productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.productVariantOptionID).join(',') : '',
@@ -317,9 +322,9 @@ const renderTransactionByName = () => {
       };
     
       const decrementQuantity = () => {
-        // if (quantity > 1) {
+        if (quantity > 1) {
           setQuantity((prevQuantity) => prevQuantity - 1);
-        // }
+       }
       };
     
 
@@ -335,8 +340,8 @@ const renderTransactionByName = () => {
     
           setForm((prev) => ({
             ...prev,
-            paymentConfirmationFileName: res.name || '',
-            paymentConfirmationFileData: `data:${res.type};base64,${fs}`,
+            fileName: res.name || '',
+            fileData: `data:${res.type};base64,${fs}`,
           }));
         } catch (err) {
           if (DocumentPicker.isCancel(err)) {
@@ -431,9 +436,9 @@ const renderTransactionByName = () => {
         <View style={{width:'25%',  alignItems:'center'}}>
           {detailData && detailData.product.imgUrl ? (
             <View style={{paddingLeft:8}}>
-                {form.paymentConfirmationFileData ? (
+                {form.fileData ? (
                  <Image
-                 source={{ uri: form.paymentConfirmationFileData }}
+                 source={{ uri: form.fileData }}
                  style={{ width: 120, height: 100, borderRadius:7 }}
                />
                 ) : (
@@ -450,9 +455,9 @@ const renderTransactionByName = () => {
               </View>
               ):(
                 <View style={{paddingLeft:8}}>
-                {form.paymentConfirmationFileData ? (
+                {form.fileData ? (
                   <Image
-                    source={{ uri: form.paymentConfirmationFileData }}
+                    source={{ uri: form.fileData }}
                     style={{ width: 120, height: 100, borderRadius:7 }}
                   />
                 ) : (
@@ -649,10 +654,10 @@ const renderTransactionByName = () => {
 
 
         <View style={{marginHorizontal:10, marginVertical:8, width:'80%',  }}>
-                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, height: 32}}>
                         <Text style={{color:'white', }}>Save</Text>
                     </TouchableOpacity>     
-                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{flexDirection:'row', gap:5, marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#dfdfdf', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{flexDirection:'row', gap:5, marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#dfdfdf', padding:4, borderRadius:5, height: 32}}>
                         <Text style={{color:'black',}}>Cancel</Text>
                     </TouchableOpacity>   
         </View>
@@ -701,17 +706,17 @@ const styles = StyleSheet.create({
       },
       quantityButton: {
         backgroundColor: '#2563EB',
-        padding:7,
-        height:25,
+        padding:8,
+        height:32,
+        width: 32,
         borderRadius: 3,
-        
         marginHorizontal: 5,
       },
       quantityBorder: {
         borderWidth: 0.5,
        borderColor: '#D2D2D2',
         width:'100%',
-        height:25,
+        height:32,
         //padding: 5,
         alignItems: 'center',
         justifyContent:'center',
@@ -722,6 +727,8 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 10,
         fontWeight: 'bold',
+        marginLeft: 5,
+        marginBottom: 3
       },
       quantityText: {
         fontWeight: 'bold',

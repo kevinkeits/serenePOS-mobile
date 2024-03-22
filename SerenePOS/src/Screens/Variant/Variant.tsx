@@ -2,13 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation, useIsFocused } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
-import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import { Dimensions, Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import { ApiUrls } from '../../apiUrls/apiUrls'
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
 import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
 
+
+const windowDimensions = Dimensions.get('window');
+const screenDimensions = Dimensions.get('screen');
 
   export interface Variant {
     id: string;
@@ -57,6 +60,10 @@ import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
 
 
 const Variant = () => {
+  const [dimensions, setDimensions] = React.useState({
+    window: windowDimensions,
+    screen: screenDimensions,
+  });
 
     const [variantsData, setVariantsData] = React.useState<Variant[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
@@ -170,10 +177,10 @@ const Variant = () => {
           ):(
             <View style={{flexDirection:'row', gap:4}}>
             <TouchableOpacity onPress={() => handleNavigate('')} style={{borderWidth:0.5, paddingHorizontal:16, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor: '#D2D2D2'}}>
-                <Text style={{fontWeight:'bold', fontSize: 16, color:'black'}}>+</Text>
+                <Text style={{fontSize: 22, color:'black'}}>+</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleDeleteModeToggle} style={{borderWidth:0.5, paddingHorizontal:13, borderRadius:10, justifyContent:'center', alignItems:'center', borderColor:'#D2D2D2'}}>
-                <TrashSVG width='16' height='16' color='red'/>
+                <TrashSVG width='22' height='22' color='red'/>
             </TouchableOpacity>
           </View>
           )}
@@ -189,7 +196,7 @@ const Variant = () => {
       )} */}
       
 
-      <ScrollView style={{marginBottom:50}}>
+      <ScrollView style={{marginBottom:70}}>
       <View style={{flexDirection:'row',  flexWrap:'wrap', alignItems:'center',  marginVertical:7, marginLeft:7}}>
         {variantsData.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:8, gap:0,  justifyContent:'center', alignItems:'center'}}>
@@ -219,11 +226,11 @@ const Variant = () => {
       </View>
       </ScrollView>
       {deleteMode && (
-        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:0 }}>
-        <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:24, justifyContent:'center', alignItems:'center' }}>
+        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:20 }}>
+        <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:32, justifyContent:'center', alignItems:'center' }}>
           <Text style={{ color: '#fff' }}>Delete ({selectedItems.length}) item{selectedItems.length > 1 ? 's' : ''}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#dfdfdf', backgroundColor:'white', borderRadius: 5, width:'45%', height:24, justifyContent:'center', alignItems:'center' }}>
+        <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#dfdfdf', backgroundColor:'white', borderRadius: 5, width:'45%', height:32, justifyContent:'center', alignItems:'center' }}>
           <Text style={{ color: 'black' }}>Cancel</Text>
         </TouchableOpacity>
         

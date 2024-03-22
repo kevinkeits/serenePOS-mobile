@@ -93,9 +93,8 @@ const Profile = () => {
 
 
   const [form, setForm] = React.useState({
-    // Your other form fields
-    paymentConfirmationFileName: '',
-    paymentConfirmationFileData: '',
+    fileName: '',
+    fileData: '',
   });
   const [userData, setUserData] = React.useState<any>(null);
 
@@ -106,8 +105,8 @@ const Profile = () => {
       if (jsonValue !== null) {
         const jsonData = JSON.parse(jsonValue).data
         setUserData(JSON.parse(jsonValue));
-        console.log("ini:" + jsonValue)
         setTextName(jsonData.Name)
+        setTextEmail(jsonData.Email)
       }
     } catch (error) {
       console.error('Error retrieving data from AsyncStorage:', error);
@@ -194,8 +193,8 @@ const Profile = () => {
     
           setForm((prev) => ({
             ...prev,
-            paymentConfirmationFileName: res.name || '',
-            paymentConfirmationFileData: `data:${res.type};base64,${fs}`,
+            fileName: res.name || '',
+            fileData: `data:${res.type};base64,${fs}`,
           }));
         } catch (err) {
           if (DocumentPicker.isCancel(err)) {
@@ -223,12 +222,12 @@ const Profile = () => {
 
 
     React.useEffect(() => {
-        fetchUser()
-        if (userData){
-        setTextName(userData.data.Name)
-        setTextEmail(accountData.email)
-        setTextPassword(accountData.password)
-        }
+         fetchUser()
+        // if (userData){
+        // setTextName(userData.data.Name)
+        // setTextEmail(accountData.email)
+        // //setTextPassword(accountData.password)
+        // }
       }, []);
 
   return (
@@ -238,7 +237,7 @@ const Profile = () => {
         {/* <TouchableOpacity onPress={()=> navigation.goBack()}>
             <Text style={{fontSize:12, fontWeight:'bold', color:'black'}}>&lt;--</Text>
         </TouchableOpacity> */}
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Account</Text>
+      <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Account</Text>
       </View>
       <View style={{flexDirection:'row', gap:6}}>
         <View style={{width:'25%',  alignItems:'center'}}>
@@ -246,29 +245,34 @@ const Profile = () => {
         <View style={{paddingLeft:8}}>
 
 
-          {form.paymentConfirmationFileData ? (
+          {form.fileData ? (
             <Image
-              source={{ uri: form.paymentConfirmationFileData }}
+              source={{ uri: form.fileData }}
               style={{ width: 130, height: 100, borderRadius:7 }}
             />
           ) : (
-            <View style={{ width: 130, height: 100, borderWidth:0.5, borderColor:'grey', borderRadius:7 }}>
+            <Image
+              source={require('../../assets/img/no-image.png')}
+              style={{ width: 130, height: 100, borderRadius:7 }}
+            />
+            
+            // <View style={{ width: 130, height: 100, borderWidth:0.5, borderColor:'grey', borderRadius:7 }}>
 
-            </View>
+            // </View>
           )}
 
           <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 130, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
-                            <Text style={{fontSize:8, color:'white', fontWeight:'500'}}>Upload Image</Text>
+                            <Text style={{color:'white', fontWeight:'500'}}>Upload Image</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>navigation.navigate('Setting' as never)} style={{justifyContent:'center', gap:4, flexDirection:'row',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
+          <TouchableOpacity onPress={()=>navigation.navigate('Setting' as never)} style={{justifyContent:'center', gap:4, flexDirection:'row',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'#D2D2D2', padding:4, borderRadius:5, marginTop:7}}>
               <SettingsSVG width='11' height='11' color='black'/>
-              <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Setting</Text>
+              <Text style={{color:'black', fontWeight:'500'}}>Setting</Text>
           </TouchableOpacity> 
 
-          <TouchableOpacity onPress={handleLogout} style={{justifyContent:'center', gap:4, flexDirection:'row',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'black', padding:4, borderRadius:5, marginTop:7}}>
+          <TouchableOpacity onPress={handleLogout} style={{justifyContent:'center', gap:4, flexDirection:'row',  width: 130, alignItems:'center', borderWidth:0.5, borderColor:'#D2D2D2', padding:4, borderRadius:5, marginTop:7}}>
                   <LogoutSVG width='12' height='12' color='black'/>
-                  <Text style={{fontSize:8, color:'black', fontWeight:'500'}}>Logout</Text>
+                  <Text style={{color:'black', fontWeight:'500'}}>Logout</Text>
           </TouchableOpacity>    
                 {/* <Text>File Name: {form.paymentConfirmationFileName}</Text> */}
         </View>
@@ -276,7 +280,7 @@ const Profile = () => {
         </View>
         <View style={{width:'85%',}}>
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Name</Text>
+                    <Text style={{ marginBottom:5, width:'20%'}}>Name</Text>
                     <View
                         style={{
                             backgroundColor: textName,
@@ -293,12 +297,12 @@ const Profile = () => {
                             maxLength={40}
                             onChangeText={text => setTextName(text)}
                             value={textName}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
                         />
                     </View>          
         </View>
         <View style={{marginHorizontal:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Email</Text>
+                    <Text style={{marginBottom:5, width:'20%'}}>Email</Text>
                     <View
                         style={{
                             backgroundColor: '#D2D2D2',
@@ -314,12 +318,12 @@ const Profile = () => {
                             maxLength={40}
                             onChangeText={text => setTextEmail(text)}
                             value={textEmail}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
                         />
                     </View>          
         </View>
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Password</Text>
+                    <Text style={{marginBottom:5,  width:'20%'}}>Password</Text>
                     <View
                         style={{
                             backgroundColor: textPassword,
@@ -336,18 +340,18 @@ const Profile = () => {
                             maxLength={40}
                             onChangeText={text => setTextPassword(text)}
                             value={textPassword}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, width:'80%',  }}>
                     <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
+                        <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
                     <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'black', fontWeight:'500'}}>Cancel</Text>
+                        <Text style={{color:'black', fontWeight:'500'}}>Cancel</Text>
                     </TouchableOpacity>       
         </View>
 

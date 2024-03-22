@@ -353,6 +353,9 @@ const handleSave = () => {
                     </View>       
         </View>
 
+        {
+              options.length > 0 && (
+                <View>
         <View style={{borderBottomWidth:0.5, borderBottomColor:'grey', marginVertical:10}}/>
 
         <Text style={{fontWeight:"bold", marginVertical: "auto", color:'black'}}>Linked Product</Text>
@@ -360,13 +363,19 @@ const handleSave = () => {
             <View style={{ height: 25, justifyContent: 'center', width:'60%',}}>
 
             </View>
-            <View style={{width:'20%', alignSelf:'center', backgroundColor:'#2563EB', justifyContent:'center', alignItems:'center', height:25, borderRadius:6, marginLeft:5, marginBottom:10}}>
+            
+                <View style={{width:'20%', alignSelf:'center', backgroundColor:'#2563EB', justifyContent:'center', alignItems:'center', height:32, borderRadius:6, marginLeft:5, marginBottom:10}}>
                     <TouchableOpacity onPress={()=> onOpenProduct()} style={{width:'100%', alignItems:'center'}}>
                       <Text style={{color:'white', textAlign:'center', alignSelf:'center'}}>Select Product</Text>
                     </TouchableOpacity>
             </View>
+            
+            
 
         </View>
+        </View>
+          )
+        }
         <View style={{flexDirection:'row', gap:10, flexWrap:'wrap'}}>
           {selectedProducts.map((x, index)=> (
             <View key={index} style={{width:110, height:100}}>
@@ -381,11 +390,11 @@ const handleSave = () => {
         )}
 
         <View style={{margin:10, width:'90%',  }}>
-                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, height: 32}}>
                         <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
-                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5,  height: 32}}>
                         <Text style={{color:'black', fontWeight:'500'}}>Cancel</Text>
                     </TouchableOpacity>       
         </View>
@@ -506,8 +515,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 10,
         justifyContent:'center',
-        width:25,
-        height:25
+        width:32,
+        height:32
       },
       optionRow: {
         flexDirection: 'row',

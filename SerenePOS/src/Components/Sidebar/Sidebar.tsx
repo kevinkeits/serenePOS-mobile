@@ -107,17 +107,6 @@ const Sidebar: React.FC = () => {
         <Text style={[styles.menuItem, (isActive('Variants') || isActive('VariantDetail')) && styles.activeMenuItemText]}>Variant</Text>
       </TouchableOpacity>
 
-      {/* <TouchableOpacity
-        style={[
-          styles.menuItemContainer,
-          isActive('Outlet') && styles.activeMenuItemContainer,
-        ]}
-        onPress={() => navigateToScreen('Outlet')}
-      >
-        <CategoriesSVG width='12' height='12' color={isActive('Outlet') ? 'white' : 'black'}  />
-        <Text style={[styles.menuItem, isActive('Outlet') && styles.activeMenuItemText]}>Outlets</Text>
-      </TouchableOpacity> */}
-
       <TouchableOpacity
         style={[
           styles.menuItemContainer,
@@ -126,39 +115,16 @@ const Sidebar: React.FC = () => {
         onPress={() => navigateToScreen('TransactionHistory')}
       >
         <TransactionHistorySVG width='24' height='24' color={isActive('TransactionHistory') ? 'white' : 'black'}  />
-        <Text style={[styles.menuItem, isActive('TransactionHistory') && styles.activeMenuItemText]}>Transaction History</Text>
+        <Text style={[styles.menuItem, isActive('TransactionHistory') && styles.activeMenuItemText]}>Transaction</Text>
       </TouchableOpacity>
 
-      {/* <TouchableOpacity
-        style={[
-          styles.menuItemContainer,
-          isActive('Setting') && styles.activeMenuItemContainer,
-        ]}
-        onPress={() => navigateToScreen('Setting')}
-      >
-        <CategoriesSVG width='12' height='12' color={isActive('Setting') ? 'white' : 'black'}  />
-        <Text style={[styles.menuItem, isActive('Setting') && styles.activeMenuItemText]}>Settings</Text>
-      </TouchableOpacity> */}
-{/* 
-      <TouchableOpacity
-        style={[
-          styles.menuItemContainer,
-          isActive('Account') && styles.activeMenuItemContainer,
-        ]}
-        onPress={() => navigateToScreen('Account')}
-      >
-        <CategoriesSVG width='12' height='12' color={isActive('Account') ? 'white' : 'black'}  />
-        <Text style={[styles.menuItem, isActive('Account') && styles.activeMenuItemText]}>Account</Text>
-      </TouchableOpacity> */}
-
-      
       </View>
       <View>
 
       <TouchableOpacity
         style={[
           styles.menuAccountContainer,
-          isActive('Account') && styles.activeMenuItemContainer,
+          //isActive('Account') && styles.activeMenuItemContainer,
         ]}
         onPress={() => navigateToScreen('Account')}
       >
@@ -194,7 +160,7 @@ const styles = StyleSheet.create({
     // borderRadius: 5,
     marginBottom: 8,
     flexDirection: 'row',
-    paddingLeft: 10
+    paddingLeft: 10,
   },
   menuAccountContainer: {
     // backgroundColor: '#ffffff',
@@ -209,6 +175,7 @@ const styles = StyleSheet.create({
   },
   activeMenuItemContainer: {
     backgroundColor: '#2563EB',
+    height: 32,
   },
   menuItem: {
     color: 'black',

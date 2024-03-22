@@ -35,20 +35,20 @@ const ConfirmationModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, s
           </View>
          
 
-          <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
-                    <Text style={{color:'black', marginTop:5, marginBottom:10, textAlign:'center' }}>Continue delete ({selectedItems?.length}) product{selectedItems.length > 1 ? 's' : ''}?</Text>
-                    <TouchableOpacity  onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#EF4444', padding:4, borderRadius:5}}>
+          <View style={{marginVertical:5, marginHorizontal:30,  width:'90%', justifyContent:'center', }}>
+                    <Text style={{color:'black', marginTop:5, marginBottom:32, textAlign:'center' }}>Continue delete ({selectedItems?.length}) product{selectedItems.length > 1 ? 's' : ''}?</Text>
+                    <TouchableOpacity  onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#EF4444', padding:4, borderRadius:5, height: 32}}>
                         <Text style={{color:'white', fontWeight:'500'}}>Yes, delete</Text>
                     </TouchableOpacity>     
 
-                    <TouchableOpacity onPress={onClose} style={{marginVertical:5, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={onClose} style={{marginVertical:5, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5, height: 32}}>
                         <Text style={{color:'black', fontWeight:'500'}}>No</Text>
                     </TouchableOpacity>           
         </View>
 
          
           <TouchableOpacity onPress={() => onClose()} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>x</Text>
+            <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
         </View>
       </View>

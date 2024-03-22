@@ -104,7 +104,7 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
                 <Text style={styles.modalTitle}>Add Category</Text>
             )}
           </View>
-          <View style={{margin:10, flexDirection:'row', width:'85%', justifyContent:'center', alignItems:'center'}}>
+          <View style={{margin:10, marginTop: 32, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{ marginBottom:5, width:'15%'}}>Name</Text>
                     <View
                         style={{
@@ -141,24 +141,24 @@ const DetailModal: React.FC<EditItemModalProps> = ({ isVisible, onClose, onSave,
                 </View>       
         </View> */}
 
-        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'85%', justifyContent:'space-between', alignItems:'center'}}>
+        <View style={{marginHorizontal:10, marginVertical:5, flexDirection:'row', width:'90%', justifyContent:'space-between', alignItems:'center'}}>
         <Text style={{marginBottom:5, marginLeft:8, width:'15%'}}>Color</Text>
                 {renderColorSelection()}      
         </View>
 
-        <View style={{marginVertical:5, marginHorizontal:30,  width:'80%', justifyContent:'center', }}>
-                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+        <View style={{marginVertical:5, marginTop: 32, marginHorizontal:30,  justifyContent:'center', }}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', height: 32, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
-                    <TouchableOpacity onPress={handleClose} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleClose} style={{marginVertical:10, height: 32, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
                         <Text style={{color:'black', fontWeight:'500'}}>Cancel</Text>
                     </TouchableOpacity>           
         </View>
 
          
           <TouchableOpacity onPress={() => handleClose()} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>x</Text>
+            <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -184,7 +184,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 11,
     fontWeight: 'bold',
     color:'black',
     marginBottom: 5,
@@ -209,8 +208,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButtonText: {
-    color: 'black',
-    fontSize: 13,
+    color: 'grey',
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -251,9 +249,9 @@ const styles = StyleSheet.create({
     justifyContent:'flex-end'
   },
   colorOption: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     marginHorizontal: 2,
     borderWidth:2,
   },
