@@ -248,6 +248,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
                     // multiline
                     // numberOfLines={4}
                     placeholder='Type here'
+                    keyboardType="numeric"
                     maxLength={40}
                     onChangeText={text => 
                         setDiscValue(text)

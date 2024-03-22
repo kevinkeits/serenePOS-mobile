@@ -1,11 +1,11 @@
 import React from 'react'
-import { Dimensions, Button, StyleSheet, Text, View, Image, ScrollView, TextInput } from 'react-native';
+import { Dimensions, Button, StyleSheet, Text, View, Image, ScrollView, TextInput, Alert } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import CommonLayout from '../../Components/CommonLayout/CommonLayout';
 import EditItemModal from './components/EditItemModal/EditItemModal';
-import PaymentMethodModal from './components/PaymentMethodModal/PaymentMethodModal';
+import PaymentMethodModal, { TransactionForm } from './components/PaymentMethodModal/PaymentMethodModal';
 import EditOrderModal from './components/EditOrderModal/EditOrderModal';
 import DiscountModal from './components/DiscountModal/DiscountModal';
 import PencilSVG from '../../assets/svgs/PencilSVG';
@@ -262,6 +262,36 @@ const Sales = () => {
       const onCloseDiscount = () => {
         setIsOpenDiscount(false);
       };
+
+      const onSaveTransaction = async (data: TransactionForm) => {
+        try {
+          const token = await AsyncStorage.getItem('userData'); 
+          const url = ApiUrls.saveTransaction
+          if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.post(url, data, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });
+          if (response.status === 200) {
+            if (response.data.status) {
+              Alert.alert('Success', response.data.message);
+              // onCloseConfirmation()
+              // setDeleteMode(false)
+              // fetchData(selectedCategory)
+            } else {
+              Alert.alert('Error', response.data.message);
+            }
+          } else {
+            Alert.alert('Error', 'Saving data failed');
+          }
+        }
+        } catch (error) {
+          console.error('Error during saving:', error);
+          Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+        }
+    };
   
       const addToSelectedItems = (item: ProductDetail | null, selectedVariantIds: string[]) => {
         if (item) {
@@ -345,6 +375,35 @@ const Sales = () => {
           discount,
           totalPrice,
         };
+      };
+
+      const handleSaveDraft = () => {
+        const updatedData: TransactionForm = {
+          id: '',
+          action: 'add',
+          paymentID: '',
+          customerName: customerName,
+          subtotal: calculateTotalPrice().subtotal.toString(),
+          discount: calculateTotalPrice().discount.toString(),
+          tax: calculateTotalPrice().tax.toString(),
+          totalPayment: calculateTotalPrice().totalPrice.toString(),
+          paymentAmount: '0',
+          changes: '0',
+          isPaid: 'F',
+          notes: 'draft',
+          productID: selectedItems.map(x => x.product.id).join(','),
+          qty: selectedItems.map(x => x.product.qty).join(','),
+          unitPrice: selectedItems.map(x => parseInt(x.product.price).toString()).join(','),
+          discountProduct: selectedItems.map(x => x.product.selectedDiscountValue).join(','),
+          notesProduct: selectedItems.map(x => x.product.selectedNotes).join(','),
+          // transactionProductID: selectedProductVariantOptionIds.join(','),
+          transactionProductIDVariant: selectedProductVariantOptionIds.join(','),
+          variantOptionID: selectedVariantOptionIds.join(','),
+          variantLabel: selectedVariantLabel.join(','),
+          variantPrice: selectedVariantPrice.join(','),
+        };
+        console.log(updatedData)
+        onSaveTransaction(updatedData);
       };
 
 
@@ -437,9 +496,9 @@ React.useEffect(() => {
                             style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
                         />
                     </View>  
-                    <View style={{marginLeft: 4}}>
+                    <TouchableOpacity style={{marginLeft: 4}} onPress={handleSaveDraft}>
                       <SaveSVG width='25' height='25' color='#828282' />
-                    </View>
+                    </TouchableOpacity>
 
             <TouchableOpacity onPress={()=> onOpenDiscount()}>
               <View style={{ marginRight:4}} >
@@ -576,7 +635,8 @@ React.useEffect(() => {
     </View>
     <EditItemModal isNewOpen={isNewOpen} isVisible={isEditModalVisible} selectedItem={detailData} selectedProductVariantID={selectedProductVariantOptionIds} onClose={closeEditModal} onSave={addToSelectedItems} />
 
-    <PaymentMethodModal 
+    <PaymentMethodModal
+    onSave={onSaveTransaction} 
     isVisible={isOpenPayment} 
     totalPrice={totalPriceState} 
     onClose={onClosePayment} 
@@ -595,9 +655,9 @@ React.useEffect(() => {
     notesProduct={selectedItems.map(x => x.product.selectedNotes).join(',')}
     // transactionProductID={selectedItems.map(x => x.product.id).join(',')}
     transactionProductIDVariant={selectedProductVariantOptionIds.join(',')}
-    variantOptionID={selectedItems.map(x => x.variant.map(x => x.variantOptionID)).join(',')}
-    variantLabel={selectedItems.map(x => x.variant.map(x => x.label)).join(',')}
-    variantPrice={selectedItems.map(x => x.variant.map(x => parseInt(x.price).toString())).join(',')}
+    variantOptionID={selectedVariantOptionIds.join(',')}
+    variantLabel={selectedVariantLabel.join(',')}
+    variantPrice={selectedVariantPrice.join(',')}
     />
 
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />

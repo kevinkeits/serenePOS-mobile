@@ -12,6 +12,7 @@ import ReceivedCashModal from '../ReceivedCashModal/ReceivedCashModal';
 interface Props {
   isVisible: boolean;
   onClose: () => void;
+  onSave: (data: TransactionForm) => void
   totalPrice: number
   discountOverall?: DiscountOverall
   data: Payment[]
@@ -73,7 +74,8 @@ export interface DiscountOverall {
 
 const PaymentMethodModal: React.FC<Props> = ({ 
   isVisible, 
-  onClose, 
+  onClose,
+  onSave, 
   totalPrice, 
   discountOverall, 
   data,
@@ -127,35 +129,35 @@ const PaymentMethodModal: React.FC<Props> = ({
       onCloseCash()
     }
 
-    const onSave = async (data: TransactionForm) => {
-      try {
-        const token = await AsyncStorage.getItem('userData'); 
-        const url = ApiUrls.saveTransaction
-        if (token) {
-        const authToken = JSON.parse(token).data.Token
-        const response = await axios.post(url, data, {
-          headers: {
-            'Authorization': `Bearer ${authToken}`
-          }
-        });
-        if (response.status === 200) {
-          if (response.data.status) {
-            onCloseCash()
-            // onCloseConfirmation()
-            // setDeleteMode(false)
-            // fetchData(selectedCategory)
-          } else {
-            Alert.alert('Error', response.data.message);
-          }
-        } else {
-          Alert.alert('Error', 'Saving data failed');
-        }
-      }
-      } catch (error) {
-        console.error('Error during saving:', error);
-        Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
-      }
-  };
+  //   const onSave = async (data: TransactionForm) => {
+  //     try {
+  //       const token = await AsyncStorage.getItem('userData'); 
+  //       const url = ApiUrls.saveTransaction
+  //       if (token) {
+  //       const authToken = JSON.parse(token).data.Token
+  //       const response = await axios.post(url, data, {
+  //         headers: {
+  //           'Authorization': `Bearer ${authToken}`
+  //         }
+  //       });
+  //       if (response.status === 200) {
+  //         if (response.data.status) {
+  //           onCloseCash()
+  //           // onCloseConfirmation()
+  //           // setDeleteMode(false)
+  //           // fetchData(selectedCategory)
+  //         } else {
+  //           Alert.alert('Error', response.data.message);
+  //         }
+  //       } else {
+  //         Alert.alert('Error', 'Saving data failed');
+  //       }
+  //     }
+  //     } catch (error) {
+  //       console.error('Error during saving:', error);
+  //       Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+  //     }
+  // };
 
 
 
