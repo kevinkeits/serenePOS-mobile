@@ -2,16 +2,62 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
+import { TransactionForm } from '../PaymentMethodModal/PaymentMethodModal';
 
 
 interface Props {
   isVisible: boolean;
   onClose: () => void;
   handleCloseAll: () => void
+  onSave: (data: TransactionForm) => void;
   totalPrice: number
+  paymentID?: string
+  paymentName?: string
+  customerName?: string
+  subtotal?: string
+  discount?: string
+  tax?: string
+  totalPayment?: string
+  // paymentAmount?: string
+  // changes?: string
+  // isPaid?: string
+  // notes?: string
+  productID?: string
+  qty?: string
+  unitPrice?: string
+  discountProduct?: string
+  notesProduct?: string
+  transactionProductID?: string
+  transactionProductIDVariant?: string
+  variantOptionID?: string
+  variantLabel?: string
+  variantPrice?: string
 }
 
-const ReceivedCashModal: React.FC<Props> = ({ isVisible, onClose, totalPrice, handleCloseAll }) => {
+const ReceivedCashModal: React.FC<Props> = ({ 
+  isVisible, 
+  onClose, 
+  totalPrice,
+   handleCloseAll,
+   onSave, 
+   paymentID, 
+   paymentName,
+   customerName,
+   subtotal,
+   discount,
+   tax,
+   totalPayment,
+   productID,
+   qty,
+   unitPrice,
+   discountProduct,
+   notesProduct,
+   transactionProductID,
+   transactionProductIDVariant,
+   variantOptionID,
+   variantLabel,
+   variantPrice, 
+  }) => {
 
 
     const [textReceived, setTextReceived] = React.useState('');
@@ -31,8 +77,38 @@ const ReceivedCashModal: React.FC<Props> = ({ isVisible, onClose, totalPrice, ha
       setTextChange(change.toString())
     }
 
+    const handleSave = () => {
+      const updatedData: TransactionForm = {
+        id: '',
+        action: 'add',
+        paymentID: paymentID,
+        customerName: customerName,
+        subtotal: subtotal,
+        discount: discount,
+        tax: tax,
+        totalPayment: totalPayment,
+        paymentAmount: textReceived,
+        changes: textChange,
+        isPaid: paymentID !== '' ? 'T' : 'F',
+        notes: textNotes,
+        productID: productID,
+        qty: qty,
+        unitPrice: unitPrice,
+        discountProduct: discountProduct,
+        notesProduct: notesProduct,
+        transactionProductID: transactionProductID,
+        transactionProductIDVariant: transactionProductIDVariant,
+        variantOptionID: variantOptionID,
+        variantLabel: variantLabel,
+        variantPrice: variantPrice,
+      };
+      console.log(updatedData)
+      onSave(updatedData);
+    };
+
     React.useEffect(() => {
       setTextTotalPrice(totalPrice)
+      console.log('clicked')
       if (totalPrice <= 20000) {
         setTextSuggesstionOne(20000)
         setTextSuggesstionTwo(50000)
@@ -55,7 +131,7 @@ const ReceivedCashModal: React.FC<Props> = ({ isVisible, onClose, totalPrice, ha
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <View style={styles.titleContainer}>
-            <Text style={styles.modalTitle}>Received</Text>
+            <Text style={styles.modalTitle}>{paymentName}</Text>
             <View style={styles.underline}></View>
           </View>
         <ScrollView>
@@ -91,6 +167,7 @@ const ReceivedCashModal: React.FC<Props> = ({ isVisible, onClose, totalPrice, ha
                             // multiline
                             // numberOfLines={4}
                             placeholder='Type here'
+                            keyboardType="numeric"
                             maxLength={40}
                             onChangeText={text => {
                               setTextReceived(text)
@@ -141,7 +218,7 @@ const ReceivedCashModal: React.FC<Props> = ({ isVisible, onClose, totalPrice, ha
                             //maxLength={40}
                             onChangeText={text => setTextNotes(text)}
                             value={textNotes}
-                            style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
+                            style={{paddingLeft: 10, paddingVertical:1, fontSize:10, textAlignVertical: 'top'}}
                         />
                     </View>          
                 </View>
@@ -149,7 +226,7 @@ const ReceivedCashModal: React.FC<Props> = ({ isVisible, onClose, totalPrice, ha
 
           </ScrollView>
           <View style={{width:'90%', marginBottom:5, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
-            <TouchableOpacity onPress={() => handleCloseAll()} style={{width:'100%', alignItems:'center'}}>
+            <TouchableOpacity onPress={handleSave} style={{width:'100%', alignItems:'center'}}>
                 <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Pay</Text>
             </TouchableOpacity>
           </View>

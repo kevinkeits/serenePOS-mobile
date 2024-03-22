@@ -9,6 +9,7 @@ interface Props {
   onClose: () => void;
   selectedIDs: string[]
   onSave?: (ids: string[]) => void;
+  onAdd?: (isDiscount: string, type: string, value: string) => void
 }
 
 interface RadioButtonOptionProps {
@@ -21,14 +22,14 @@ interface RadioButtonOptionProps {
     { id: '2', label: '%', additionalData: '0' },
   ];
 
-const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSave }) => {
+const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSave, onAdd }) => {
 
 
     const [textDisc, setTextDisc] = React.useState('');
     const [textName, setTextName] = React.useState('');
     const [radioValue, setRadioValue] = React.useState('1');
     const [radioTypeValue, setRadioTypeValue] = React.useState('1');
-    const [discTypValue, setDiscTypeValue] = React.useState('');
+    const [discTypeValue, setDiscTypeValue] = React.useState('');
 
 
 
@@ -57,6 +58,11 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
       const handleDiscountTypePress = (option: string) => {
         setDiscTypeValue(option);
       };
+
+
+      const handleAddDiscount = () => {
+        if (onAdd) onAdd(radioValue, discTypeValue,  textDisc )
+      }
 
 
   return (
@@ -121,7 +127,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                                     <Text 
                                     style={[
                                       {fontSize: 10, color:'black', borderWidth:0.5, width:30, borderColor:'#2563EB', borderRadius:3, height:30, textAlign:'center', paddingTop:8},
-                                      discTypValue == option.id && {backgroundColor: '#2563EB', color:'white'}
+                                      discTypeValue == option.id && {backgroundColor: '#2563EB', color:'white'}
                                   ]}>{option.label}</Text>
                                   </TouchableOpacity>
                                 ))}
@@ -159,7 +165,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
             </View>
 
           <View style={{width:'90%', marginTop:5, marginBottom:20, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
-            <TouchableOpacity style={{width:'100%', alignItems:'center'}}>
+            <TouchableOpacity style={{width:'100%', alignItems:'center'}} onPress={handleAddDiscount}>
                 <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Save</Text>
             </TouchableOpacity>
           </View>

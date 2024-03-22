@@ -24,6 +24,14 @@ import { ApiUrls } from '../../apiUrls/apiUrls';
 const windowDimensions = Dimensions.get('window');
 const screenDimensions = Dimensions.get('screen');
 
+export interface Payment{
+  id: string
+  clientID: string;
+  name: string;
+  description: string;
+  isActive: string;
+}
+
 const Sales = () => {
   const [dimensions, setDimensions] = React.useState({
     window: windowDimensions,
@@ -35,6 +43,7 @@ const Sales = () => {
     //const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [productData, setProductData] = React.useState<Product[]>([]);
     const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
+    const [paymentData, setPaymentData] = React.useState<Payment[]>([]);
 
 
     const [selectedItems, setSelectedItems] = React.useState<ProductDetail[]>([]);
@@ -51,6 +60,11 @@ const Sales = () => {
     const [loading, setLoading] = React.useState(true);
     const [isNewOpen, setIsNewOpen] = React.useState(true);
     const [detailData, setDetailData] = React.useState<ProductDetail | null>(null);
+    const [discountOverall, setDiscountOverall] = React.useState({
+      isDiscount: '1',
+      discountType: '', 
+      discountValue: '0', 
+    });
 
 
 
@@ -133,6 +147,28 @@ const Sales = () => {
       }
     };
 
+    const fetchPayment = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userData'); 
+        const Url = ApiUrls.getPayment;    
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(Url, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: Payment[] = response.data.data;
+          setPaymentData(data);
+          setLoading(false)
+        } else {
+          console.error('No token found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
     const fetchCategories = async () => {
       try {
         const token = await AsyncStorage.getItem('userData');     
@@ -183,6 +219,7 @@ const Sales = () => {
       };
 
       const onOpenPayment = () => {
+        fetchPayment()
         setIsOpenPayment(true);
         setTotalPriceState(calculateTotalPrice().totalPrice);
       };
@@ -278,6 +315,16 @@ const Sales = () => {
         };
       };
 
+
+      const addDiscountOverall = (isDiscount: string, type: string, value: string) => {
+        setDiscountOverall((prevDiscountOverall) => ({
+          ...prevDiscountOverall,
+          isDiscount: isDiscount,
+          discountType: type,
+          discountValue: value,
+        }));
+      }
+
   const navigation = useNavigation();
 
 
@@ -334,7 +381,7 @@ React.useEffect(() => {
     <View style={styles.selectedItemsContainer}>
       <View>
       <Text style={{fontSize:8, marginTop:4, marginBottom: 4, marginHorizontal:10,  color:'black'}}>{getCurrentDate()}</Text>
-      <View style={{flexDirection:'row', alignItems:'center',  marginHorizontal:5, marginTop:7, gap:2}}>
+      <View style={{flexDirection:'row', alignItems:'center', marginTop:7, gap:2}}>
             <TouchableOpacity onPress={()=>onOpenTransaction()}>
               <ReceiptSVG width='24' height='24' color='#828282' />
             </TouchableOpacity>
@@ -358,12 +405,12 @@ React.useEffect(() => {
                             style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
                         />
                     </View>  
-                    <View style={{marginLeft: 8}}>
+                    <View style={{marginLeft: 4}}>
                       <SaveSVG width='25' height='25' color='#828282' />
                     </View>
 
             <TouchableOpacity onPress={()=> onOpenDiscount()}>
-              <View style={{marginLeft:8}} >
+              <View style={{ marginRight:4}} >
                 <DiscountSVG width='24' heigth='24'/>
               </View>
             </TouchableOpacity>
@@ -429,6 +476,12 @@ React.useEffect(() => {
                   <Text style={styles.totalPriceAmount}>-Rp {calculateTotalPrice().discount.toLocaleString()}</Text>
                 </View>
               ) }
+            {discountOverall.isDiscount == '2' && (
+              <View style={styles.totalPriceContainer}>
+                <Text style={styles.totalPriceText}>Discount Overall</Text>
+                <Text style={styles.totalPriceAmount}>{discountOverall.discountType == '1' ? `Rp ${discountOverall.discountValue}` : `${discountOverall.discountValue}%`}</Text>
+              </View>
+              )}
               
               <View style={styles.dottedUnderline} />
               <View style={styles.totalPriceContainer}>
@@ -436,6 +489,8 @@ React.useEffect(() => {
                 <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().totalPrice.toLocaleString()}</Text>
               </View>
               </View>
+
+              
           )}
           
           
@@ -488,9 +543,33 @@ React.useEffect(() => {
 
     </View>
     <EditItemModal isNewOpen={isNewOpen} isVisible={isEditModalVisible} selectedItem={detailData} selectedProductVariantID={selectedVariantOptionIds} onClose={closeEditModal} onSave={addToSelectedItems} />
-    <PaymentMethodModal isVisible={isOpenPayment} totalPrice={totalPriceState} onClose={onClosePayment}/>
+
+    <PaymentMethodModal 
+    isVisible={isOpenPayment} 
+    totalPrice={totalPriceState} 
+    onClose={onClosePayment} 
+    discountOverall={discountOverall} 
+    data={paymentData}
+
+    customerName={customerName}
+    subtotal={calculateTotalPrice().subtotal.toString()}
+    discount={calculateTotalPrice().discount.toString()}
+    tax={calculateTotalPrice().tax.toString()}
+    totalPayment={calculateTotalPrice().totalPrice.toString()}
+    productID={selectedItems.map(x => x.product.id).join(',')}
+    qty={selectedItems.map(x => x.product.qty).join(',')}
+    unitPrice={selectedItems.map(x => parseInt(x.product.price).toString()).join(',')}
+    discountProduct={selectedItems.map(x => x.product.selectedDiscountValue).join(',')}
+    notesProduct={selectedItems.map(x => x.product.selectedNotes).join(',')}
+    // transactionProductID={selectedItems.map(x => x.product.id).join(',')}
+    transactionProductIDVariant={selectedVariantOptionIds.join(',')}
+    variantOptionID={selectedItems.map(x => x.variant.map(x => x.variantOptionID)).join(',')}
+    variantLabel={selectedItems.map(x => x.variant.map(x => x.label)).join(',')}
+    variantPrice={selectedItems.map(x => x.variant.map(x => parseInt(x.price).toString())).join(',')}
+    />
+
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
-    <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.product.id)} />
+    <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.product.id)} onAdd={addDiscountOverall} />
     <TransactionModal isVisible={isOpenTransaction} onClose={onCloseTransaction}/>
 
 

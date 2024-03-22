@@ -34,4 +34,8 @@ export const ApiUrls = {
   getTransactionDetail: (id: string) => `https://serenepos.temandigital.id/api/transaction/get?ID=${id}`,
   saveTransaction: `https://serenepos.temandigital.id/api/transaction/doSave`,
 
+  getPayment: `https://serenepos.temandigital.id/api/payment/get`,
+  getPaymentDetail: (id: string) => `https://serenepos.temandigital.id/api/payment/get?ID=${id}`,
+  savePayment: `https://serenepos.temandigital.id/api/payment/doSave`,
+
 };
