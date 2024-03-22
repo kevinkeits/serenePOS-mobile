@@ -102,13 +102,12 @@ const ReceivedCashModal: React.FC<Props> = ({
         variantLabel: variantLabel,
         variantPrice: variantPrice,
       };
-      console.log(updatedData)
+      //console.log(updatedData)
       onSave(updatedData);
     };
 
     React.useEffect(() => {
       setTextTotalPrice(totalPrice)
-      console.log('clicked')
       if (totalPrice <= 20000) {
         setTextSuggesstionOne(20000)
         setTextSuggesstionTwo(50000)
@@ -118,12 +117,12 @@ const ReceivedCashModal: React.FC<Props> = ({
       } else if (totalPrice <= 100000){
         setTextSuggesstionOne(100000)
       }
-    }, []);
+    }, [totalPrice]);
 
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={isVisible}
       onRequestClose={() => onClose()}
@@ -136,25 +135,30 @@ const ReceivedCashModal: React.FC<Props> = ({
           </View>
         <ScrollView>
           <View style={{  borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey',}}>
-          <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>Total Bill</Text>
-          <Text style={{textAlign:'center', fontSize:15, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice.toLocaleString()}</Text>
+          <Text style={{textAlign:'center', marginTop:10, color: 'black'}}>Total Bill {(parseInt(discount ?? '0') > 0 ? 'after Rp ' + parseInt(discount ?? '0').toLocaleString() + ' discount:' : '')}</Text>
+          <Text style={{textAlign:'center', marginBottom:5, color: '#2563EB', fontWeight: '800', fontSize:25}}>Rp {totalPrice.toLocaleString()}</Text>
           </View>
-          <View style={{  borderBottomWidth:0.5, borderStyle:'dotted', borderColor:'grey', flexDirection:'row', gap:10, paddingVertical:10, justifyContent:'center', alignItems:'center'}}>
+          
+          <View style={{marginVertical:5, gap:10, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey', paddingBottom:20}}>
+            <View style={{marginHorizontal:30}}>
+                    <Text style={{fontWeight:'bold', marginBottom:5, color:'black'}}>Received</Text>
+
+                    <View style={{  borderBottomWidth:0.5, borderStyle:'dotted', borderColor:'grey', flexDirection:'row', gap:10, paddingVertical:10, justifyContent:'center', alignItems:'center'}}>
             <TouchableOpacity onPress={() => handlePressSuggestion(textTotalPrice)} style={{borderWidth:0.5, padding:3, borderRadius:5, width:60, height:40, alignItems:'center', justifyContent:'center'}}>
-              <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>{textTotalPrice.toLocaleString()}</Text>
+              <Text style={{textAlign:'center',  color: 'black'}}>{textTotalPrice.toLocaleString()}</Text>
            </TouchableOpacity>
       
            <TouchableOpacity onPress={() => handlePressSuggestion(textSuggesstionOne)} style={{borderWidth:0.5, padding:3, borderRadius:5, width:60, height:40, alignItems:'center', justifyContent:'center'}}>
-              <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>{textSuggesstionOne.toLocaleString()}</Text>
+              <Text style={{textAlign:'center', color: 'black'}}>{textSuggesstionOne.toLocaleString()}</Text>
            </TouchableOpacity>
-
-           <TouchableOpacity onPress={() => handlePressSuggestion(textSuggesstionTwo)} style={{borderWidth:0.5, padding:3, borderRadius:5, width:60, height:40, alignItems:'center', justifyContent:'center'}}>
-              <Text style={{textAlign:'center', fontSize:10,  color: 'black'}}>{textSuggesstionTwo.toLocaleString()}</Text>
-           </TouchableOpacity>
+            {textSuggesstionOne < 100000 && (
+              <TouchableOpacity onPress={() => handlePressSuggestion(textSuggesstionTwo)} style={{borderWidth:0.5, padding:3, borderRadius:5, width:60, height:40, alignItems:'center', justifyContent:'center'}}>
+                <Text style={{textAlign:'center',  color: 'black'}}>{textSuggesstionTwo.toLocaleString()}</Text>
+            </TouchableOpacity>
+            )}
+           
           </View>
-          <View style={{marginVertical:5, gap:10, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey', paddingBottom:20}}>
-            <View style={{marginHorizontal:30}}>
-                    <Text style={{fontSize:10, fontWeight:'bold', marginBottom:5, color:'black'}}>Received</Text>
+
                     <View
                         style={{
                             backgroundColor: textReceived,
@@ -175,13 +179,13 @@ const ReceivedCashModal: React.FC<Props> = ({
                                 setTextChange(change.toString())
                             }}
                             value={textReceived}
-                            style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
+                            style={{paddingLeft: 10, paddingVertical:1}}
                         />
                     </View>          
                 </View>
 
                 <View style={{marginHorizontal:30}}>
-                    <Text style={{fontSize:10, fontWeight:'bold', marginBottom:5, color:'black'}}>Changes</Text>
+                    <Text style={{fontWeight:'bold', marginBottom:5, color:'black'}}>Changes</Text>
                     <View
                         style={{
                             backgroundColor: '#D2D2D2',
@@ -196,13 +200,13 @@ const ReceivedCashModal: React.FC<Props> = ({
                             maxLength={40}
                             onChangeText={text => setTextChange(text)}
                             value={textChange}
-                            style={{paddingLeft: 10, paddingVertical:1, fontSize:10, color:'black'}}
+                            style={{paddingLeft: 10, paddingVertical:1,color:'black'}}
                         />
                     </View>          
                 </View>
 
                 <View style={{marginHorizontal:30}}>
-                    <Text style={{fontSize:10, fontWeight:'bold', marginBottom:5, color:'black'}}>Notes</Text>
+                    <Text style={{ fontWeight:'bold', marginBottom:5, color:'black'}}>Notes</Text>
                     <View
                         style={{
                             backgroundColor: textNotes,
@@ -218,20 +222,20 @@ const ReceivedCashModal: React.FC<Props> = ({
                             //maxLength={40}
                             onChangeText={text => setTextNotes(text)}
                             value={textNotes}
-                            style={{paddingLeft: 10, paddingVertical:1, fontSize:10, textAlignVertical: 'top'}}
+                            style={{paddingLeft: 10, paddingVertical:1, textAlignVertical: 'top'}}
                         />
                     </View>          
                 </View>
           </View>
 
           </ScrollView>
-          <View style={{width:'90%', marginBottom:5, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
+          <View style={{width:'90%', marginBottom:5, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
             <TouchableOpacity onPress={handleSave} style={{width:'100%', alignItems:'center'}}>
-                <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Pay</Text>
+                <Text style={{ fontWeight:'bold', color: 'white'}}>Pay</Text>
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={() => onClose()} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>x</Text>
+            <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -258,7 +262,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 11,
     fontWeight: 'bold',
     marginBottom: 10,
     color: 'black'
@@ -284,7 +287,6 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     color: 'grey', // Change color to black
-    fontSize: 15,
   },
   
 });

@@ -270,8 +270,8 @@ const renderTransactionByName = () => {
          >
            <View style={styles.checkbox}>
              {selectedVariantIds.includes(name.variantOptionID) && 
-               <Text style={{ color: 'white', backgroundColor:'#2563EB', width: 20,
-               height: 20,
+               <Text style={{ color: 'white', backgroundColor:'#2563EB', width: 28,
+               height: 28,
                borderRadius: 4, textAlign:'center' }}>✔</Text>
              }
            </View>
@@ -749,8 +749,8 @@ const styles = StyleSheet.create({
         width:'30%'
       },
       checkbox: {
-        width: 20,
-        height: 20,
+        width: 28,
+        height: 28,
         borderWidth: 0.5,
         borderRadius: 4,
         borderColor:'#D2D2D2',
@@ -771,7 +771,7 @@ const styles = StyleSheet.create({
         color:'black'
       },
       servingInput: {
-        height: 25,
+        height: 28,
         width: '30%',
         borderColor: 'gray',
         paddingVertical:5,
@@ -781,7 +781,7 @@ const styles = StyleSheet.create({
       },
 
   variantInput: {
-    height: 25,
+    height: 32,
     width: '40%',
     borderColor: 'gray',
     paddingVertical: 5,

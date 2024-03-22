@@ -163,7 +163,7 @@ const PaymentMethodModal: React.FC<Props> = ({
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={isVisible}
       onRequestClose={() => onClose()}
@@ -174,28 +174,27 @@ const PaymentMethodModal: React.FC<Props> = ({
             <Text style={styles.modalTitle}>Payment Method</Text>
             <View style={styles.underline}></View>
           </View>
-          <Text style={{marginVertical:4, marginLeft: 20, fontSize:11, color:'black', fontWeight:'bold'}}>Select Payment</Text>
-          <View style={{  borderBottomWidth:1, borderTopWidth:1, borderStyle:'dotted', borderColor:'grey',}}>
-          <Text style={{textAlign:'center', fontSize:10, marginTop:10, color: 'black'}}>Total Bill</Text>
-          <Text style={{textAlign:'center', fontSize:15, marginBottom:5, color: '#2563EB', fontWeight: 'bold'}}>Rp {totalPrice.toLocaleString()}</Text>
+          <View style={{ borderStyle:'dotted', borderColor:'grey',}}>
+          <Text style={{textAlign:'center', marginTop:10, color: 'black'}}>Total Bill {(parseInt(discount ?? '0') > 0 ? 'after Rp ' + parseInt(discount ?? '0').toLocaleString() + ' discount:' : '')}</Text>
+          <Text style={{textAlign:'center', marginBottom:5, color: '#2563EB', fontWeight: '800', fontSize:25}}>Rp {totalPrice.toLocaleString()}</Text>
 
-          {discountOverall?.isDiscount == '2' && (
+          {/* {parseInt(discount ?? '0') > 0 && (
             <View>
-              <Text style={{textAlign:'center', fontSize:10, marginTop:2, color: 'black'}}>Discount Overall</Text>
-              <Text style={{textAlign:'center', fontSize:15, marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>{discountOverall.discountType == '1' ? `Rp ${discountOverall.discountValue}` : `${discountOverall.discountValue}%`}</Text>
+              <Text style={{textAlign:'center', marginTop:2, color: 'black'}}>Discount Overall</Text>
+              <Text style={{textAlign:'center', marginBottom:10, color: '#2563EB', fontWeight: 'bold'}}>{discountOverall.discountType == '1' ? `Rp ${discountOverall.discountValue}` : `${discountOverall.discountValue}%`}</Text>
             </View>
-          )}
+          )} */}
           </View>
 
           <ScrollView>
           <View style={{flexDirection: 'row', marginTop:10, marginBottom:10, flexWrap:'wrap', justifyContent:'center', gap:10}}>
             {data.map((x, index) => (
-              <TouchableOpacity key={index} onPress={()=> onOpenCash(x.id, x.name)} style={{borderWidth:0.5, borderColor: '#2563EB', borderRadius:5, width:'40%', padding:20}}>
+              <TouchableOpacity key={index} onPress={()=> onOpenCash(x.id, x.name)} style={{borderWidth:0.5, /*borderColor: '#2563EB',*/ borderRadius:5, width:'40%', padding:20}}>
                   <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-                      <Text style={{color:'black', fontWeight:'400', fontSize:10}}>{x.name}</Text>
-                      <Text style={{color:'black', fontWeight:'bold', fontSize:15}}>&gt;</Text>
+                      <Text style={{color:'black', fontWeight:'400'}}>{x.name}</Text>
+                      <Text style={{color:'black', fontWeight:'bold'}}>&gt;</Text>
                   </View>
-                  <Text style={{color: '#ACACAC', fontSize:8}}>{x.description}</Text>
+                  <Text style={{color: '#ACACAC'}}>{x.description}</Text>
               </TouchableOpacity>
             ))}
             </View>
@@ -225,14 +224,14 @@ const PaymentMethodModal: React.FC<Props> = ({
             </View> */}
            
           </ScrollView>
-          <View style={{width:'90%', marginVertical:5, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
+          {/* <View style={{width:'90%', marginVertical:5, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
             <TouchableOpacity style={{width:'100%', alignItems:'center'}}>
                 <Text style={{fontSize:8, fontWeight:'bold', color: 'white'}}>Delete Transaction</Text>
             </TouchableOpacity>
-            </View>
+            </View> */}
 
           <TouchableOpacity onPress={() => onClose()} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>x</Text>
+            <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
         </View>
       </View>

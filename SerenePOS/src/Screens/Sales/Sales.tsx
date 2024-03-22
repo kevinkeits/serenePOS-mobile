@@ -61,7 +61,7 @@ const Sales = () => {
     const [isOpenDiscount, setIsOpenDiscount] = React.useState(false);
     const [customerName, setCustomerName] = React.useState('');
     const [isOpenTransaction, setIsOpenTransaction] = React.useState(false);
-    const [loading, setLoading] = React.useState(true);
+    const [loading, setLoading] = React.useState(false);
     const [isNewOpen, setIsNewOpen] = React.useState(true);
     const [detailData, setDetailData] = React.useState<ProductDetail | null>(null);
     const [discountOverall, setDiscountOverall] = React.useState({
@@ -102,7 +102,6 @@ const Sales = () => {
           });           
           const data: Product[] = response.data.data;
           setProductData(data);
-          setLoading(false)
         } else {
           console.error('No token found in AsyncStorage');
         }
@@ -164,7 +163,6 @@ const Sales = () => {
           });           
           const data: Payment[] = response.data.data;
           setPaymentData(data);
-          setLoading(false)
         } else {
           console.error('No token found in AsyncStorage');
         }
@@ -390,7 +388,7 @@ const Sales = () => {
           paymentAmount: '0',
           changes: '0',
           isPaid: 'F',
-          notes: 'draft',
+          notes: '',
           productID: selectedItems.map(x => x.product.id).join(','),
           qty: selectedItems.map(x => x.product.qty).join(','),
           unitPrice: selectedItems.map(x => parseInt(x.product.price).toString()).join(','),
@@ -402,7 +400,6 @@ const Sales = () => {
           variantLabel: selectedVariantLabel.join(','),
           variantPrice: selectedVariantPrice.join(','),
         };
-        console.log(updatedData)
         onSaveTransaction(updatedData);
       };
 
@@ -782,7 +779,7 @@ justifyContent: 'space-between'
     borderRadius: 8,
     width: '95%',
     marginTop: 20,
-    height: 24,
+    height: 32,
     alignSelf: 'center',
     alignItems:'center',
     marginBottom:5
@@ -798,7 +795,7 @@ justifyContent: 'space-between'
     padding: 2,
     borderRadius: 8,
     width: '95%',
-    height: 24,
+    height: 32,
     alignSelf: 'center',
     alignItems:'center',
     marginBottom:10
