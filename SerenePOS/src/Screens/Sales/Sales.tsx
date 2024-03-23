@@ -15,10 +15,11 @@ import CartSVG from '../../assets/svgs/CartSVG';
 import SaveSVG from '../../assets/svgs/SaveSVG';
 import TrashSVG from '../../assets/svgs/TrashSVG';
 import TransactionModal from './components/TransactionModal/TransactionModal';
-import { Product, ProductDetail } from '../Products/Products';
+import { headerProduct, Product, ProductDetail, selVariantProduct } from '../Products/Products';
 import { Categories } from '../Categories/Categories';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiUrls } from '../../apiUrls/apiUrls';
+import { Transaction, TransactionDetail } from '../TransactionHistory/TransactionHistory';
 
 
 const windowDimensions = Dimensions.get('window');
@@ -58,6 +59,12 @@ const Sales = () => {
     const [totalPriceState, setTotalPriceState] = React.useState(0);
     const [isOpenPayment, setIsOpenPayment] = React.useState(false);
     const [isOpenOrder, setIsOpenOrder] = React.useState(false);
+
+    const [isOpenReceived, setIsOpenReceived] = React.useState(false);
+
+    const [loadingSave, setLoadingSave] = React.useState(false);
+
+
     const [isOpenDiscount, setIsOpenDiscount] = React.useState(false);
     const [customerName, setCustomerName] = React.useState('');
     const [isOpenTransaction, setIsOpenTransaction] = React.useState(false);
@@ -69,6 +76,10 @@ const Sales = () => {
       discountType: '', 
       discountValue: '0', 
     });
+
+    const [transactionData, setTransactionData] = React.useState<Transaction[]>([]);
+    const [transactionDetailData, setTransactionDetailData] = React.useState<TransactionDetail | null>(null);
+
 
 
 
@@ -141,6 +152,83 @@ const Sales = () => {
           // }
           setIsNewOpen(true)
           setDetailData(data);
+        }
+        } else {
+          console.error('No token found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const fetchTransactionHistory = async () => {
+      console.log('[Transaction History] fetching data')
+      try {
+        const token = await AsyncStorage.getItem('userData');     
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(ApiUrls.getTransaction, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: Transaction[] = response.data.data;
+          setTransactionData(data);
+        } else {
+          console.error('No token found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const fetchTransactionDetail = async (id: string) => {
+      try {
+        const token = await AsyncStorage.getItem('userData'); 
+        const transactionDetailUrl = ApiUrls.getTransactionDetail(id);    
+        if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.get(transactionDetailUrl, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });           
+          const data: TransactionDetail = response.data.data;
+          console.log(data.details)
+          if (id !== '') {
+
+          setCustomerName(data.details.customerName)
+          setTransactionDetailData(data);
+          const productDetails: ProductDetail[] = data.detailsProduct.map(detail => ({
+            product: {
+                id: detail.productID,
+                productSKU: '',
+                name: detail.productName,
+                price: detail.unitPrice,
+                categoryID: '', // Add category ID if available
+                categoryName: '', // Add category name if available
+                qty: detail.qty,
+                notes: detail.notes,
+                imgUrl: '', // Add image URL if available
+                mimeType: '', // Add MIME type if available
+                // Add other product properties as needed
+            },
+            variant: data.detailsVariant
+                .filter(variant => variant.transactionProductID === detail.transactionProductID)
+                .map(variant => ({
+                    productVariantOptionID: variant.variantOptionID,
+                    isSelected: 'false', // Default value
+                    variantID: variant.id,
+                    name: '', // Add variant name if available
+                    type: '', // Add variant type if available
+                    variantOptionID: '', // Add variant option ID
+                    label: variant.label,
+                    price: variant.price,
+                    // Add other variant properties as needed
+                }))
+        }));
+        setSelectedItems(productDetails);
+
         }
         } else {
           console.error('No token found in AsyncStorage');
@@ -240,6 +328,7 @@ const Sales = () => {
       };
 
       const onOpenTransaction= () => {
+        fetchTransactionHistory()
         setIsOpenTransaction(true);
       };
     
@@ -262,6 +351,7 @@ const Sales = () => {
       };
 
       const onSaveTransaction = async (data: TransactionForm) => {
+        setLoadingSave(true)
         try {
           const token = await AsyncStorage.getItem('userData'); 
           const url = ApiUrls.saveTransaction
@@ -275,11 +365,15 @@ const Sales = () => {
           if (response.status === 200) {
             if (response.data.status) {
               Alert.alert('Success', response.data.message);
+              setLoadingSave(false)
+              onClosePayment()
+              onCloseReceived()
               // onCloseConfirmation()
               // setDeleteMode(false)
               // fetchData(selectedCategory)
             } else {
               Alert.alert('Error', response.data.message);
+              setLoadingSave(false)
             }
           } else {
             Alert.alert('Error', 'Saving data failed');
@@ -375,6 +469,21 @@ const Sales = () => {
         };
       };
 
+      const onOpenReceived = () => {
+        setIsOpenReceived(true);
+      };
+
+      const onCloseReceived = () => {
+        setIsOpenReceived(false);
+      };
+
+      const onClickTransactionHistory = (id: string) => {
+        fetchTransactionDetail(id)
+        onCloseTransaction()
+      }
+
+     
+
       const handleSaveDraft = () => {
         const updatedData: TransactionForm = {
           id: '',
@@ -413,7 +522,44 @@ const Sales = () => {
         }));
       }
 
+
   const navigation = useNavigation();
+
+  const transformTransactionDetailToProductDetail = (transactionDetail: TransactionDetail): ProductDetail => {
+    const { details, detailsProduct, detailsVariant } = transactionDetail;
+
+    // Construct the headerProduct object
+    const product: headerProduct = {
+        id: details.transactionID,
+        productSKU: '', // You can set this if available
+        name: details.customerName, // Or any other appropriate property from transaction details
+        price: details.totalPayment,
+        categoryID: '', // You can set this if available
+        categoryName: '', // You can set this if available
+        qty: 1, // You can set this if available
+        notes: details.notes,
+        imgUrl: '', // You can set this if available
+        mimeType: '', // You can set this if available
+    };
+
+    // Construct the selVariantProduct array
+    const variant: selVariantProduct[] = detailsVariant.map(detailVariant => ({
+        productVariantOptionID: detailVariant.id,
+        isSelected: '', // You can set this if available
+        variantID: detailVariant.productID,
+        name: '', // You can set this if available
+        type: '', // You can set this if available
+        variantOptionID: detailVariant.variantOptionID,
+        label: detailVariant.label,
+        price: detailVariant.price,
+    }));
+
+    // Return the constructed ProductDetail object
+    return {
+        product,
+        variant,
+    };
+};
 
 
 React.useEffect(() => {
@@ -639,6 +785,11 @@ React.useEffect(() => {
     onClose={onClosePayment} 
     discountOverall={discountOverall} 
     data={paymentData}
+    
+    isOpenReceived={isOpenReceived}
+    onOpenReceived={onOpenReceived}
+    onCloseReceived={onCloseReceived}
+    loadingSave={loadingSave}
 
     customerName={customerName}
     subtotal={calculateTotalPrice().subtotal.toString()}
@@ -659,7 +810,7 @@ React.useEffect(() => {
 
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
     <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.product.id)} onAdd={addDiscountOverall} />
-    <TransactionModal isVisible={isOpenTransaction} onClose={onCloseTransaction}/>
+    <TransactionModal isVisible={isOpenTransaction} onClose={onCloseTransaction} data={transactionData.filter((x => x.isPaid == '0'))} onClick={onClickTransactionHistory} />
 
 
     </CommonLayout>

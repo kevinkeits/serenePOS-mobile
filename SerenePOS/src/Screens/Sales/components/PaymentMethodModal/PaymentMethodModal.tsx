@@ -11,6 +11,11 @@ import ReceivedCashModal from '../ReceivedCashModal/ReceivedCashModal';
 
 interface Props {
   isVisible: boolean;
+  isOpenReceived: boolean
+
+  onOpenReceived: () => void;
+  onCloseReceived: () => void;
+  loadingSave: boolean
   onClose: () => void;
   onSave: (data: TransactionForm) => void
   totalPrice: number
@@ -79,6 +84,10 @@ const PaymentMethodModal: React.FC<Props> = ({
   totalPrice, 
   discountOverall, 
   data,
+  isOpenReceived,
+  onOpenReceived,
+  onCloseReceived,
+  loadingSave,
 
   customerName,
   subtotal,
@@ -106,7 +115,8 @@ const PaymentMethodModal: React.FC<Props> = ({
 
 
     const onOpenCash = (paymentID: string, name: string) => {
-        setIsOpenCash(true)
+        // setIsOpenCash(true)
+        onOpenReceived()
         setTotalPriceState(totalPrice)
         setSelectedPaymentID(paymentID)
         setSelectedPaymentName(name)
@@ -238,10 +248,11 @@ const PaymentMethodModal: React.FC<Props> = ({
 
 
       <ReceivedCashModal 
-        isVisible={isOpenCash} 
+        isVisible={isOpenReceived} 
         totalPrice={totalPriceState} 
-        onClose={onCloseCash}
-        onSave={onSave} 
+        onClose={onCloseReceived}
+        onSave={onSave}
+        loadingSave={loadingSave} 
         handleCloseAll={handleCloseAll} 
         paymentID={selectedPaymentID} 
         paymentName={selectedPaymentName}

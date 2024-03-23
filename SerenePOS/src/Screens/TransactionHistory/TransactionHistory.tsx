@@ -76,7 +76,7 @@ export interface DetailsVariantTransaction {
   price: string;
 }
 
-interface GroupedTransactions {
+export interface GroupedTransactions {
   [date: string]: Transaction[];
 }
 

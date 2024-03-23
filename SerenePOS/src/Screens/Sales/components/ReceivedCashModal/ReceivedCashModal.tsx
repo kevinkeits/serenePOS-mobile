@@ -9,6 +9,7 @@ interface Props {
   isVisible: boolean;
   onClose: () => void;
   handleCloseAll: () => void
+  loadingSave: boolean
   onSave: (data: TransactionForm) => void;
   totalPrice: number
   paymentID?: string
@@ -39,6 +40,7 @@ const ReceivedCashModal: React.FC<Props> = ({
   onClose, 
   totalPrice,
    handleCloseAll,
+   loadingSave,
    onSave, 
    paymentID, 
    paymentName,
@@ -164,7 +166,8 @@ const ReceivedCashModal: React.FC<Props> = ({
                             backgroundColor: textReceived,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
-                            borderRadius:5
+                            borderRadius:5,
+                             marginTop:10
                         }}>
                         <TextInput
                             editable
@@ -229,8 +232,8 @@ const ReceivedCashModal: React.FC<Props> = ({
           </View>
 
           </ScrollView>
-          <View style={{width:'90%', marginBottom:5, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
-            <TouchableOpacity onPress={handleSave} style={{width:'100%', alignItems:'center'}}>
+          <View style={loadingSave ? {backgroundColor:'#D2D2D2'} :{width:'90%', marginBottom:5, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
+            <TouchableOpacity onPress={handleSave} style={{width:'100%', alignItems:'center'}} disabled={loadingSave}>
                 <Text style={{ fontWeight:'bold', color: 'white'}}>Pay</Text>
             </TouchableOpacity>
           </View>
