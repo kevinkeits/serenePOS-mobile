@@ -32,7 +32,7 @@ const discountTypeData = [
 const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onClose, selectedItem, selectedProductVariantID, onSave }) => {
 
     const [quantity, setQuantity] = React.useState(1);
-    const [discValue, setDiscValue] = React.useState('0');
+    const [discValue, setDiscValue] = React.useState('');
     const [discTypeValue, setDiscTypeValue] = React.useState('0');
     const [notes, setNotes] = React.useState('');
     const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
@@ -89,7 +89,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
         setQuantity(1)
         setNotes('')
         setSelectedDiscount('1')
-        setDiscValue('0')
+        setDiscValue('')
         setDiscTypeValue('0')
         onClose()
       }
@@ -173,7 +173,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
           setQuantity(parseInt(selectedItem?.product.selectedQty ?? '1'));          
           setNotes(selectedItem?.product.selectedNotes ?? '');
           setDiscTypeValue(selectedItem?.product.selectedDiscountType ?? '0')
-          setDiscValue(selectedItem?.product.selectedDiscountValue ?? '0')
+          setDiscValue(selectedItem?.product.selectedDiscountValue ?? '')
           if (selectedItem?.product.selectedDiscountType) {
             if (selectedItem?.product.selectedDiscountType != '0') setSelectedDiscount('2')
           } else setSelectedDiscount('1')

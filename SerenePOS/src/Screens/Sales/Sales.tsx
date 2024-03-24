@@ -353,6 +353,7 @@ const Sales = () => {
       const onSaveTransaction = async (data: TransactionForm) => {
         setLoadingSave(true)
         try {
+          setLoadingSave(false)
           const token = await AsyncStorage.getItem('userData'); 
           const url = ApiUrls.saveTransaction
           if (token) {
@@ -377,11 +378,15 @@ const Sales = () => {
             }
           } else {
             Alert.alert('Error', 'Saving data failed');
+            setLoadingSave(false)
+
           }
         }
         } catch (error) {
           console.error('Error during saving:', error);
           Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+          setLoadingSave(false)
+
         }
     };
   

@@ -178,7 +178,7 @@ const ReceivedCashModal: React.FC<Props> = ({
                             maxLength={40}
                             onChangeText={text => {
                               setTextReceived(text)
-                              var change = parseInt(text) - totalPrice
+                              var change = parseInt(text == '' ? '0' : text) - totalPrice
                                 setTextChange(change.toString())
                             }}
                             value={textReceived}
