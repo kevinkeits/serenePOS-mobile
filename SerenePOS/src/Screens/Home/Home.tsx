@@ -4,6 +4,12 @@ import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
 import SalesChart from './components/SalesChart/SalesChart'
 
+export interface IProfitAmount {
+  thisWeekAmount: string;
+  lastWeekAmount: string;
+  profitPercentage: number;
+}
+
 const Home = () => {
   const getCurrentDate = () => {
     const currentDate = new Date();

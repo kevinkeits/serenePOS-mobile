@@ -38,4 +38,14 @@ export const ApiUrls = {
   getPaymentDetail: (id: string) => `https://serenepos.temandigital.id/api/payment/get?ID=${id}`,
   savePayment: `https://serenepos.temandigital.id/api/payment/doSave`,
 
+  getDashboardTodayIncome: `https://serenepos.temandigital.id/api/dashboard/getTodayIncome`,
+  getDashboardTotalIncomeForMonth: `https://serenepos.temandigital.id/api/dashboard/getTotalIncomeForMonth`,
+  getDashboardTopSellings: `https://serenepos.temandigital.id/api/dashboard/getTopSellings`,
+  getDashboardSalesWeekly: `https://serenepos.temandigital.id/api/dashboard/getSalesWeekly`,
+  getDashboardProfitAmount: `https://serenepos.temandigital.id/api/dashboard/getProfitAmount`,
+
+
+
+
+
 };

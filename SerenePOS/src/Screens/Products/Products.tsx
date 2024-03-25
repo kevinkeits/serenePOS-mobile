@@ -258,9 +258,6 @@ const Products = () => {
       </ScrollView>
 
           <ScrollView >
-        {/* <View>
-        
-        </View> */}
       
       <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center',  marginBottom: (dimensions.window.height / 3)}}>
         {productData.map((x, index)=>(
@@ -370,7 +367,9 @@ const styles = StyleSheet.create({
     },
     scrollView: {
       flexDirection: 'row',
+
       //marginTop:10
+      height:85
     },
   });
 
