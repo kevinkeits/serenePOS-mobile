@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { TransactionForm } from '../PaymentMethodModal/PaymentMethodModal';
 
@@ -80,32 +80,36 @@ const ReceivedCashModal: React.FC<Props> = ({
     }
 
     const handleSave = () => {
-      const updatedData: TransactionForm = {
-        id: '',
-        action: 'add',
-        paymentID: paymentID,
-        customerName: customerName,
-        subtotal: subtotal,
-        discount: discount,
-        tax: tax,
-        totalPayment: totalPayment,
-        paymentAmount: textReceived,
-        changes: textChange,
-        isPaid: paymentID !== '' ? 'T' : 'F',
-        notes: textNotes,
-        productID: productID,
-        qty: qty,
-        unitPrice: unitPrice,
-        discountProduct: discountProduct,
-        notesProduct: notesProduct,
-        transactionProductID: transactionProductID,
-        transactionProductIDVariant: transactionProductIDVariant,
-        variantOptionID: variantOptionID,
-        variantLabel: variantLabel,
-        variantPrice: variantPrice,
-      };
-      //console.log(updatedData)
-      onSave(updatedData);
+      if (textReceived != '') {
+        const updatedData: TransactionForm = {
+          id: '',
+          action: 'add',
+          paymentID: paymentID,
+          customerName: customerName,
+          subtotal: subtotal,
+          discount: discount,
+          tax: tax,
+          totalPayment: totalPayment,
+          paymentAmount: textReceived,
+          changes: textChange,
+          isPaid: paymentID !== '' ? 'T' : 'F',
+          notes: textNotes,
+          productID: productID,
+          qty: qty,
+          unitPrice: unitPrice,
+          discountProduct: discountProduct,
+          notesProduct: notesProduct,
+          transactionProductID: transactionProductID,
+          transactionProductIDVariant: transactionProductIDVariant,
+          variantOptionID: variantOptionID,
+          variantLabel: variantLabel,
+          variantPrice: variantPrice,
+        };
+        //console.log(updatedData)
+        onSave(updatedData);
+      } else {
+        Alert.alert('Please input amount received')
+      }
     };
 
     React.useEffect(() => {
@@ -181,6 +185,7 @@ const ReceivedCashModal: React.FC<Props> = ({
                               var change = parseInt(text == '' ? '0' : text) - totalPrice
                                 setTextChange(change.toString())
                             }}
+                            //value={'Rp ' + parseInt(textReceived == '' ? '0' : textReceived).toLocaleString()}
                             value={textReceived}
                             style={{paddingLeft: 10, paddingVertical:1}}
                         />
@@ -202,7 +207,7 @@ const ReceivedCashModal: React.FC<Props> = ({
                             // numberOfLines={4}
                             maxLength={40}
                             onChangeText={text => setTextChange(text)}
-                            value={textChange}
+                            value={textChange == '' ? '0' : parseInt(textChange).toLocaleString()}
                             style={{paddingLeft: 10, paddingVertical:1,color:'black'}}
                         />
                     </View>          

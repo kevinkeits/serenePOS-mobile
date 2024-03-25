@@ -369,6 +369,7 @@ const Sales = () => {
               setLoadingSave(false)
               onClosePayment()
               onCloseReceived()
+              clearProduct()
               // onCloseConfirmation()
               // setDeleteMode(false)
               // fetchData(selectedCategory)
@@ -463,7 +464,8 @@ const Sales = () => {
         }, { subtotal: 0, discount: 0 });
       
         const taxRate = 0.1;
-        const tax = (subtotal - discount) * taxRate;
+        //const tax = (subtotal - discount) * taxRate;
+        const tax = 0;
         const totalPrice = (subtotal - discount) + tax;
       
         return {
@@ -705,10 +707,10 @@ React.useEffect(() => {
                 <Text style={styles.totalPriceText}>Subtotal</Text>
                 <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().subtotal.toLocaleString()}</Text>
               </View>
-              <View style={styles.totalPriceContainer}>
+              {/*<View style={styles.totalPriceContainer}>
                 <Text style={styles.totalPriceText}>Tax (10%)</Text>
                 <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().tax.toLocaleString()}</Text>
-              </View>
+          </View>*/}
               { calculateTotalPrice().discount > 0 && (
                 <View style={styles.totalPriceContainer}>
                   <Text style={styles.totalPriceText}>Discount</Text>

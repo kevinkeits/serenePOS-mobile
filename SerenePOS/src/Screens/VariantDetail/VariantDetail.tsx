@@ -219,11 +219,11 @@ const handleSave = () => {
   };
 
   const handleOption = (index: number, field: keyof OptionsVariant, value: string) => {
-    if (field == 'price' && isNaN(Number(value))) {
+    if (field == 'price' && value != '') {
       // If value is not a valid number, handle it accordingly
       // For example, you can set a default value or leave the field unchanged
       // console.warn('Value must be a valid number. Field will remain unchanged.');
-      return; // Exit the function early
+      if (isNaN(Number(value))) return; // Exit the function early
     }
   
     const newOptions = [...options];
@@ -339,8 +339,8 @@ const handleSave = () => {
           <View style={{ position: 'relative', width: '30%' }}>
                 <TextInput
                     style={{ paddingLeft: 10, paddingVertical: 5, width: '100%', height: 32, borderColor: '#D2D2D2', borderWidth: 0.5, borderRadius: 5 }}
-                    placeholder="Price"
-                    value={'Rp ' + parseInt(option.price.toString())}
+                    placeholder="Type here"
+                    value={parseInt(option.price) !== 0 ? 'Rp ' + parseInt(option.price.toString()) : ''}
                     onChangeText={(text) => handleOption(index, 'price', text.replace('Rp', ''))}
                     keyboardType="numeric"
                 />

@@ -254,7 +254,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
                     onChangeText={text => 
                         setDiscValue(text)
                     }
-                    value={discValue}
+                    value={discValue != '0' ? discValue : ''}
                     style={{paddingLeft: 10, paddingVertical:1}}
                 />
             </View>
