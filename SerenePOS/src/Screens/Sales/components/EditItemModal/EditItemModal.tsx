@@ -137,7 +137,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
       
         return Object.keys(groupedVariants).map(variantID => (
           <View key={variantID} style={{flexDirection:'row', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey', marginTop: 8}}>
-            <View style={{width:'30%', marginTop:10}}>
+            <View style={{width:'25%', marginTop:10}}>
               <Text style={{ }}>{selectedItem?.variant.find((x) => x.variantID == variantID)?.name}</Text>
             </View>
             <View style={{marginBottom:10}}>
@@ -195,7 +195,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
             <View style={styles.underline}></View>
           </View>
     <ScrollView>
-          <View style={{ flexDirection: 'row', justifyContent:'space-between', borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey'}}>
+          <View style={{ flexDirection: 'row', gap:50, borderBottomWidth:1, borderStyle:'dotted', borderColor:'grey', alignItems:'center'}}>
             <Text style={{justifyContent:'center', marginTop:5, }}>Amount </Text>
           <View style={styles.quantityContainer}>
             <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
@@ -289,7 +289,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
                     borderColor: '#D2D2D2',
                     borderWidth: 0.5,
                     borderRadius:5,
-                    width: '80%',
+                    width: '60%',
                     marginBottom:10
                 }}>
                 <TextInput
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   quantityButton: {
     backgroundColor: '#2563EB',
     padding:8,
-    height: 32,
+    // height: 32,
     width: 32,
     borderRadius: 5,
     marginHorizontal: 5,
@@ -396,8 +396,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
         fontSize: 10,
-        marginLeft: 5,
-        marginBottom: 3
+        textAlign:'center',
+        marginTop:3
+        // marginLeft: 5,
+        // marginBottom: 3
   },
   quantityText: {
     fontWeight: 'bold',

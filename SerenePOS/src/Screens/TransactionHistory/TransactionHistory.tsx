@@ -198,12 +198,15 @@ export interface GroupedTransactions {
           <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Transaction History</Text>
       </View>
       <ScrollView>
-      
-        <View style={{width:'100%'}}>
-            
-      {renderTransactionByDate()}
-            
-        </View>
+      {transactionData.length > 0 ? (
+      <View style={{width:'100%'}}>
+          {renderTransactionByDate()} 
+      </View>
+      ):(
+        <View style={{width:'100%', marginTop:'20%', justifyContent:'center', alignItems:'center'}}>
+          <Text>No Transaction</Text>
+      </View>
+      )}
         </ScrollView>
 
         <DetailModal isVisible={isOpenDetail} selectedID={selectedID} onClose={onCloseDetail} selectedData={detailData} />

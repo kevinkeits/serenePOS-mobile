@@ -53,6 +53,7 @@ export interface ProductDetail {
     name: string;
     type: string;
     variantOptionID: string;
+    transactionProductID: string
     label: string;
     price: string;
   }
@@ -369,7 +370,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
 
       //marginTop:10
-      height:85
+      // height:85
     },
   });
 

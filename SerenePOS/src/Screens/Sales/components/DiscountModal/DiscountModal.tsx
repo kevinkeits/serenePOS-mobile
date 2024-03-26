@@ -93,8 +93,8 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                                     borderColor: '#D2D2D2',
                                     borderWidth: 0.5,
                                     borderRadius:5,
-                                    width: '60%',
-                                    marginLeft:20
+                                    width: '50%',
+                                    marginLeft:50
                                 }}>
                                 <TextInput
                                     editable
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '70%',
+    width: '50%',
     //height: '50%',
     backgroundColor: 'white',
     paddingTop: 20,

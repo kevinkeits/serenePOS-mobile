@@ -322,9 +322,9 @@ const renderTransactionByName = () => {
       };
     
       const decrementQuantity = () => {
-        if (quantity > 1) {
+       
           setQuantity((prevQuantity) => prevQuantity - 1);
-       }
+       
       };
     
 

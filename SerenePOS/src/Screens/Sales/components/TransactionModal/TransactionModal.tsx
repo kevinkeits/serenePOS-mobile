@@ -83,12 +83,15 @@ const TransactionModal: React.FC<Props> = ({ isVisible, onClose, data, onClick }
             <View style={styles.underline}></View>
           </View>
           <ScrollView>
-      
+      {data.length > 0 ? (
       <View style={{width:'100%', marginBottom:50}}>
-          
-    {renderTransactionByDate()}
-          
+          {renderTransactionByDate()} 
       </View>
+      ):(
+        <View style={{width:'100%', marginBottom:30, marginTop:20, justifyContent:'center', alignItems:'center'}}>
+          <Text>No Transaction</Text>
+      </View>
+      )}
       </ScrollView>
         
 

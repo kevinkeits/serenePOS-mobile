@@ -20,6 +20,7 @@ import { Categories } from '../Categories/Categories';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiUrls } from '../../apiUrls/apiUrls';
 import { Transaction, TransactionDetail } from '../TransactionHistory/TransactionHistory';
+import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal';
 
 
 const windowDimensions = Dimensions.get('window');
@@ -49,6 +50,8 @@ const Sales = () => {
 
     const [selectedItems, setSelectedItems] = React.useState<ProductDetail[]>([]);
     const [selectedProductVariantOptionIds, setSelectedProductVariantOptionIds] = React.useState<string[]>([]);
+    const [selectedTransactionProductID, setSelectedTransactionProductID] = React.useState<string[]>([]);
+
 
     const [selectedVariantOptionIds, setSelectedVariantOptionIds] = React.useState<string[]>([]);
     const [selectedVariantLabel, setSelectedVariantLabel] = React.useState<string[]>([]);
@@ -68,6 +71,8 @@ const Sales = () => {
     const [isOpenDiscount, setIsOpenDiscount] = React.useState(false);
     const [customerName, setCustomerName] = React.useState('');
     const [isOpenTransaction, setIsOpenTransaction] = React.useState(false);
+    const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
+
     const [loading, setLoading] = React.useState(false);
     const [isNewOpen, setIsNewOpen] = React.useState(true);
     const [detailData, setDetailData] = React.useState<ProductDetail | null>(null);
@@ -79,8 +84,7 @@ const Sales = () => {
 
     const [transactionData, setTransactionData] = React.useState<Transaction[]>([]);
     const [transactionDetailData, setTransactionDetailData] = React.useState<TransactionDetail | null>(null);
-
-
+    const [selectedTransactionID, setSelectedTransactionID] = React.useState<string>('');
 
 
 
@@ -194,10 +198,11 @@ const Sales = () => {
             }
           });           
           const data: TransactionDetail = response.data.data;
-          console.log(data.details)
+          console.log(data)
           if (id !== '') {
 
           setCustomerName(data.details.customerName)
+          setSelectedTransactionID(data.details.transactionID)
           setTransactionDetailData(data);
           const productDetails: ProductDetail[] = data.detailsProduct.map(detail => ({
             product: {
@@ -205,29 +210,31 @@ const Sales = () => {
                 productSKU: '',
                 name: detail.productName,
                 price: detail.unitPrice,
-                categoryID: '', // Add category ID if available
-                categoryName: '', // Add category name if available
+                categoryID: '',
+                categoryName: '',
                 qty: detail.qty,
                 notes: detail.notes,
-                imgUrl: '', // Add image URL if available
-                mimeType: '', // Add MIME type if available
-                // Add other product properties as needed
+                imgUrl: '',
+                mimeType: '', 
+                selectedQty: detail.qty.toString(),
+                selectedDiscountValue: detail.discount,
+                selectedNotes: detail.notes
             },
-            variant: data.detailsVariant
-                .filter(variant => variant.transactionProductID === detail.transactionProductID)
+            variant: data.detailsVariant.filter((variant => variant.transactionProductID == detail.transactionProductID))
                 .map(variant => ({
-                    productVariantOptionID: variant.variantOptionID,
-                    isSelected: 'false', // Default value
+                    productVariantOptionID: '',
+                    isSelected: 'false',
                     variantID: variant.id,
-                    name: '', // Add variant name if available
-                    type: '', // Add variant type if available
-                    variantOptionID: '', // Add variant option ID
+                    name: '', 
+                    type: '', 
+                    variantOptionID: variant.variantOptionID, 
                     label: variant.label,
                     price: variant.price,
-                    // Add other variant properties as needed
+                    transactionProductID: variant.transactionProductID
                 }))
         }));
         setSelectedItems(productDetails);
+        console.log(data.detailsVariant)
 
         }
         } else {
@@ -319,6 +326,14 @@ const Sales = () => {
         setIsOpenPayment(false);
       };
 
+      const onOpenConfirmation = () => {
+        setIsOpenConfirmation(true);
+      };
+
+      const onCloseConfirmation = () => {
+        setIsOpenConfirmation(false);
+      };
+
       const onOpenOrder= () => {
         setIsOpenOrder(true);
       };
@@ -369,6 +384,9 @@ const Sales = () => {
               setLoadingSave(false)
               onClosePayment()
               onCloseReceived()
+              onCloseConfirmation()
+              clearProduct()
+              // fetchTransactionHistory()
               // onCloseConfirmation()
               // setDeleteMode(false)
               // fetchData(selectedCategory)
@@ -408,6 +426,14 @@ const Sales = () => {
           }
           setSelectedVariantOptionIds([...updatedVariantIds]);
 
+
+          const siblingDataTransactionProduct = new Set(item.variant.map(x => item.product.id));
+          const updatedTransactionProductIds = new Set(selectedTransactionProductID.filter(prevId => !siblingDataTransactionProduct.has(prevId)));
+          selectedVariantIds.forEach(id => updatedTransactionProductIds.add(id));
+          setSelectedTransactionProductID([...updatedTransactionProductIds]);
+
+  
+
           const siblingDataVariantLabel = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID + '~' + x.label));
           const updatedVariantLabel = new Set(selectedVariantLabel.filter(prevId => !siblingDataVariantLabel.has(prevId)));
           for (let index = 0; index < selectedVariantIds.length; index++) {
@@ -442,6 +468,7 @@ const Sales = () => {
       const clearProduct = () => {
         setSelectedItems([])
         setSelectedProductVariantOptionIds([])
+        setSelectedTransactionID('')
       };
 
       const calculateTotalPrice = () => {
@@ -491,8 +518,8 @@ const Sales = () => {
 
       const handleSaveDraft = () => {
         const updatedData: TransactionForm = {
-          id: '',
-          action: 'add',
+          id: selectedTransactionID == '' ? '' : selectedTransactionID,
+          action: selectedTransactionID == '' ? 'add' : 'edit',
           paymentID: '',
           customerName: customerName,
           subtotal: calculateTotalPrice().subtotal.toString(),
@@ -504,18 +531,21 @@ const Sales = () => {
           isPaid: 'F',
           notes: '',
           productID: selectedItems.map(x => x.product.id).join(','),
-          qty: selectedItems.map(x => x.product.qty).join(','),
+          qty: selectedItems.map(x => x.product.selectedQty).join(','),
           unitPrice: selectedItems.map(x => parseInt(x.product.price).toString()).join(','),
           discountProduct: selectedItems.map(x => x.product.selectedDiscountValue).join(','),
           notesProduct: selectedItems.map(x => x.product.selectedNotes).join(','),
-          // transactionProductID: selectedProductVariantOptionIds.join(','),
+          transactionProductID: selectedTransactionProductID.join(','),
           transactionProductIDVariant: selectedProductVariantOptionIds.join(','),
           variantOptionID: selectedVariantOptionIds.join(','),
           variantLabel: selectedVariantLabel.join(','),
           variantPrice: selectedVariantPrice.join(','),
         };
+        console.log(updatedData)
         onSaveTransaction(updatedData);
       };
+
+
 
 
       const addDiscountOverall = (isDiscount: string, type: string, value: string) => {
@@ -529,42 +559,6 @@ const Sales = () => {
 
 
   const navigation = useNavigation();
-
-  const transformTransactionDetailToProductDetail = (transactionDetail: TransactionDetail): ProductDetail => {
-    const { details, detailsProduct, detailsVariant } = transactionDetail;
-
-    // Construct the headerProduct object
-    const product: headerProduct = {
-        id: details.transactionID,
-        productSKU: '', // You can set this if available
-        name: details.customerName, // Or any other appropriate property from transaction details
-        price: details.totalPayment,
-        categoryID: '', // You can set this if available
-        categoryName: '', // You can set this if available
-        qty: 1, // You can set this if available
-        notes: details.notes,
-        imgUrl: '', // You can set this if available
-        mimeType: '', // You can set this if available
-    };
-
-    // Construct the selVariantProduct array
-    const variant: selVariantProduct[] = detailsVariant.map(detailVariant => ({
-        productVariantOptionID: detailVariant.id,
-        isSelected: '', // You can set this if available
-        variantID: detailVariant.productID,
-        name: '', // You can set this if available
-        type: '', // You can set this if available
-        variantOptionID: detailVariant.variantOptionID,
-        label: detailVariant.label,
-        price: detailVariant.price,
-    }));
-
-    // Return the constructed ProductDetail object
-    return {
-        product,
-        variant,
-    };
-};
 
 
 React.useEffect(() => {
@@ -601,7 +595,17 @@ React.useEffect(() => {
       <ScrollView>
     <View style={{ alignItems: 'center', marginBottom:85, marginLeft:10, width:'100%', flexDirection:'row', flexWrap:"wrap", marginTop:5,}}>
       {productData.map((x) => (
-        <TouchableOpacity key={x.id} style={styles.card} onPress={() => openEditModal(x)}>
+        <TouchableOpacity 
+        disabled={x.qty < 1}
+        key={x.id} 
+        style={x.qty < 1 ? [styles.card, { backgroundColor: 'black', opacity:0.5, zIndex:0, borderRadius:5 }] : styles.card}
+        onPress={() => openEditModal(x)}>
+        
+          {x.qty < 1 && (
+            <View style={{ position:'absolute', zIndex:1, alignItems:'center', bottom:'50%', left:'20%'}}>
+              <Text style={{color:'white', alignSelf:'center', textAlign:'center', backgroundColor:'black', padding:5, fontSize:10 }}>Out of Stock</Text>
+            </View>
+          )}
           <Image source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')} style={styles.image} />
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{x.name}</Text>
           <Text style={styles.price}>Rp {parseInt(x.price).toLocaleString()}</Text>
@@ -740,6 +744,12 @@ React.useEffect(() => {
           <TouchableOpacity onPress={() => clearProduct()} style={styles.billButton}>
             <Text style={styles.billButtonText}>Clear</Text>
           </TouchableOpacity>
+
+          {selectedTransactionID !== '' && (
+          <TouchableOpacity onPress={() => onOpenConfirmation()} style={styles.billButton}>
+              <Text style={styles.billButtonText}>Delete Transaction</Text>
+          </TouchableOpacity>
+          )}
         </View>
         </ScrollView>
 
@@ -816,6 +826,7 @@ React.useEffect(() => {
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
     <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.product.id)} onAdd={addDiscountOverall} />
     <TransactionModal isVisible={isOpenTransaction} onClose={onCloseTransaction} data={transactionData.filter((x => x.isPaid == '0'))} onClick={onClickTransactionHistory} />
+    <ConfirmationModal isVisible={isOpenConfirmation} onClose={onCloseConfirmation} selectedID={selectedTransactionID} onSave={onSaveTransaction} />
 
 
     </CommonLayout>
@@ -954,7 +965,7 @@ justifyContent: 'space-between'
     height: 32,
     alignSelf: 'center',
     alignItems:'center',
-    marginBottom:10
+    marginBottom:5
   },
   billButtonText: {
     color: 'black',
