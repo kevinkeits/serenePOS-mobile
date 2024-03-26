@@ -582,7 +582,7 @@ const renderTransactionByName = () => {
                             maxLength={40}
                             keyboardType="numeric"
                             onChangeText={onChangePrice}
-                            value={textPrice}
+                            value={textPrice != '0' ? textPrice : ''}
                             style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:32}}
                         />
                     </View>          
