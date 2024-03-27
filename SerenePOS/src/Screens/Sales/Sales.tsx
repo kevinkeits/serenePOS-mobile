@@ -138,22 +138,6 @@ const Sales = () => {
           });           
           const data: ProductDetail = response.data.data;
           if (id !== '') {
-          // if (data) {
-          //   setTextProductSKU(data.product.productSKU)
-          //   setTextName(data.product.name)
-          //   setTextPrice(parseInt(data.product.price).toString())
-          //   setSelCategory(data.product.categoryID)
-          //   setQuantity(data.product.qty)
-          //   setTextDescription(data.product.notes)
-          //   if (data.variant) {
-          //     const variantOptionIDs = data.variant.map((x) => x.variantOptionID);
-          //     setSelectedVariantIds(data.variant.filter((x) => x.isSelected == 'T').map((x) => x.variantOptionID));
-          //     //setIsSelectedOptions(Array.from({ length: variantOptionIDs.length }, () => 'T'));
-          //     setIsSelectedOptions(data.variant.map((x) => x.isSelected));
-          //     setVariantIds(variantOptionIDs)
-          //     setVariantInputValues(data.variant.map((x) => 'Rp ' + parseInt(x.price).toLocaleString())); 
-          //   }
-          // }
           setIsNewOpen(true)
           setDetailData(data);
         }
@@ -198,43 +182,51 @@ const Sales = () => {
             }
           });           
           const data: TransactionDetail = response.data.data;
-          console.log(data)
+          // console.log(data)
           if (id !== '') {
 
           setCustomerName(data.details.customerName)
           setSelectedTransactionID(data.details.transactionID)
           setTransactionDetailData(data);
-          const productDetails: ProductDetail[] = data.detailsProduct.map(detail => ({
-            product: {
-                id: detail.productID,
-                productSKU: '',
-                name: detail.productName,
-                price: detail.unitPrice,
-                categoryID: '',
-                categoryName: '',
-                qty: detail.qty,
-                notes: detail.notes,
-                imgUrl: '',
-                mimeType: '', 
-                selectedQty: detail.qty.toString(),
-                selectedDiscountValue: detail.discount,
-                selectedNotes: detail.notes
-            },
-            variant: data.detailsVariant.filter((variant => variant.transactionProductID == detail.transactionProductID))
+          const productDetails: ProductDetail[] = data.detailsProduct.map(detail => {
+            const variants: selVariantProduct[] = data.detailsVariant
+                .filter(variant => variant.transactionProductID === detail.transactionProductID)
                 .map(variant => ({
                     productVariantOptionID: '',
                     isSelected: 'false',
                     variantID: variant.id,
-                    name: '', 
-                    type: '', 
-                    variantOptionID: variant.variantOptionID, 
+                    name: '',
+                    type: '',
+                    variantOptionID: variant.variantOptionID,
+                    transactionProductID: variant.transactionProductID,
                     label: variant.label,
                     price: variant.price,
-                    transactionProductID: variant.transactionProductID
-                }))
-        }));
+                }));
+
+            const discount = detail.discount;
+
+            return {
+                product: {
+                    id: detail.productID,
+                    productSKU: '',
+                    name: detail.productName,
+                    price: detail.unitPrice,
+                    categoryID: '',
+                    categoryName: '',
+                    qty: detail.qty,
+                    notes: detail.notes,
+                    imgUrl: '',
+                    mimeType: '',
+                    selectedQty: detail.qty.toString(),
+                    selectedDiscountValue: detail.discount,
+                    selectedNotes: detail.notes
+                },
+                variant: variants,
+                discount: discount
+            };
+        });
         setSelectedItems(productDetails);
-        console.log(data.detailsVariant)
+        console.log(productDetails)
 
         }
         } else {
@@ -426,13 +418,16 @@ const Sales = () => {
           }
           setSelectedVariantOptionIds([...updatedVariantIds]);
 
-
-          const siblingDataTransactionProduct = new Set(item.variant.map(x => item.product.id));
+          const siblingDataTransactionProduct = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID));
           const updatedTransactionProductIds = new Set(selectedTransactionProductID.filter(prevId => !siblingDataTransactionProduct.has(prevId)));
-          selectedVariantIds.forEach(id => updatedTransactionProductIds.add(id));
-          setSelectedTransactionProductID([...updatedTransactionProductIds]);
+          for (let index = 0; index < selectedVariantIds.length; index++) {
+            const refData = item.variant.find((x) => x.productVariantOptionID == selectedVariantIds[index])
+            updatedTransactionProductIds.add(item.product.id + '~' + refData?.variantOptionID)
+          }
+          const firstIds = [...updatedTransactionProductIds].map(item => item.split('~')[0]);
+          setSelectedTransactionProductID(firstIds);
 
-  
+
 
           const siblingDataVariantLabel = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID + '~' + x.label));
           const updatedVariantLabel = new Set(selectedVariantLabel.filter(prevId => !siblingDataVariantLabel.has(prevId)));
@@ -440,7 +435,6 @@ const Sales = () => {
             const refData = item.variant.find((x) => x.productVariantOptionID == selectedVariantIds[index])
             updatedVariantLabel.add(item.product.id + '~' + refData?.variantOptionID + '~' + refData?.label)
           }
-          console.log(updatedVariantLabel)
           setSelectedVariantLabel([...updatedVariantLabel]);
 
           const siblingDataVariantPrice = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID + '~' + x.price));
@@ -449,7 +443,7 @@ const Sales = () => {
             const refData = item.variant.find((x) => x.productVariantOptionID == selectedVariantIds[index])
             updatedVariantPrice.add(item.product.id + '~' + refData?.variantOptionID + '~' + refData?.price)
           }
-          console.log(updatedVariantPrice)
+          // console.log(updatedVariantPrice)
           setSelectedVariantPrice([...updatedVariantPrice]);
 
           
@@ -662,40 +656,35 @@ React.useEffect(() => {
 
           <ScrollView style={{maxHeight:(dimensions.window.height / 3)}}>
             <View style={{ }}>
-        {selectedItems.map((item) => (
-        <View key={item.product.id} style={styles.selectedItem}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-            <Text style={{ fontSize: 10, fontWeight: 'bold', maxWidth: 150  }}>{item.product.name} x {item.product.selectedQty}</Text>
-            <Text style={{ fontSize: 10, marginLeft: 5 }}>Rp {parseInt(item.product.price ?? '0').toLocaleString()}</Text>
-            
-          </View>
-          { item.product.selectedTotalDiscount != '0' && (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
-              <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
-              <Text style={{ fontSize: 8, marginLeft: 5 }}>-Rp {parseInt(item.product.selectedTotalDiscount ?? '0').toLocaleString()}</Text>
-            </View>
-          )}
-          {
-            item.variant.filter((x) => selectedProductVariantOptionIds.includes(x.productVariantOptionID)).map((x, index)=>(
-              <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
-                <Text style={{fontSize: 9}}>{x.label}</Text>
-                <Text style={{ fontSize: 9, marginLeft: 5 }}>{parseInt(x.price) == 0 ? 'Free' : ('Rp' + parseInt(x.price).toLocaleString())} </Text>
+        {selectedItems.map((item, index) => (
+            <View key={index} style={styles.selectedItem}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 10, fontWeight: 'bold', maxWidth: 150 }}>{item.product.name} x {item.product.selectedQty}</Text>
+                <Text style={{ fontSize: 10, marginLeft: 5 }}>Rp {parseInt(item.product.price ?? '0').toLocaleString()}</Text>
               </View>
-            ))
-          }
-          <View style={{marginTop: 4}}><Text style={{fontSize: 9}}>Note {item.product.selectedNotes == '' ? '-' : item.product.selectedNotes}</Text></View>
-
-          <View style={{flexDirection:'row', gap:4, justifyContent:'flex-end'}}>
-          <TouchableOpacity onPress={() => openEditModalCart(item)} style={{marginTop:5, marginRight: 16}}>
-          <PencilSVG width='16' heigth='16' color='grey'/>
-           
-          </TouchableOpacity>
-            <TouchableOpacity onPress={() => removeFromSelectedItems(item)} style={{marginTop:5, marginRight: 8}}>
-            <TrashSVG width='16' height='16' color='red'/>
-              </TouchableOpacity>
-          </View>
-        </View>
-        ))}
+              {item.product.selectedTotalDiscount != '0' && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+                  <Text style={{ fontSize: 8, maxWidth: 150 }}>Discount</Text>
+                  <Text style={{ fontSize: 8, marginLeft: 5 }}>-Rp {parseInt(item.product.selectedTotalDiscount ?? '0').toLocaleString()}</Text>
+                </View>
+              )}
+              {item.variant.map((variant, vIndex) => (
+                <View key={vIndex} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+                  <Text style={{ fontSize: 9 }}>{variant.label}</Text>
+                  <Text style={{ fontSize: 9, marginLeft: 5 }}>{parseInt(variant.price) == 0 ? 'Free' : ('Rp' + parseInt(variant.price).toLocaleString())} </Text>
+                </View>
+              ))}
+              <View style={{ marginTop: 4 }}><Text style={{ fontSize: 9 }}>Note {item.product.selectedNotes == '' ? '-' : item.product.selectedNotes}</Text></View>
+              <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'flex-end' }}>
+                <TouchableOpacity onPress={() => openEditModalCart(item)} style={{ marginTop: 5, marginRight: 16 }}>
+                  <PencilSVG width='16' heigth='16' color='grey' />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => removeFromSelectedItems(item)} style={{ marginTop: 5, marginRight: 8 }}>
+                  <TrashSVG width='16' height='16' color='red' />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
         </View>
         </ScrollView>
 

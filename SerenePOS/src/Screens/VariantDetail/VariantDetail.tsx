@@ -179,11 +179,11 @@ const handleSave = () => {
     action: id !== '' ? 'edit' : 'add',
     name: textName,
     type: selectedType,
-    optionID: options.map((option) => option.id).join(','), // Extracting option IDs
-    optionLabel: options.map((option) => option.label).join(','), // Extracting option labels
-    optionPrice: options.map((option) => option.price).join(','), // Extracting option prices
-    productID: selectedProducts.map((product) => product.id).join(','), // Extracting product IDs
-    optionIDDelete: id !== '' ? selectedOptionIDsDelete.join(',') : '', // No need for mapping here
+    optionID: options.map((option) => option.id).join(','), 
+    optionLabel: options.map((option) => option.label).join(','),
+    optionPrice: options.map((option) => option.price).join(','),
+    productID: selectedProducts.map((product) => product.id).join(','),
+    optionIDDelete: id !== '' ? selectedOptionIDsDelete.join(',') : '',
   };
   onSave(updatedData);
 };
@@ -220,15 +220,11 @@ const handleSave = () => {
 
   const handleOption = (index: number, field: keyof OptionsVariant, value: string) => {
     if (field == 'price' && value != '') {
-      // If value is not a valid number, handle it accordingly
-      // For example, you can set a default value or leave the field unchanged
-      // console.warn('Value must be a valid number. Field will remain unchanged.');
-      if (isNaN(Number(value))) return; // Exit the function early
+      if (isNaN(Number(value))) return;
     }
   
     const newOptions = [...options];
-    // Update the specific field in the option object with the numeric value
-    newOptions[index][field] = field == 'price' ? value.toString().trim() : value.toString(); // Convert numeric value back to string
+    newOptions[index][field] = field == 'price' ? value.toString().trim() : value.toString();
     setOptions(newOptions);
   };
 
