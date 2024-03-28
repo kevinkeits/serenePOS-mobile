@@ -157,7 +157,7 @@ const Sales = () => {
           // }
           setIsNewOpen(true)
           setDetailData(data);
-          console.log(data)
+          //console.log(data)
         }
         } else {
           console.error('No token found in AsyncStorage');
@@ -213,7 +213,7 @@ const Sales = () => {
                     id: variant.id,
                     productVariantOptionID: variant.productVariantOptionID,
                     isSelected: variant.isSelected,
-                    variantID: variant.id,
+                    variantID: variant.variantID,
                     name: variant.name,
                     type: variant.type,
                     variantOptionID: variant.variantOptionID,
@@ -221,13 +221,6 @@ const Sales = () => {
                     label: variant.label,
                     price: variant.price,
                 }));
-
-                const mappedProductVariantOptionID = data.detailsVariant
-                .filter(x => x.id !== '') // Filter out elements with empty ids
-                .map(x => x.id);
-              
-              setSelectedProductVariantOptionIds(mappedProductVariantOptionID);
-              // console.log(variants)
             return {
                 product: {
                     id: detail.productID,
@@ -249,12 +242,14 @@ const Sales = () => {
                 },
                 variant: variants,
             };
-            
-
-
         });
         setSelectedItems(productDetails);
-        // console.log(productDetails[0].variant)
+
+        const mappedProductVariantOptionID = data.detailsVariant
+          .filter(x => x.id !== '') // Filter out elements with empty ids
+          .map(x => x.id);
+        setSelectedProductVariantOptionIds(mappedProductVariantOptionID);
+        //console.log(productDetails[0], mappedProductVariantOptionID)
 
         }
         } else {
@@ -591,7 +586,7 @@ const Sales = () => {
           variantLabel: selectedVariantLabel.join(','),
           variantPrice: selectedVariantPrice.join(','),
         };
-        console.log(updatedData)
+        //console.log(updatedData)
         onSaveTransaction(updatedData);
       };
 
