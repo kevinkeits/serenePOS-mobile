@@ -200,12 +200,28 @@ const Sales = () => {
             }
           });           
           const data: TransactionDetail = response.data.data;
-          // console.log(data)
-          if (id !== '') {
 
+          if (id !== '') {
           setCustomerName(data.details.customerName)
           setSelectedTransactionID(data.details.transactionID)
           setTransactionDetailData(data);
+
+          const totalDiscount = data.detailsProduct.reduce((acc, detail) => {
+            const discount = parseFloat(detail.discount);
+            acc += isNaN(discount) ? 0 : discount;
+            return acc;
+        }, 0);
+
+        const discountOverall = parseInt(data.details.discount) - totalDiscount
+
+        setDiscountOverall({
+          isDiscount:'2',
+          discountType:'2',
+          discountValue: discountOverall.toLocaleString(),
+          discountDesc:''
+        })
+
+
           const productDetails: ProductDetail[] = data.detailsProduct.map(detail => {
             const variants: selVariantProduct[] = data.detailsVariant
                 .filter(variant => variant.productID === detail.productID)
@@ -244,12 +260,12 @@ const Sales = () => {
             };
         });
         setSelectedItems(productDetails);
+        // console.log(response.data.data)
 
         const mappedProductVariantOptionID = data.detailsVariant
-          .filter(x => x.id !== '') // Filter out elements with empty ids
+          .filter(x => x.id !== '')
           .map(x => x.id);
         setSelectedProductVariantOptionIds(mappedProductVariantOptionID);
-        //console.log(productDetails[0], mappedProductVariantOptionID)
 
         }
         } else {

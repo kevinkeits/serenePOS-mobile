@@ -123,7 +123,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
               ))}
                 {radioValue == '2' && (
                     <View style={{}}>
-                        <View style={{ flexDirection:'row', gap:10,  alignItems:'center', borderBottomWidth:1, borderBottomColor:'grey', borderStyle:'dotted', paddingBottom:20}}>
+                        <View style={{ flexDirection:'row', gap:10,  alignItems:'center', borderBottomColor:'grey', borderStyle:'dotted'}}>
                             <View
                                 style={{
                                     backgroundColor: textDisc,
@@ -170,7 +170,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                                 ))}
                             </View>
                        </View>
-                        <View style={{marginTop:20, marginLeft:20}}>
+                        {/* <View style={{marginTop:20, marginLeft:20}}>
                         <View style={{ flexDirection:'row', gap:10,  }}>
                         <Text style={{fontSize:10, fontWeight:'bold', marginBottom:5, color:'black', }}>Description :</Text>
                             <View
@@ -196,7 +196,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                             </View>
                                  
                        </View> 
-                        </View>
+                        </View> */}
                     </View>
                 )}
             </View>
