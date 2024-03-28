@@ -157,6 +157,7 @@ const Sales = () => {
           // }
           setIsNewOpen(true)
           setDetailData(data);
+          console.log(data)
         }
         } else {
           console.error('No token found in AsyncStorage');
@@ -207,27 +208,33 @@ const Sales = () => {
           setTransactionDetailData(data);
           const productDetails: ProductDetail[] = data.detailsProduct.map(detail => {
             const variants: selVariantProduct[] = data.detailsVariant
-                .filter(variant => variant.transactionProductID === detail.transactionProductID)
+                .filter(variant => variant.productID === detail.productID)
                 .map(variant => ({
-                    productVariantOptionID: '',
-                    isSelected: 'T',
+                    id: variant.id,
+                    productVariantOptionID: variant.productVariantOptionID,
+                    isSelected: variant.isSelected,
                     variantID: variant.id,
-                    name: '',
-                    type: '',
+                    name: variant.name,
+                    type: variant.type,
                     variantOptionID: variant.variantOptionID,
                     transactionProductID: variant.transactionProductID,
                     label: variant.label,
                     price: variant.price,
                 }));
 
-            // const discount = detail.discount;
-
+                const mappedProductVariantOptionID = data.detailsVariant
+                .filter(x => x.id !== '') // Filter out elements with empty ids
+                .map(x => x.id);
+              
+              setSelectedProductVariantOptionIds(mappedProductVariantOptionID);
+              // console.log(variants)
             return {
                 product: {
                     id: detail.productID,
                     productSKU: '',
                     name: detail.productName,
                     price: detail.unitPrice,
+                    transactionProductID: detail.transactionProductID,
                     categoryID: '',
                     categoryName: '',
                     qty: detail.qty,
@@ -241,11 +248,13 @@ const Sales = () => {
                     selectedNotes: detail.notes
                 },
                 variant: variants,
-                // discount: discount
             };
+            
+
+
         });
         setSelectedItems(productDetails);
-        console.log('transaction'+data)
+        // console.log(productDetails[0].variant)
 
         }
         } else {
@@ -703,7 +712,6 @@ React.useEffect(() => {
           </View>
 
           <ScrollView style={{maxHeight:(dimensions.window.height / 3)}}>
-            {selectedTransactionID == '' ? (
             <View style={{ }}>
         {selectedItems.map((item) => (
         <View key={item.product.id} style={styles.selectedItem}>
@@ -740,39 +748,7 @@ React.useEffect(() => {
         </View>
         ))}
          </View>
-         ):(
-        <View>
-        {selectedItems.map((item, index) => (
-            <View key={index} style={styles.selectedItem}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontSize: 10, fontWeight: 'bold', maxWidth: 150 }}>{item.product.name} x {item.product.selectedQty}</Text>
-                <Text style={{ fontSize: 10, marginLeft: 5 }}>Rp {parseInt(item.product.price ?? '0').toLocaleString()}</Text>
-              </View>
-              {item.product.selectedTotalDiscount != '0' && (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
-                  <Text style={{ fontSize: 8, maxWidth: 150 }}>Discount</Text>
-                  <Text style={{ fontSize: 8, marginLeft: 5 }}>-Rp {parseInt(item.product.selectedTotalDiscount ?? '0').toLocaleString()}</Text>
-                </View>
-              )}
-              {item.variant.map((variant, vIndex) => (
-                <View key={vIndex} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
-                  <Text style={{ fontSize: 9 }}>{variant.label}</Text>
-                  <Text style={{ fontSize: 9, marginLeft: 5 }}>{parseInt(variant.price) == 0 ? 'Free' : ('Rp' + parseInt(variant.price).toLocaleString())} </Text>
-                </View>
-              ))}
-              <View style={{ marginTop: 4 }}><Text style={{ fontSize: 9 }}>Note {item.product.selectedNotes == '' ? '-' : item.product.selectedNotes}</Text></View>
-              <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'flex-end' }}>
-                <TouchableOpacity onPress={() => openEditModalCart(item)} style={{ marginTop: 5, marginRight: 16 }}>
-                  <PencilSVG width='16' heigth='16' color='grey' />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => removeFromSelectedItems(item)} style={{ marginTop: 5, marginRight: 8 }}>
-                  <TrashSVG width='16' height='16' color='red' />
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </View>
-        )}
+
         </ScrollView>
 
         </View>

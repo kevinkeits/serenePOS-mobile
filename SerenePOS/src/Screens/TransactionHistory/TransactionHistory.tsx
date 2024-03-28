@@ -69,10 +69,15 @@ export interface DetailsProductTransaction {
 
 export interface DetailsVariantTransaction {
   id: string;
+  isSelected: string
   transactionProductID: string;
   productID: string;
+  productVariantOptionID: string
+  type: string
+  variantID: string;
   variantOptionID: string;
   label: string;
+  name: string
   price: string;
 }
 

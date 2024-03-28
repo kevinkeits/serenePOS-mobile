@@ -127,7 +127,7 @@ const Home = () => {
           }
         });           
         const data: ISalesWeekly[] = response.data.data;
-        console.log(data)
+        // console.log(data)
         setSalesWeekly(data)
 
       } else {
