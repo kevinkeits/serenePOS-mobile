@@ -71,7 +71,7 @@ const TransactionModal: React.FC<Props> = ({ isVisible, onClose, data, onClick }
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={isVisible}
       onRequestClose={() => onClose()}

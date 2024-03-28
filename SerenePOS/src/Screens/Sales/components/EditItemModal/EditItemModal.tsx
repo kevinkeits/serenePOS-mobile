@@ -187,11 +187,12 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
       transparent={true}
       visible={isVisible}
       onRequestClose={() => closeWindow()}
+      // onShow={()=>console.log(selectedItem)}
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <View style={styles.titleContainer}>
-            <Text style={styles.modalTitle}>{selectedItem?.product.name}</Text>
+            <Text style={styles.modalTitle}>{selectedItem?.product.name ?? ''}</Text>
             <View style={styles.underline}></View>
           </View>
     <ScrollView>

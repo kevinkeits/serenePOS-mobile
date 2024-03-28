@@ -173,7 +173,7 @@ const PaymentMethodModal: React.FC<Props> = ({
 
   return (
     <Modal
-      animationType="fade"
+      animationType="slide"
       transparent={true}
       visible={isVisible}
       onRequestClose={() => onClose()}

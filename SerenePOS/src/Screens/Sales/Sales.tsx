@@ -50,7 +50,6 @@ const Sales = () => {
 
     const [selectedItems, setSelectedItems] = React.useState<ProductDetail[]>([]);
     const [selectedProductVariantOptionIds, setSelectedProductVariantOptionIds] = React.useState<string[]>([]);
-    const [selectedTransactionProductID, setSelectedTransactionProductID] = React.useState<string[]>([]);
 
 
     const [selectedVariantOptionIds, setSelectedVariantOptionIds] = React.useState<string[]>([]);
@@ -79,7 +78,8 @@ const Sales = () => {
     const [discountOverall, setDiscountOverall] = React.useState({
       isDiscount: '1',
       discountType: '', 
-      discountValue: '0', 
+      discountValue: '0',
+      discountDesc: '' 
     });
 
     const [transactionData, setTransactionData] = React.useState<Transaction[]>([]);
@@ -127,6 +127,7 @@ const Sales = () => {
 
     const fetchDetail = async (id: string) => {
       try {
+        console.log('[Sales] Fetch detail product')
         const token = await AsyncStorage.getItem('userData'); 
         const categoryDetailUrl = ApiUrls.getProductDetail(id);    
         if (token) {
@@ -138,6 +139,22 @@ const Sales = () => {
           });           
           const data: ProductDetail = response.data.data;
           if (id !== '') {
+          // if (data) {
+          //   setTextProductSKU(data.product.productSKU)
+          //   setTextName(data.product.name)
+          //   setTextPrice(parseInt(data.product.price).toString())
+          //   setSelCategory(data.product.categoryID)
+          //   setQuantity(data.product.qty)
+          //   setTextDescription(data.product.notes)
+          //   if (data.variant) {
+          //     const variantOptionIDs = data.variant.map((x) => x.variantOptionID);
+          //     setSelectedVariantIds(data.variant.filter((x) => x.isSelected == 'T').map((x) => x.variantOptionID));
+          //     //setIsSelectedOptions(Array.from({ length: variantOptionIDs.length }, () => 'T'));
+          //     setIsSelectedOptions(data.variant.map((x) => x.isSelected));
+          //     setVariantIds(variantOptionIDs)
+          //     setVariantInputValues(data.variant.map((x) => 'Rp ' + parseInt(x.price).toLocaleString())); 
+          //   }
+          // }
           setIsNewOpen(true)
           setDetailData(data);
         }
@@ -193,7 +210,7 @@ const Sales = () => {
                 .filter(variant => variant.transactionProductID === detail.transactionProductID)
                 .map(variant => ({
                     productVariantOptionID: '',
-                    isSelected: 'false',
+                    isSelected: 'T',
                     variantID: variant.id,
                     name: '',
                     type: '',
@@ -203,7 +220,7 @@ const Sales = () => {
                     price: variant.price,
                 }));
 
-            const discount = detail.discount;
+            // const discount = detail.discount;
 
             return {
                 product: {
@@ -215,18 +232,20 @@ const Sales = () => {
                     categoryName: '',
                     qty: detail.qty,
                     notes: detail.notes,
+                    selectedTotalDiscount: detail.discount,
                     imgUrl: '',
                     mimeType: '',
                     selectedQty: detail.qty.toString(),
                     selectedDiscountValue: detail.discount,
+                    selectedDiscountType: detail.discount !== '' ? '1' : '0',
                     selectedNotes: detail.notes
                 },
                 variant: variants,
-                discount: discount
+                // discount: discount
             };
         });
         setSelectedItems(productDetails);
-        console.log(productDetails)
+        console.log('transaction'+data)
 
         }
         } else {
@@ -289,7 +308,7 @@ const Sales = () => {
             setDetailData(selectedItems[index])
           }
         }
-        if (selectedProduct == '') fetchDetail(item.id)
+        fetchDetail(item.id)
 
         setSelectedItemForEdit(item);
         setEditModalVisible(true);
@@ -355,6 +374,7 @@ const Sales = () => {
     
       const onCloseDiscount = () => {
         setIsOpenDiscount(false);
+        // setDiscountOverall()
       };
 
       const onSaveTransaction = async (data: TransactionForm) => {
@@ -418,16 +438,37 @@ const Sales = () => {
           }
           setSelectedVariantOptionIds([...updatedVariantIds]);
 
-          const siblingDataTransactionProduct = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID));
-          const updatedTransactionProductIds = new Set(selectedTransactionProductID.filter(prevId => !siblingDataTransactionProduct.has(prevId)));
-          for (let index = 0; index < selectedVariantIds.length; index++) {
-            const refData = item.variant.find((x) => x.productVariantOptionID == selectedVariantIds[index])
-            updatedTransactionProductIds.add(item.product.id + '~' + refData?.variantOptionID)
-          }
-          const firstIds = [...updatedTransactionProductIds].map(item => item.split('~')[0]);
-          setSelectedTransactionProductID(firstIds);
+          // const siblingDataTransactionProduct = new Set(item.variant.map(x => item.product.id));
+          // const updatedTransactionProductIds = new Set(selectedTransactionProductID.filter(prevId => !siblingDataTransactionProduct.has(prevId)));
+          // for (let index = 0; index < selectedVariantIds.length; index++) {
+          //   const refData = item.variant.find((x) => x.productVariantOptionID == selectedVariantIds[index])
+          //   updatedTransactionProductIds.add(item.product.id)
+          //   console.log('A',index,updatedTransactionProductIds)
+          // }
+          // //console.log('A',selectedVariantIds.length,updatedTransactionProductIds)
+          // //const firstIds = [...updatedTransactionProductIds].map(item => item.split('~')[0]);
+          // setSelectedTransactionProductID([...updatedTransactionProductIds]);
+          // //console.log([...updatedTransactionProductIds])
+          
+          //console.log(selectedVariantIds.length)
+
+          
+
+          // const siblingDataTransactionProduct = new Set(item.variant.map(x => item.product.id));
+          // const updatedTransactionProductIds = new Set(selectedTransactionProductID.filter(prevId => !siblingDataTransactionProduct.has(prevId)));
+          
+          // // Add the product ID for each variant ID
+          // selectedVariantIds.forEach(variantId => {
+          //   updatedTransactionProductIds.add(item.product.id);
+          // });
+          
+          // setSelectedTransactionProductID([...updatedTransactionProductIds]);
+          // console.log([...updatedTransactionProductIds]);
 
 
+
+
+  
 
           const siblingDataVariantLabel = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID + '~' + x.label));
           const updatedVariantLabel = new Set(selectedVariantLabel.filter(prevId => !siblingDataVariantLabel.has(prevId)));
@@ -436,6 +477,7 @@ const Sales = () => {
             updatedVariantLabel.add(item.product.id + '~' + refData?.variantOptionID + '~' + refData?.label)
           }
           setSelectedVariantLabel([...updatedVariantLabel]);
+          // console.log(updatedVariantLabel)
 
           const siblingDataVariantPrice = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID + '~' + x.price));
           const updatedVariantPrice = new Set(selectedVariantLabel.filter(prevId => !siblingDataVariantPrice.has(prevId)));
@@ -463,11 +505,13 @@ const Sales = () => {
         setSelectedItems([])
         setSelectedProductVariantOptionIds([])
         setSelectedTransactionID('')
+        setCustomerName('')
+        setDiscountOverall({discountType:'', discountValue:'', isDiscount:'', discountDesc:''})
       };
 
       const calculateTotalPrice = () => {
 
-        const { subtotal, discount } = selectedItems.reduce((acc, currentItem) => {
+        const { subtotal, discount} = selectedItems.reduce((acc, currentItem) => {
           const unitPrice = parseInt(currentItem.product.price) * parseInt(currentItem.product.selectedQty ?? '1');
           const variantPrice = currentItem.variant.reduce((variantTotal, variantItem) => {
             if (selectedProductVariantOptionIds.includes(variantItem.productVariantOptionID)) {
@@ -479,20 +523,23 @@ const Sales = () => {
           
           return {
             subtotal: acc.subtotal + unitPrice + variantPrice,
-            discount: acc.discount + unitDiscount
+            discount: acc.discount + unitDiscount,
           };
         }, { subtotal: 0, discount: 0 });
       
         const taxRate = 0.1;
         //const tax = (subtotal - discount) * taxRate;
         const tax = 0;
-        const totalPrice = (subtotal - discount) + tax;
+        const discountAll = discount + parseInt(discountOverall.discountValue)
+        const totalPrice = (subtotal - discountAll) + tax;
+
       
         return {
           subtotal,
           tax,
           discount,
           totalPrice,
+          discountAll
         };
       };
 
@@ -528,9 +575,8 @@ const Sales = () => {
           productID: selectedItems.map(x => x.product.id).join(','),
           qty: selectedItems.map(x => x.product.selectedQty).join(','),
           unitPrice: selectedItems.map(x => parseInt(x.product.price).toString()).join(','),
-          discountProduct: selectedItems.map(x => x.product.selectedDiscountValue).join(','),
+          discountProduct: selectedItems.map(x => x.product.selectedTotalDiscount).join(','),
           notesProduct: selectedItems.map(x => x.product.selectedNotes).join(','),
-          transactionProductID: selectedTransactionProductID.join(','),
           transactionProductIDVariant: selectedProductVariantOptionIds.join(','),
           variantOptionID: selectedVariantOptionIds.join(','),
           variantLabel: selectedVariantLabel.join(','),
@@ -543,13 +589,15 @@ const Sales = () => {
 
 
 
-      const addDiscountOverall = (isDiscount: string, type: string, value: string) => {
+      const addDiscountOverall = (isDiscount: string, type: string, value: string, desc: string) => {
         setDiscountOverall((prevDiscountOverall) => ({
           ...prevDiscountOverall,
           isDiscount: isDiscount,
           discountType: type,
           discountValue: value,
+          discountDesc: desc
         }));
+        onCloseDiscount()
       }
 
 
@@ -655,7 +703,45 @@ React.useEffect(() => {
           </View>
 
           <ScrollView style={{maxHeight:(dimensions.window.height / 3)}}>
+            {selectedTransactionID == '' ? (
             <View style={{ }}>
+        {selectedItems.map((item) => (
+        <View key={item.product.id} style={styles.selectedItem}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+            <Text style={{ fontSize: 10, fontWeight: 'bold', maxWidth: 150  }}>{item.product.name} x {item.product.selectedQty}</Text>
+            <Text style={{ fontSize: 10, marginLeft: 5 }}>Rp {parseInt(item.product.price ?? '0').toLocaleString()}</Text>
+            
+          </View>
+          { item.product.selectedTotalDiscount != '0' && (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+              <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
+              <Text style={{ fontSize: 8, marginLeft: 5 }}>-Rp {parseInt(item.product.selectedTotalDiscount ?? '0').toLocaleString()}</Text>
+            </View>
+          )}
+          {
+            item.variant.filter((x) => selectedProductVariantOptionIds.includes(x.productVariantOptionID)).map((x, index)=>(
+              <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+                <Text style={{fontSize: 9}}>{x.label}</Text>
+                <Text style={{ fontSize: 9, marginLeft: 5 }}>{parseInt(x.price) == 0 ? 'Free' : ('Rp' + parseInt(x.price).toLocaleString())} </Text>
+              </View>
+            ))
+          }
+          <View style={{marginTop: 4}}><Text style={{fontSize: 9}}>Note {item.product.selectedNotes == '' ? '-' : item.product.selectedNotes}</Text></View>
+
+          <View style={{flexDirection:'row', gap:4, justifyContent:'flex-end'}}>
+          <TouchableOpacity onPress={() => openEditModalCart(item)} style={{marginTop:5, marginRight: 16}}>
+          <PencilSVG width='16' heigth='16' color='grey'/>
+           
+          </TouchableOpacity>
+            <TouchableOpacity onPress={() => removeFromSelectedItems(item)} style={{marginTop:5, marginRight: 8}}>
+            <TrashSVG width='16' height='16' color='red'/>
+              </TouchableOpacity>
+          </View>
+        </View>
+        ))}
+         </View>
+         ):(
+        <View>
         {selectedItems.map((item, index) => (
             <View key={index} style={styles.selectedItem}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -686,6 +772,7 @@ React.useEffect(() => {
             </View>
           ))}
         </View>
+        )}
         </ScrollView>
 
         </View>
@@ -798,7 +885,7 @@ React.useEffect(() => {
 
     customerName={customerName}
     subtotal={calculateTotalPrice().subtotal.toString()}
-    discount={calculateTotalPrice().discount.toString()}
+    discount={calculateTotalPrice().discountAll.toString()}
     tax={calculateTotalPrice().tax.toString()}
     totalPayment={calculateTotalPrice().totalPrice.toString()}
     productID={selectedItems.map(x => x.product.id).join(',')}
@@ -814,7 +901,7 @@ React.useEffect(() => {
     />
 
     <EditOrderModal isVisible={isOpenOrder} onClose={onCloseOrder} name={customerName} onSave={onSaveOrder} />
-    <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.product.id)} onAdd={addDiscountOverall} />
+    <DiscountModal isVisible={isOpenDiscount} onClose={onCloseDiscount} selectedIDs={selectedItems.map((x) => x.product.id)} onAdd={addDiscountOverall} discountOverallValue={discountOverall} />
     <TransactionModal isVisible={isOpenTransaction} onClose={onCloseTransaction} data={transactionData.filter((x => x.isPaid == '0'))} onClick={onClickTransactionHistory} />
     <ConfirmationModal isVisible={isOpenConfirmation} onClose={onCloseConfirmation} selectedID={selectedTransactionID} onSave={onSaveTransaction} />
 

@@ -9,7 +9,15 @@ interface Props {
   onClose: () => void;
   selectedIDs: string[]
   onSave?: (ids: string[]) => void;
-  onAdd?: (isDiscount: string, type: string, value: string) => void
+  onAdd?: (isDiscount: string, type: string, value: string, des: string) => void
+  discountOverallValue?: discountOverallProps;
+}
+
+export interface discountOverallProps {
+  isDiscount: string;
+  discountType: string;
+  discountValue: string;
+  discountDesc: string;
 }
 
 interface RadioButtonOptionProps {
@@ -18,15 +26,20 @@ interface RadioButtonOptionProps {
   }
 
   const discountTypeData = [
-    { id: '1', label: 'Rp', additionalData: '0' },
-    { id: '2', label: '%', additionalData: '0' },
+    { id: '1', label: '%', additionalData: '0' },
+    { id: '2', label: 'Rp', additionalData: '0' },
   ];
 
-const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSave, onAdd }) => {
+  const discountData = [
+    { id: '1', label: 'No Discount', additionalData: '0' },
+    { id: '2', label: 'Discount', additionalData: '0' },
+  ];
+
+const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSave, onAdd, discountOverallValue }) => {
 
 
     const [textDisc, setTextDisc] = React.useState('');
-    const [textName, setTextName] = React.useState('');
+    const [textDesc, setTextDesc] = React.useState('');
     const [radioValue, setRadioValue] = React.useState('1');
     const [radioTypeValue, setRadioTypeValue] = React.useState('1');
     const [discTypeValue, setDiscTypeValue] = React.useState('');
@@ -44,16 +57,10 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
         </View>
       );
 
-      const RadioTypeOption: React.FC<RadioButtonOptionProps> = ({ label, value }) => (
-        <View style={{flexDirection:'row', alignItems:'center'}}>
-          <RadioButton
-            value={value}
-            status={radioTypeValue === value ? 'checked' : 'unchecked'}
-            onPress={() => setRadioTypeValue(value)}
-          />
-          <Text style={{fontSize:10, color:'black'}}>{label}</Text>
-        </View>
-      );
+      const handleRadio = (option: string) => {
+        setRadioValue(option)
+        setDiscTypeValue('1')
+      };
 
       const handleDiscountTypePress = (option: string) => {
         setDiscTypeValue(option);
@@ -61,16 +68,38 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
 
 
       const handleAddDiscount = () => {
-        if (onAdd) onAdd(radioValue, discTypeValue,  textDisc )
+        if (onAdd) onAdd(radioValue, discTypeValue,  textDisc, textDesc )
+      }
+
+      const handleClose = () => {
+        setDiscTypeValue('')
+        setRadioTypeValue('')
+        setRadioValue('')
+        setTextDisc('')
+        setTextDesc('')
+        onClose()
+      }
+
+      const onOpen = () => {
+        setRadioValue('1')
+
+        if (discountOverallValue) {
+        setDiscTypeValue(discountOverallValue.discountType)
+        setRadioTypeValue('')
+        setRadioValue(discountOverallValue.isDiscount)
+        setTextDisc(discountOverallValue.discountValue)
+        setTextDesc(discountOverallValue.discountDesc)
+        }
       }
 
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={isVisible}
-      onRequestClose={() => onClose()}
+      onRequestClose={() => handleClose()}
+      onShow={()=> onOpen()}
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
@@ -80,10 +109,18 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
           </View>
 
             <View style={{marginVertical:10, gap:10, }}>
-                <View style={styles.radioContainer}>
-                    <RadioButtonOption label="No Discount" value="1" />
-                    <RadioButtonOption label="Add Discount" value="2" />
-                </View>
+            {discountData.map((option) => (
+                <TouchableOpacity
+                  key={option.id}
+                  style={styles.optionContainer}
+                  onPress={() => handleRadio(option.id)}
+                >
+                  <View style={styles.radioButton}>
+                    {radioValue === option.id && <View style={styles.innerCircle} />}
+                  </View>
+                  <Text style={styles.optionText}>{option.label}</Text>
+                </TouchableOpacity>
+              ))}
                 {radioValue == '2' && (
                     <View style={{}}>
                         <View style={{ flexDirection:'row', gap:10,  alignItems:'center', borderBottomWidth:1, borderBottomColor:'grey', borderStyle:'dotted', paddingBottom:20}}>
@@ -126,7 +163,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                                   >
                                     <Text 
                                     style={[
-                                      {fontSize: 10, color:'black', borderWidth:0.5, width:30, borderColor:'#2563EB', borderRadius:3, height:30, textAlign:'center', paddingTop:8},
+                                      {color:'black', borderWidth:0.5, marginLeft: 4, width:32, borderColor:'#dfdfdf', borderRadius:3, height:32, textAlign:'center', paddingTop:6},
                                       discTypeValue == option.id && {backgroundColor: '#2563EB', color:'white'}
                                   ]}>{option.label}</Text>
                                   </TouchableOpacity>
@@ -134,11 +171,11 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                             </View>
                        </View>
                         <View style={{marginTop:20, marginLeft:20}}>
-                        <View style={{ flexDirection:'row', gap:10,  alignItems:'center',}}>
-                        <Text style={{fontSize:10, fontWeight:'bold', marginBottom:5, color:'black', }}>Discount Name :</Text>
+                        <View style={{ flexDirection:'row', gap:10,  }}>
+                        <Text style={{fontSize:10, fontWeight:'bold', marginBottom:5, color:'black', }}>Description :</Text>
                             <View
                                 style={{
-                                    backgroundColor: textName,
+                                    backgroundColor: textDesc,
                                     borderColor: '#D2D2D2',
                                     borderWidth: 0.5,
                                     borderRadius:5,
@@ -146,15 +183,15 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                                 }}>
                                 <TextInput
                                     editable
-                                    // multiline
-                                    // numberOfLines={4}
+                                    multiline
+                                    numberOfLines={3}
                                     placeholder='Type here'
-                                    maxLength={40}
+                                    // maxLength={40}
                                     onChangeText={text => 
-                                        setTextName(text)
+                                        setTextDesc(text)
                                     }
-                                    value={textName}
-                                    style={{paddingLeft: 10, paddingVertical:1, fontSize:10}}
+                                    value={textDesc}
+                                    style={{paddingLeft: 10, paddingVertical:3, width:'80%', textAlignVertical: 'top',}}
                                 />
                             </View>
                                  
@@ -169,7 +206,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                 <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Save</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => onClose()} style={styles.closeButton}>
+          <TouchableOpacity onPress={() => handleClose()} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>x</Text>
           </TouchableOpacity>
         </View>
@@ -236,6 +273,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  optionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  radioButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#dfdfdf',
+    marginLeft: 20,
+    marginRight:8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerCircle: {
+    width: 16,
+    height: 16,
+    borderRadius: 16,
+    backgroundColor: '#2563EB',
+  },
+  optionText: {
+    color:'black',
+    width:'40%'
+  },
+  additionalText: {
+    color:'black',
+  },
+  
   
 });
 
