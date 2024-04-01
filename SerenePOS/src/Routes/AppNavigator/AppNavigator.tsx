@@ -7,7 +7,6 @@ import Sales from '../../Screens/Sales/Sales';
 import Splash from '../../Screens/Splash/Splash';
 import Login from '../../Screens/Login/Login';
 import Products from '../../Screens/Products/Products';
-import ProductDetail from '../../Screens/ProductDetail/ProductDetail';
 import DetailProduct from '../../Screens/ProductDetail/DetailProduct';
 import Categories from '../../Screens/Categories/Categories';
 import Variant from '../../Screens/Variant/Variant';

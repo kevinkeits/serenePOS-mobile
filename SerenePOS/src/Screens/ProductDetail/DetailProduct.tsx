@@ -20,21 +20,6 @@ import {useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 
-
-
-
-
-
-
-export interface Coffee {
-    id: number;
-    title: string;
-    price: number;
-    image: string;
-  }
-
-
-
   interface CategoryOptions {
     label: string;
     value: string;
@@ -44,31 +29,6 @@ export interface Coffee {
     [danamete: string]: selVariantProduct[];
   }
 
-  const temperatureOptions = [
-    { id: 'hot', label: 'Hot' },
-    { id: 'ice', label: 'Ice' },
-    // Add more options as needed
-  ];
-
-  const sugarOptions = [
-    { id: 'normal', label: 'Normal' },
-    { id: 'moreSugar', label: 'More Sugar' },
-    { id: 'lessSugar', label: 'Less Sugar' },
-    // Add more options as needed
-  ];
-
-  const addOnOptions = [
-    { id: 'sugarSyrup', label: 'Sugar Syrup' },
-    { id: 'bobba', label: 'Bobba' },
-    { id: 'grassJelly', label: 'Grass Jelly' },
-    { id: 'milk', label: 'Milk' },
-    { id: 'cheese', label: 'Cheese' },
-    // Add more options as needed
-  ];
-
-  // type DetailScreenProps = {
-  //   route: { params: {  data: ProductDetail | null } };
-  // };
 
   type DetailScreenProps = {
     route: { params: {  id: string} };

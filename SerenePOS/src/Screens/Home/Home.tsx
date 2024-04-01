@@ -127,7 +127,7 @@ const Home = () => {
           }
         });           
         const data: ISalesWeekly[] = response.data.data;
-        // console.log(data)
+        console.log(data)
         setSalesWeekly(data)
 
       } else {
@@ -227,7 +227,7 @@ const Home = () => {
 
       </View>
       <View style={{backgroundColor:"ffffff", borderWidth:0.5, borderColor:"#D2D2D2", width:280, height:170, borderRadius:10}}>
-        <SalesChart/>
+        <SalesChart salesWeekly={salesWeekly}/>
       </View>
       </View>
 

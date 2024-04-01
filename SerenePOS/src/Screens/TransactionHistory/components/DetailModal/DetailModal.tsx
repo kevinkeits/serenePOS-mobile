@@ -1,8 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
-import { RadioButton } from 'react-native-paper';
 import { TransactionDetail } from '../../TransactionHistory';
 
 
@@ -13,43 +11,14 @@ interface Props {
   selectedData: TransactionDetail | null
   onSave?: (ids: string[]) => void;
 }
-
-interface RadioButtonOptionProps {
-    label: string;
-    value: string;
-  }
-
-const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedID, selectedData, onSave }) => {
+const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedData, onSave }) => {
 
     const navigation = useNavigation();
 
-    const [textDisc, setTextDisc] = React.useState('');
-    const [textName, setTextName] = React.useState('');
-    const [radioValue, setRadioValue] = React.useState('1');
-    const [radioTypeValue, setRadioTypeValue] = React.useState('1');
+    const handleNavigate = ( selectedId: string) => {
+      navigation.navigate('Sales' as never, {id: selectedId} as never)
+    };
 
-
-    const RadioButtonOption: React.FC<RadioButtonOptionProps> = ({ label, value }) => (
-        <View style={styles.radioButtonContainer}>
-          <RadioButton
-            value={value}
-            status={radioValue === value ? 'checked' : 'unchecked'}
-            onPress={() => setRadioValue(value)}
-          />
-          <Text style={{fontSize:10, color:'black'}}>{label}</Text>
-        </View>
-      );
-
-      const RadioTypeOption: React.FC<RadioButtonOptionProps> = ({ label, value }) => (
-        <View style={{flexDirection:'row', alignItems:'center'}}>
-          <RadioButton
-            value={value}
-            status={radioTypeValue === value ? 'checked' : 'unchecked'}
-            onPress={() => setRadioTypeValue(value)}
-          />
-          <Text style={{fontSize:10, color:'black'}}>{label}</Text>
-        </View>
-      );
 
   return (
     <Modal
@@ -198,8 +167,22 @@ const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedID, selected
         </View>
 
         {selectedData?.details.isPaid == '0' && (
-          <View style={{width:'90%', marginTop:5, marginBottom:5, backgroundColor: '#2563EB', padding:4, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
-            <TouchableOpacity style={{width:'100%', alignItems:'center'}}>
+          <View 
+          style={{
+            width:'90%', 
+            marginTop:5, 
+            marginBottom:5, 
+            backgroundColor: '#2563EB', 
+            padding:4, 
+            justifyContent: 'center', 
+            alignItems:'center', 
+            alignSelf:'center', 
+            borderRadius:5
+            }}>
+            <TouchableOpacity 
+            style={{width:'100%', alignItems:'center'}}
+            onPress={()=>handleNavigate(selectedData.details.transactionID)}
+            >
                 <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Pay Now</Text>
             </TouchableOpacity>          
           </View>

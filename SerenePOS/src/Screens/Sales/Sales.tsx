@@ -34,7 +34,15 @@ export interface Payment{
   isActive: string;
 }
 
-const Sales = () => {
+type ScreenProps = {
+  route: { params: { id: string} };
+};
+
+const Sales = ({ route }: ScreenProps) => {
+
+  const { id = '' } = route?.params ?? {};
+
+
   const [dimensions, setDimensions] = React.useState({
     window: windowDimensions,
     screen: screenDimensions,
@@ -625,7 +633,12 @@ const Sales = () => {
 
 
 React.useEffect(() => {
-  if (isFocused) fetchCategories();
+  if (isFocused) {
+    fetchCategories();
+    if (id !== '') {
+      fetchTransactionDetail(id)
+    }
+  }
 }, [isFocused]);
 
 
