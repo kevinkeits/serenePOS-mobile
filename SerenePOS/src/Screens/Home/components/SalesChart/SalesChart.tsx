@@ -16,21 +16,21 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
 
   const data = {
     weekly: {
-      labels: ['','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      values: [0,50, 75, 60, 90, 80, 110, 95],
+      labels: salesWeekly.map((x=>x.transactionDay)),
+      values: salesWeekly.map((x=> parseInt(x.paymentAmount))),
     },
     monthly: {
-      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-      values: [150, 120, 200, 180],
+      labels: [ 'Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      values: [ 150, 120, 200, 180],
     },
   };
 
   const chartData = data[selectedFilter];
   
   // Calculate dimensions
-  const width = 200; // Adjust the width as needed
-  const height = 120; // Adjust the height as needed
-  const margin = { top: 20, right: 20, bottom: 20, left: 20 }; // Adjust the margin as needed
+  const width = 250; // Adjust the width as needed
+  const height = 140; // Adjust the height as needed
+  const margin = { top: 13, right: 20, bottom: 20, left: 40 }; // Adjust the margin as needed
 
   const minDataValue = Math.min(...chartData.values); // Calculate the minimum value in data
 
@@ -44,17 +44,22 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
       <View style={styles.pickerContainer}>
         <Text style={styles.title}>Sales History</Text>
         <RNPickerSelect
-          onValueChange={(x) => setSelectedFilter(x as 'weekly' | 'monthly')}
-          items={[
-            { label: "Weekly", value: "weekly" },
-            { label: "Monthly", value: "monthly" },
-          ]}
-          useNativeAndroidPickerStyle={false}
-          value={selectedFilter}
-          Icon={() => <DropdownSVG width='9' height='9' color='black' />}
-          style={pickerSelectStyles}
-        />
+            onValueChange={(value) => setSelectedFilter(value)}
+            items={[
+              { label: "Weekly", value: "weekly" },
+              { label: "Monthly", value: "monthly" },
+            ]}
+            useNativeAndroidPickerStyle={false}
+            value={selectedFilter}
+            Icon={() => <DropdownSVG width='9' height='9' color='black' />}
+            style={{
+              ...pickerSelectStyles,
+              iconContainer: pickerSelectStyles.iconContainer,
+              placeholder: { color: 'gray' }, // Optional: if you have a placeholder
+            }}
+          />
       </View>
+      <View style={{justifyContent:'center', alignSelf:'center', marginLeft:15}}>
       <Svg width={width} height={height}>
         <G>
           {/* Add horizontal line with dotted style */}
@@ -86,9 +91,9 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
             <SvgText
               key={`xLabel_${i}`}
               x={x(i) + barWidth / 2}
-              y={height - 5} // Adjust the vertical positioning of x-axis labels
+              y={height - 5} 
               fill="black"
-              fontSize="8" // Adjust the font size as needed
+              fontSize="8" 
               textAnchor="middle"
             >
               {label}
@@ -101,7 +106,7 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
               x={margin.left - 5}
               y={y(value)}
               fill="black"
-              fontSize="8" // Adjust the font size as needed
+              fontSize="8" 
               textAnchor="end"
             >
               {value}
@@ -109,6 +114,7 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
           ))}
         </G>
       </Svg>
+      </View>
     </View>
   );
 };
@@ -116,13 +122,16 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   pickerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 5, // Adjust the margin as needed
+    justifyContent:'space-between',
+    marginHorizontal:20,
+    marginTop:10
+    // padding:3
   },
   title: {
     fontWeight: 'bold',
@@ -135,22 +144,31 @@ const styles = StyleSheet.create({
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     fontSize: 8,
-    paddingHorizontal: 10,
+    height:20,
+    width:'40%',
+    paddingHorizontal: 5,
     paddingVertical: 5,
-    borderWidth: 0.5,
-    borderColor: '#D2D2D2',
-    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
     color: 'black',
-    paddingRight: 30 // to ensure the text is never behind the icon
+    paddingRight: 30, // to ensure the text is never behind the icon
   },
   inputAndroid: {
     fontSize: 8,
-    paddingTop: 5,
-    borderBottomWidth: 0.5,
-    borderColor: '#D2D2D2',
-    borderRadius: 6,
+    height:20,
+    paddingLeft: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
     color: 'black',
-    paddingRight: 5 // to ensure the text is never behind the icon
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  iconContainer: {
+    top: '80%',
+    right: 15,
+    transform: [{ translateY: -10 }], // Adjust based on your icon's size
   },
 });
 

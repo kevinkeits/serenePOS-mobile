@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
 import axios from 'axios'
+import moment from 'moment'
 import React from 'react'
 import { Text, View, Image, ScrollView } from 'react-native'
 import { ApiUrls } from '../../apiUrls/apiUrls'
@@ -40,14 +41,7 @@ const Home = () => {
   const [profitAmount, setProfitAmount] = React.useState<IProfitAmount | null>(null);
 
 
-
-
-
-  const getCurrentDate = () => {
-    const currentDate = new Date();
-    const options: Intl.DateTimeFormatOptions = { month: 'short', year: 'numeric' };
-    return currentDate.toLocaleDateString;
-  };
+  const currentMonthAndYear = moment().format('MMMM YYYY');
 
   const fetchTodayIncome = async () => {
     try {
@@ -181,7 +175,7 @@ const Home = () => {
       <View style={{flexDirection:"row", gap:10, marginHorizontal:"auto", justifyContent: 'center', alignItems: 'center'}}>
       <View style={{backgroundColor:"blue", width:150, height:80, justifyContent: 'flex-end', borderRadius:10, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3,  shadowRadius: 4,  elevation: 4}}>
         <View style={{ marginLeft:10, marginBottom:10}}>
-        <Text style={{fontWeight: "bold", color: "white", fontSize: 10}}>Sales January 2024</Text>
+        <Text style={{fontWeight: "bold", color: "white", fontSize: 10}}>Sales {currentMonthAndYear}</Text>
         <Text style={{fontWeight: "bold", color: "white", fontSize: 10}}>Rp. {parseInt(totalIncome).toLocaleString()}</Text>
         </View>
       </View>
@@ -204,10 +198,10 @@ const Home = () => {
 
       <View style={{flexDirection:"row", gap:10, marginHorizontal:"auto", marginVertical:10, justifyContent: 'center', alignItems:'center'}}>
       <View style={{ width:180, height:170, borderRadius:10, borderWidth:0.5, borderColor:'#D2D2D2'}}>
-      <Text style={{fontWeight: "bold", color: "black", fontSize: 13, marginVertical:10, marginLeft:20}}>Top Selling Product</Text>
+      <Text style={{fontWeight: "bold", color: "black", fontSize: 12, marginTop:10, marginLeft:20}}>Top Selling Product</Text>
       <ScrollView>
           {topSelling?.map((x, index) => (
-              <View key={index} style={{flexDirection: 'row', marginLeft:20, marginTop:20, gap:20}}>
+              <View key={index} style={{flexDirection: 'row', marginLeft:20, marginTop:13, gap:20}}>
                 <View>
                 <Image
                 source={x.imgUrl !== '' ? { uri: x.imgUrl } : require('../../assets/img/no-image.png')}
