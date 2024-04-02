@@ -28,9 +28,9 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
   const chartData = data[selectedFilter];
   
   // Calculate dimensions
-  const width = 250; // Adjust the width as needed
-  const height = 140; // Adjust the height as needed
-  const margin = { top: 13, right: 20, bottom: 20, left: 40 }; // Adjust the margin as needed
+  const width = 550; // Adjust the width as needed
+  const height = 300; // Adjust the height as needed
+  const margin = { top: 13, right: 20, bottom: 20, left: 50 }; // Adjust the margin as needed
 
   const minDataValue = Math.min(...chartData.values); // Calculate the minimum value in data
 
@@ -59,7 +59,7 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
             }}
           />
       </View>
-      <View style={{justifyContent:'center', alignSelf:'center', marginLeft:15}}>
+      <View style={{justifyContent:'center', alignSelf:'center', marginTop:10}}>
       <Svg width={width} height={height}>
         <G>
           {/* Add horizontal line with dotted style */}
@@ -93,7 +93,7 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
               x={x(i) + barWidth / 2}
               y={height - 5} 
               fill="black"
-              fontSize="8" 
+              // fontSize="8" 
               textAnchor="middle"
             >
               {label}
@@ -106,7 +106,7 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
               x={margin.left - 5}
               y={y(value)}
               fill="black"
-              fontSize="8" 
+              // fontSize="8" 
               textAnchor="end"
             >
               {value}
@@ -136,14 +136,14 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     color: 'black',
-    fontSize: 12,
+    // fontSize: 12,
     marginRight: 10,
   },
 });
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    fontSize: 8,
+    // fontSize: 8,
     height:20,
     width:'40%',
     paddingHorizontal: 5,
@@ -155,8 +155,8 @@ const pickerSelectStyles = StyleSheet.create({
     paddingRight: 30, // to ensure the text is never behind the icon
   },
   inputAndroid: {
-    fontSize: 8,
-    height:20,
+    // fontSize: 8,
+    height:40,
     paddingLeft: 10,
     paddingVertical: 5,
     borderWidth: 1,
@@ -166,7 +166,7 @@ const pickerSelectStyles = StyleSheet.create({
     paddingRight: 30, // to ensure the text is never behind the icon
   },
   iconContainer: {
-    top: '80%',
+    top: '70%',
     right: 15,
     transform: [{ translateY: -10 }], // Adjust based on your icon's size
   },

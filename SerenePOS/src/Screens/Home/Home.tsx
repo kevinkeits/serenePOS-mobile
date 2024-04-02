@@ -3,7 +3,7 @@ import { useIsFocused } from '@react-navigation/native'
 import axios from 'axios'
 import moment from 'moment'
 import React from 'react'
-import { Text, View, Image, ScrollView } from 'react-native'
+import { Text, View, Image, ScrollView, Dimensions } from 'react-native'
 import { ApiUrls } from '../../apiUrls/apiUrls'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
@@ -29,9 +29,17 @@ export interface ISalesWeekly {
 }
 
 
+const windowDimensions = Dimensions.get('window');
+const screenDimensions = Dimensions.get('screen');
+
+
 const Home = () => {
 
   const isFocused = useIsFocused();
+  const [dimensions, setDimensions] = React.useState({
+    window: windowDimensions,
+    screen: screenDimensions,
+  });
 
 
   const [todayIncome, setTodayIncome] = React.useState<string>('');
@@ -166,39 +174,38 @@ const Home = () => {
   
   return (
     <CommonLayout>
-      <View style={{}}>
+      <View style={{width:'100%'}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:5}}>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Dashboard</Text>
-      {/* <Text style={{fontWeight:"bold", fontSize:8, borderWidth:2, padding:7, borderColor:"#ECEDF3", borderRadius:20, margin: "auto", textAlign: 'center'}}>{getCurrentDate()}</Text> */}
+      <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Dashboard</Text>
       </View>
 
       <View style={{flexDirection:"row", gap:10, marginHorizontal:"auto", justifyContent: 'center', alignItems: 'center'}}>
-      <View style={{backgroundColor:"blue", width:150, height:80, justifyContent: 'flex-end', borderRadius:10, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3,  shadowRadius: 4,  elevation: 4}}>
+      <View style={{backgroundColor:"blue", width:'31%', height:120, justifyContent: 'flex-end', borderRadius:10, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3,  shadowRadius: 4,  elevation: 4}}>
         <View style={{ marginLeft:10, marginBottom:10}}>
-        <Text style={{fontWeight: "bold", color: "white", fontSize: 10}}>Sales {currentMonthAndYear}</Text>
-        <Text style={{fontWeight: "bold", color: "white", fontSize: 10}}>Rp. {parseInt(totalIncome).toLocaleString()}</Text>
+        <Text style={{fontWeight: "bold", color: "white"}}>Sales {currentMonthAndYear}</Text>
+        <Text style={{fontWeight: "bold", color: "white"}}>Rp. {parseInt(totalIncome).toLocaleString()}</Text>
         </View>
       </View>
-      <View style={{backgroundColor:"ffffff", borderWidth:0.5, justifyContent: 'flex-end',  width:150, height:80, borderRadius:10, borderColor:'#D2D2D2'}}>
+      <View style={{backgroundColor:"ffffff", borderWidth:0.5, justifyContent: 'flex-end',  width:'31%', height:120, borderRadius:10, borderColor:'#D2D2D2'}}>
       <View style={{marginLeft:10, marginBottom:10}}>
-        <Text style={{fontWeight: "bold", color: "black", fontSize: 10}}>Today's Sales</Text>
-        <Text style={{fontWeight: "bold", color: "black", fontSize: 10}}>Rp {parseInt(todayIncome).toLocaleString()}</Text>
+        <Text style={{fontWeight: "bold", color: "black",}}>Today's Sales</Text>
+        <Text style={{fontWeight: "bold", color: "black",}}>Rp {parseInt(todayIncome).toLocaleString()}</Text>
         </View>
       </View>
-      <View style={{backgroundColor:"ffffff", borderWidth:0.5, justifyContent: 'flex-end',  width:150, height:80, borderRadius:10, borderColor:'#D2D2D2'}}>
+      <View style={{backgroundColor:"ffffff", borderWidth:0.5, justifyContent: 'flex-end',  width:'31%', height:120, borderRadius:10, borderColor:'#D2D2D2'}}>
       <View style={{ marginLeft:10, marginBottom:10}}>
         <View style={{flexDirection:"row"}}>
         {/* <Ionicons name="arrow-up" size={24} color="white"  /> */}
-        <Text style={{fontWeight: "bold", color: "green", fontSize: 10, marginLeft:10}}>{profitAmount?.profitPercentage}%</Text>
+        <Text style={{fontWeight: "bold", color: "green", marginLeft:10}}>{profitAmount?.profitPercentage}%</Text>
         </View>
-        <Text style={{fontWeight: "bold", color: "black", fontSize: 10}}>Over Last Week</Text>
+        <Text style={{fontWeight: "bold", color: "black",}}>Over Last Week</Text>
         </View>
       </View>
       </View>
 
       <View style={{flexDirection:"row", gap:10, marginHorizontal:"auto", marginVertical:10, justifyContent: 'center', alignItems:'center'}}>
-      <View style={{ width:180, height:170, borderRadius:10, borderWidth:0.5, borderColor:'#D2D2D2'}}>
-      <Text style={{fontWeight: "bold", color: "black", fontSize: 12, marginTop:10, marginLeft:20}}>Top Selling Product</Text>
+      <View style={{ width:'30%', height:400, borderRadius:10, borderWidth:0.5, borderColor:'#D2D2D2'}}>
+      <Text style={{fontWeight: "bold", color: "black", marginTop:10, marginLeft:20}}>Top Selling Product</Text>
       <ScrollView>
           {topSelling?.map((x, index) => (
               <View key={index} style={{flexDirection: 'row', marginLeft:20, marginTop:13, gap:20}}>
@@ -209,8 +216,8 @@ const Home = () => {
                   />
                 </View>
                 <View>
-                  <Text style={{fontWeight: "bold", color: "black", fontSize: 12}}>{x.productName}</Text>
-                  <Text style={{ color: "black", fontSize: 10}}>Total: {x.totalQty}</Text>
+                  <Text style={{fontWeight: "bold", color: "black"}}>{x.productName}</Text>
+                  <Text style={{ color: "black"}}>Total: {x.totalQty}</Text>
                 </View>
               </View>
           ))}
@@ -220,7 +227,7 @@ const Home = () => {
         </ScrollView>
 
       </View>
-      <View style={{backgroundColor:"ffffff", borderWidth:0.5, borderColor:"#D2D2D2", width:280, height:170, borderRadius:10}}>
+      <View style={{backgroundColor:"ffffff", borderWidth:0.5, borderColor:"#D2D2D2", width:'65%', height:400, borderRadius:10}}>
         <SalesChart salesWeekly={salesWeekly}/>
       </View>
       </View>

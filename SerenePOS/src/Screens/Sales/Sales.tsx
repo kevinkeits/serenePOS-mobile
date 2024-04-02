@@ -466,38 +466,6 @@ const Sales = ({ route }: ScreenProps) => {
           }
           setSelectedVariantOptionIds([...updatedVariantIds]);
 
-          // const siblingDataTransactionProduct = new Set(item.variant.map(x => item.product.id));
-          // const updatedTransactionProductIds = new Set(selectedTransactionProductID.filter(prevId => !siblingDataTransactionProduct.has(prevId)));
-          // for (let index = 0; index < selectedVariantIds.length; index++) {
-          //   const refData = item.variant.find((x) => x.productVariantOptionID == selectedVariantIds[index])
-          //   updatedTransactionProductIds.add(item.product.id)
-          //   console.log('A',index,updatedTransactionProductIds)
-          // }
-          // //console.log('A',selectedVariantIds.length,updatedTransactionProductIds)
-          // //const firstIds = [...updatedTransactionProductIds].map(item => item.split('~')[0]);
-          // setSelectedTransactionProductID([...updatedTransactionProductIds]);
-          // //console.log([...updatedTransactionProductIds])
-          
-          //console.log(selectedVariantIds.length)
-
-          
-
-          // const siblingDataTransactionProduct = new Set(item.variant.map(x => item.product.id));
-          // const updatedTransactionProductIds = new Set(selectedTransactionProductID.filter(prevId => !siblingDataTransactionProduct.has(prevId)));
-          
-          // // Add the product ID for each variant ID
-          // selectedVariantIds.forEach(variantId => {
-          //   updatedTransactionProductIds.add(item.product.id);
-          // });
-          
-          // setSelectedTransactionProductID([...updatedTransactionProductIds]);
-          // console.log([...updatedTransactionProductIds]);
-
-
-
-
-  
-
           const siblingDataVariantLabel = new Set(item.variant.map(x => item.product.id + '~' + x.variantOptionID + '~' + x.label));
           const updatedVariantLabel = new Set(selectedVariantLabel.filter(prevId => !siblingDataVariantLabel.has(prevId)));
           for (let index = 0; index < selectedVariantIds.length; index++) {
