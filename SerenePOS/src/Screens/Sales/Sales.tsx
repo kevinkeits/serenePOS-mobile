@@ -15,7 +15,7 @@ import CartSVG from '../../assets/svgs/CartSVG';
 import SaveSVG from '../../assets/svgs/SaveSVG';
 import TrashSVG from '../../assets/svgs/TrashSVG';
 import TransactionModal from './components/TransactionModal/TransactionModal';
-import { headerProduct, Product, ProductDetail, selVariantProduct } from '../Products/Products';
+import { Product, ProductDetail, selVariantProduct } from '../Products/Products';
 import { Categories } from '../Categories/Categories';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiUrls } from '../../apiUrls/apiUrls';

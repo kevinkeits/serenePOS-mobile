@@ -216,7 +216,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Province ID</Text>
+                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Province</Text>
                     <View
                         style={{
                             backgroundColor: textProvinceID,
@@ -239,7 +239,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{ marginBottom:5, color:'black', width:'20%'}}>District ID</Text>
+                    <Text style={{ marginBottom:5, color:'black', width:'20%'}}>District</Text>
                     <View
                         style={{
                             backgroundColor: textDistrictID,
@@ -262,7 +262,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{ marginBottom:5, color:'black', width:'20%'}}>SubDistrict ID</Text>
+                    <Text style={{ marginBottom:5, color:'black', width:'20%'}}>SubDistrict</Text>
                     <View
                         style={{
                             backgroundColor: textSubdistrictID,
@@ -307,23 +307,23 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                     </View>          
         </View>
 
-<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <TouchableOpacity onPress={handleCheckBoxToggle} style={{ marginRight: 5 }}>
+<View style={{ flexDirection: 'row', alignItems: 'center', marginLeft:10 }}>
+      <TouchableOpacity onPress={handleCheckBoxToggle} style={{ marginRight: 10 }}>
         <View style={{
-          width: 30,
-          height: 30,
+          width: 25,
+          height: 25,
           borderWidth: 1,
           padding:3,
           borderRadius: 4,
-          borderColor: 'black',
+          borderColor: '#D2D2D2',
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: isPrimary === 'T' ? 'black' : 'transparent',
+          backgroundColor: isPrimary === 'T' ? '#2563EB' : 'transparent',
         }}>
           {isPrimary === 'T' && <Text style={{ color: 'white' }}>✓</Text>}
         </View>
       </TouchableOpacity>
-      <Text style={{}}>Primary Address</Text>
+      <Text style={{color:'black'}}>Primary Address</Text>
     </View>
 
        

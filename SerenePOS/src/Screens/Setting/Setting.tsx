@@ -127,6 +127,7 @@ const Setting = () => {
           if (response.data.status) {
             Alert.alert('Success', response.data.message);
             navigation.goBack()
+            fetchOutlet();
           } else {
             Alert.alert('Error', response.data.message);
           }
@@ -304,17 +305,18 @@ const Setting = () => {
                       <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Name</Text>
                       <View
                           style={{
-                              backgroundColor: textName,
+                              backgroundColor: '#D2D2D2',
                               borderColor: '#D2D2D2',
                               borderWidth: 0.5,
                               borderRadius:5,
                               width:'80%'
+
                           }}>
                           <TextInput
-                              editable
+                              editable={false}
                               // multiline
                               // numberOfLines={4}
-                              placeholder='Type here'
+                              // placeholder='Type here'
                               maxLength={40}
                               onChangeText={text => setTextName(text)}
                               value={textName}
@@ -327,17 +329,17 @@ const Setting = () => {
                       <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Phone Number</Text>
                       <View
                           style={{
-                              backgroundColor: textPhoneNumber,
+                              backgroundColor: '#D2D2D2',
                               borderColor: '#D2D2D2',
                               borderWidth: 0.5,
                               borderRadius:5,
                               width:'80%'
                           }}>
                           <TextInput
-                              editable
+                              editable={false}
                               // multiline
                               // numberOfLines={4}
-                              placeholder='Type here'
+                              // placeholder='Type here'
                               maxLength={40}
                               onChangeText={text => setTextPhoneNumber(text)}
                               value={textPhoneNumber}
@@ -407,10 +409,10 @@ const Setting = () => {
                       </View> 
                       <View
                           style={{
-                              width:'30%'
+                              width:'50%'
                           }}>
-                          <TouchableOpacity style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', paddingVertical:3, borderRadius:5}}>
-                              <Text style={{ color:'white', fontWeight:'500'}}>Printer Sample Bills</Text>
+                          <TouchableOpacity style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', paddingVertical:3, borderRadius:5, paddingHorizontal:5}}>
+                              <Text style={{ color:'white', fontWeight:'500', textAlign:'center'}}>Printer Sample Bills</Text>
                           </TouchableOpacity> 
                       </View> 
                       </View>         
@@ -424,11 +426,11 @@ const Setting = () => {
                           style={{
                               width:'80%'
                           }}>
-                              <Text style={{ color:'grey',  width:'30%'}}>Last Sync  27 Jan 2024 </Text>
+                              <Text style={{ color:'grey',  width:'50%'}}>Last Sync  27 Jan 2024 </Text>
                       </View>          
           </View>
 
-          <View style={{flexDirection:'row', gap:6, width:'60%', marginBottom:10, marginLeft:155}}>
+          <View style={{flexDirection:'row', gap:6, width:'80%', marginBottom:10, marginLeft:85}}>
                       <View
                           style={{
                               width:'30%'
@@ -448,10 +450,10 @@ const Setting = () => {
             </View> 
 
             <Text style={{ fontWeight:'bold', color:'black'}}>Outlet</Text>
-            {outletData.map((x, index) => (
-          <View key={index} style={{marginTop:5, marginBottom:10, marginHorizontal:10,  width:'60%', }}>
+            {outletData?.map((x, index) => (
+          <View key={index} style={{marginTop:5, marginBottom:10, marginHorizontal:10,  width:'70%', }}>
                   <View style={{flexDirection:'row', gap:5}}>
-                    <Text style={{  color:'black', width:'30%'}}>{x.outlet}</Text>
+                    <Text style={{  color:'black', width:'50%', marginBottom:5}}>{x.outlet}</Text>
                   {x.isPrimary == 1 && (
                     <View style={{width:60, height:13, backgroundColor:'blue', borderRadius:5, paddingVertical:2}}>
                           <Text style={{ color:'white', fontWeight:'bold', textAlign:'center'}}>Primary</Text>
@@ -468,11 +470,11 @@ const Setting = () => {
                               flexDirection:'row',
                               justifyContent:'space-between',
                               alignItems:'center',
-                              width:'80%',
+                              width:'100%',
                               paddingBottom:5,
                               paddingHorizontal:10
                           }}>
-                            <Text style={{ maxWidth:'80%'}} numberOfLines={1} ellipsizeMode="tail">{x.address}</Text>
+                            <Text style={{ maxWidth:'80%'}} numberOfLines={1} ellipsizeMode="tail">{x.address},{x.province} {x.district} {x.subDistrict} {x.postalCode}</Text>
                             <Text style={{fontWeight:'bold'}}>&gt;</Text>
 
                       </TouchableOpacity>          

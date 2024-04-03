@@ -171,7 +171,7 @@ const Variant = () => {
     <CommonLayout>
       <View style={{}}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft:10, marginRight:30, marginVertical:5, alignItems:'center'}}>
-          <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Variant</Text>
+          <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black', marginTop:10}}>Variant</Text>
           {deleteMode ? (
             <View/>
           ):(

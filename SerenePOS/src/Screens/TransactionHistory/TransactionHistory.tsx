@@ -165,14 +165,14 @@ export interface GroupedTransactions {
       return Object.keys(groupedTransactions).map(date => (
         <View key={date}>
           <View style={{ backgroundColor: '#E1E1E1', flexDirection: 'row', justifyContent: 'space-between', padding: 5, marginHorizontal: 10 }}>
-            <Text style={{ fontSize: 10, color: 'black', fontWeight: 'bold' }}>{moment(date).format('dddd, MMMM Do YYYY')}</Text>
+            <Text style={{ fontSize: 10, color: 'black', fontWeight: 'bold' }}>{moment(date).format('dddd, D MMM YYYY')}</Text>
           </View>
           {groupedTransactions[date].map(transaction => (
             <TouchableOpacity onPress={() => onOpenDetail(transaction.id)} style={{ borderBottomWidth: 0.5, borderBottomColor: '#E1E1E1', gap: 5, paddingVertical: 10, paddingHorizontal: 5, marginHorizontal: 10 }} key={transaction.transactionNumber}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', gap: 5 }}>
                   <Text style={{ fontSize: 10, color: 'black' }}>{transaction.transactionNumber}</Text>
-                  <View style={{ backgroundColor: transaction.isPaid === '0' ? 'red' : 'white', width: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5 }}>
+                  <View style={{ backgroundColor: transaction.isPaid === '0' ? '#EB2525' : 'white', width: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 5 }}>
                     <Text style={{ textAlign: 'center', fontSize: 6, color: 'white', fontWeight: 'bold' }}>{transaction.isPaid == '0' ? 'Unpaid' : ''}</Text>
                   </View>
                 </View>
