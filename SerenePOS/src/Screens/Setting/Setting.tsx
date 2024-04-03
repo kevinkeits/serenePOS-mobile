@@ -40,6 +40,7 @@ import { ApiUrls } from '../../apiUrls/apiUrls'
     id: string;
     action: string;
     userName?: string;
+    clientName?: string;
     fileName?: string;
     fileData?: string;
   }
@@ -114,7 +115,7 @@ const Setting = () => {
     const onSave = async (data: ISettingForm) => {
       try {
         const token = await AsyncStorage.getItem('userData'); 
-        const url = ApiUrls.saveOutlet
+        const url = ApiUrls.saveSettings
         if (token) {
         const authToken = JSON.parse(token).data.Token
         const response = await axios.post(url, data, {
@@ -144,6 +145,7 @@ const Setting = () => {
       id: '',
       action: 'edit',
       userName: textName,
+      clientName: textStoreName,
       fileName: form.paymentConfirmationFileName,
       fileData: form.paymentConfirmationFileData,
     };
