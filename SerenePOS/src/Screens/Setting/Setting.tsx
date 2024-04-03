@@ -1,7 +1,7 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
-import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput, Switch } from 'react-native'
+import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet,  TextInput, Switch, Alert } from 'react-native'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 
 import DocumentPicker from 'react-native-document-picker';
@@ -17,6 +17,7 @@ import { ApiUrls } from '../../apiUrls/apiUrls'
     address: string;
     province: string;
     district: string;
+    phoneNumber: string;
     subDistrict: string;
     postalCode: string;
   }
@@ -32,6 +33,15 @@ import { ApiUrls } from '../../apiUrls/apiUrls'
     outletName: string;
     accountImage: string;
     clientImage: string;
+  }
+
+
+  export interface ISettingForm {
+    id: string;
+    action: string;
+    userName?: string;
+    fileName?: string;
+    fileData?: string;
   }
 
 const Setting = () => {
@@ -100,6 +110,45 @@ const Setting = () => {
         console.error('Error fetching data:', error);
       }
     };
+
+    const onSave = async (data: ISettingForm) => {
+      try {
+        const token = await AsyncStorage.getItem('userData'); 
+        const url = ApiUrls.saveOutlet
+        if (token) {
+        const authToken = JSON.parse(token).data.Token
+        const response = await axios.post(url, data, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        if (response.status === 200) {
+          if (response.data.status) {
+            Alert.alert('Success', response.data.message);
+            navigation.goBack()
+          } else {
+            Alert.alert('Error', response.data.message);
+          }
+        } else {
+          Alert.alert('Error', response.data.message);
+        }
+      }
+      } catch (error) {
+        console.error('Error during saving:', error);
+        Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+      }
+  };
+
+  const handleSave = () => {
+    const updatedData: ISettingForm = {
+      id: '',
+      action: 'edit',
+      userName: textName,
+      fileName: form.paymentConfirmationFileName,
+      fileData: form.paymentConfirmationFileData,
+    };
+    onSave(updatedData);
+  };
 
      
       const handleUpload = async () => {
@@ -377,7 +426,7 @@ const Setting = () => {
                       </View>          
           </View>
 
-          <View style={{flexDirection:'row', gap:6, width:'60%', marginBottom:10, marginLeft:85}}>
+          <View style={{flexDirection:'row', gap:6, width:'60%', marginBottom:10, marginLeft:155}}>
                       <View
                           style={{
                               width:'30%'
@@ -401,11 +450,11 @@ const Setting = () => {
           <View key={index} style={{marginTop:5, marginBottom:10, marginHorizontal:10,  width:'60%', }}>
                   <View style={{flexDirection:'row', gap:5}}>
                     <Text style={{  color:'black', width:'30%'}}>{x.outlet}</Text>
+                  {x.isPrimary == 1 && (
                     <View style={{width:60, height:13, backgroundColor:'blue', borderRadius:5, paddingVertical:2}}>
-                      {x.isPrimary == 1 && (
                           <Text style={{ color:'white', fontWeight:'bold', textAlign:'center'}}>Primary</Text>
-                      )}
                     </View>
+                   )}
                   </View>
                       <TouchableOpacity
                           onPress={() => handleNavigate(x)}
@@ -432,7 +481,7 @@ const Setting = () => {
         
 
         <View style={{margin:10, width:'80%', alignSelf:'center' }}>
-                    <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 

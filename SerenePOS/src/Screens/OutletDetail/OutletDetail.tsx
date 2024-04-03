@@ -1,12 +1,9 @@
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React from 'react'
-import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput, Switch } from 'react-native'
-import TrashSVG from '../../assets/svgs/TrashSVG'
+import { Text, View, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput } from 'react-native'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 
-import DocumentPicker from 'react-native-document-picker';
-import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ApiUrls } from '../../apiUrls/apiUrls'
 import { Outlet } from '../Setting/Setting'
@@ -109,7 +106,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
       province: textProvinceID,
       district: textDistrictID,
       subDistrict: textSubdistrictID,
-      isPrimary: ''
+      isPrimary: isPrimary == 'T' ? '1' : '0'
     };
     console.log(updatedData)
     onSave(updatedData);
@@ -134,38 +131,20 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
       <ScrollView>
       <View style={{}}>
       <View style={{flexDirection: 'row', gap:10,   marginRight:30, marginVertical:10, alignItems:'center'}}>
-      <Text onPress={() => navigation.navigate('Account' as never)} style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>Account</Text>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>&gt;</Text>
-      <Text onPress={() => navigation.navigate('Setting' as never)}  style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>Setting</Text>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>&gt;</Text>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Edit Outlet</Text>
+      <Text onPress={() => navigation.navigate('Account' as never)} style={{fontWeight:"bold",  marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>Account</Text>
+      <Text style={{fontWeight:"bold",  marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>&gt;</Text>
+      <Text onPress={() => navigation.navigate('Setting' as never)}  style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>Setting</Text>
+      <Text style={{fontWeight:"bold",  marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'grey'}}>&gt;</Text>
+      <Text style={{fontWeight:"bold",  marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Edit Outlet</Text>
       </View>
       <View style={{ gap:6, justifyContent:'center', alignItems:'center'}}>
-{/* 
-        <View style={{width:'35%', gap:5,  alignItems:'center', marginBottom:10}}>
-        {form.paymentConfirmationFileData ? (
-            <Image
-              source={{ uri: form.paymentConfirmationFileData }}
-              style={{ width: 170, height: 100, borderRadius:7 }}
-            />
-          ) : (
-            <View style={{borderWidth:0.5, width:'100%', height:100, borderColor:'grey', borderRadius:8}}>
 
-            </View>
-          )}
-            
-            <View style={{backgroundColor:'#2563EB', justifyContent:'center', alignItems:'center',  width:'100%', borderRadius:5}}>
-                <TouchableOpacity onPress={handleUpload} style={{width:'100%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:8, paddingVertical:7, color:'white', fontWeight:'bold', }}>Upload Image</Text>
-                </TouchableOpacity>
-            </View>
-        </View> */}
 
         <View style={{width:'100%'}}>
-        <Text style={{fontSize:12, fontWeight:'bold',  marginBottom:5, color:'black'}}>Outlet Detail</Text>
+        <Text style={{ fontWeight:'bold',  marginBottom:5, color:'black'}}>Outlet Detail</Text>
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
 
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Outlet Name</Text>
+                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Outlet Name</Text>
                     <View
                         style={{
                             backgroundColor: textName,
@@ -182,13 +161,13 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextName(text)}
                             value={textName}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Phone Number</Text>
+                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Phone Number</Text>
                     <View
                         style={{
                             backgroundColor: textPhoneNumber,
@@ -205,16 +184,16 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextPhoneNumber(text)}
                             value={textPhoneNumber}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
                         />
                     </View>          
         </View>
 
-        <Text style={{fontSize:12, fontWeight:'bold',  marginBottom:5, color:'black'}}>Address Detail</Text>
+        <Text style={{ fontWeight:'bold',  marginBottom:5, color:'black'}}>Address Detail</Text>
 
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Detail Address</Text>
+                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Detail Address</Text>
                     <View
                         style={{
                             backgroundColor: textDetailAddress,
@@ -231,13 +210,13 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextDetailAddress(text)}
                             value={textDetailAddress}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Province ID</Text>
+                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Province ID</Text>
                     <View
                         style={{
                             backgroundColor: textProvinceID,
@@ -254,13 +233,13 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextProvinceID(text)}
                             value={textProvinceID}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0,width:'80%', height:25}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>District ID</Text>
+                    <Text style={{ marginBottom:5, color:'black', width:'20%'}}>District ID</Text>
                     <View
                         style={{
                             backgroundColor: textDistrictID,
@@ -277,13 +256,13 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextDistrictID(text)}
                             value={textDistrictID}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0,  width:'80%', height:25}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>SubDistrict ID</Text>
+                    <Text style={{ marginBottom:5, color:'black', width:'20%'}}>SubDistrict ID</Text>
                     <View
                         style={{
                             backgroundColor: textSubdistrictID,
@@ -300,13 +279,13 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextSubdistrictID(text)}
                             value={textSubdistrictID}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{fontSize:10,  marginBottom:5, color:'black', width:'20%'}}>Postal Code</Text>
+                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Postal Code</Text>
                     <View
                         style={{
                             backgroundColor: textPostalCode,
@@ -323,7 +302,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextPostalCode(text)}
                             value={textPostalCode}
-                            style={{paddingLeft: 10, paddingVertical:0, fontSize:8, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
                         />
                     </View>          
         </View>
@@ -331,9 +310,10 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <TouchableOpacity onPress={handleCheckBoxToggle} style={{ marginRight: 5 }}>
         <View style={{
-          width: 15,
-          height: 15,
+          width: 30,
+          height: 30,
           borderWidth: 1,
+          padding:3,
           borderRadius: 4,
           borderColor: 'black',
           justifyContent: 'center',
@@ -343,8 +323,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
           {isPrimary === 'T' && <Text style={{ color: 'white' }}>✓</Text>}
         </View>
       </TouchableOpacity>
-      <Text style={{fontSize:10}}>Primary Address</Text>
-      <Text>{isPrimary}</Text>
+      <Text style={{}}>Primary Address</Text>
     </View>
 
        
@@ -353,11 +332,11 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
 
         <View style={{margin:10, width:'80%', alignSelf:'center' }}>
                     <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
+                        <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
                     <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
-                        <Text style={{fontSize:10, color:'black', fontWeight:'500'}}>Cancel</Text>
+                        <Text style={{color:'black', fontWeight:'500'}}>Cancel</Text>
                     </TouchableOpacity>       
         </View>
 
@@ -420,11 +399,11 @@ const styles = StyleSheet.create({
       },
       quantityButtonText: {
         color: 'white',
-        fontSize: 10,
+        // fontSize: 10,
         fontWeight: 'bold',
       },
       quantityText: {
-        fontSize: 10,
+        // fontSize: 10,
         fontWeight: 'bold',
       },
       dropdownButton: {
@@ -459,7 +438,7 @@ const styles = StyleSheet.create({
       },
       checkboxLabel: {
         marginLeft: 8,
-        fontSize: 8,
+        // fontSize: 8,
         width:50,
         color:'black'
       },
@@ -469,7 +448,7 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         paddingVertical:5,
         paddingLeft: 8,
-        fontSize: 8,
+        // fontSize: 8,
         borderRadius:7,
         marginLeft:20
       },

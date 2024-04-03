@@ -13,17 +13,23 @@ import SettingsSVG from '../../assets/svgs/SettingsSVG'
 import LogoutSVG from '../../assets/svgs/LogoutSVG'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ApiUrls } from '../../apiUrls/apiUrls'
+import { ISetting } from '../Setting/Setting'
+import ViewSVG from '../../assets/svgs/ViewSVG'
 
 
 
 
-
-export interface Coffee {
-    id: number;
-    title: string;
-    price: number;
-    image: string;
-  }
+export interface IAccountForm {
+  id: string;
+  action: string;
+  userName?: string;
+  password?: string;
+  salt?: string;
+  ivssl?: string;
+  tagssl?: string;
+  fileName?: string;
+  fileData?: string;
+}
 
 
   export interface User {
@@ -66,83 +72,75 @@ export interface Coffee {
   }
 
 
-  const accountData = 
-    { 
-      ID: "8bf8e17c-0cbb-4a08-b8f3-3b0e870223dc",
-      outletID: "080bd62c-810f-4b92-9967-0ce080bf30e8",
-      outletName: "Serene",
-      name: "Reza",
-      phoneNumber: "085157930313",
-      email: "reza@gmail.com",
-      password: "qwerty123"
-    }
-
-
 const Profile = () => {
 
   const navigation = useNavigation();
 
-    const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [textProductSKU, setTextProductSKU] = React.useState('');
     const [textName, setTextName] = React.useState('');
     const [textEmail, setTextEmail] = React.useState('');
+
     const [textOutletName, setTextOutletName] = React.useState('');
     const [textPassword, setTextPassword] = React.useState('');
-    const [quantity, setQuantity] = React.useState(1);
     const [detailData, setDetailData] = React.useState<UserDetail | null>(null);
+    const [settingData, setSettingData] = React.useState<ISetting | null>(null);
+
 
 
   const [form, setForm] = React.useState({
     fileName: '',
     fileData: '',
   });
-  const [userData, setUserData] = React.useState<any>(null);
 
-  const fetchUser = async () => {
-    try {
-      // Retrieve userData from AsyncStorage
-      const jsonValue = await AsyncStorage.getItem('userData');
-      if (jsonValue !== null) {
-        const jsonData = JSON.parse(jsonValue).data
-        setUserData(JSON.parse(jsonValue));
-        setTextName(jsonData.Name)
-        setTextEmail(jsonData.Email)
-      }
-    } catch (error) {
-      console.error('Error retrieving data from AsyncStorage:', error);
-    }
+
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  const fetchDataUser = async (id: string) => {
+  // const fetchUser = async () => {
+  //   try {
+  //     const jsonValue = await AsyncStorage.getItem('userData');
+  //     if (jsonValue !== null) {
+  //       const jsonData = JSON.parse(jsonValue).data
+  //       setUserData(JSON.parse(jsonValue));
+  //       setTextName(jsonData.Name)
+  //       setTextEmail(jsonData.Email)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error retrieving data from AsyncStorage:', error);
+  //   }
+  // };
+
+  const fetchSetting = async () => {
     try {
-      const token = await AsyncStorage.getItem('userData'); 
-      const categoryDetailUrl = ApiUrls.getOutletDetail(id);    
+      const token = await AsyncStorage.getItem('userData');     
       if (token) {
         const authToken = JSON.parse(token).data.Token
-        const response = await axios.get(categoryDetailUrl, {
+        const response = await axios.get(ApiUrls.getSettings, {
           headers: {
             'Authorization': `Bearer ${authToken}`
           }
         });           
-        const data: UserDetail = response.data.data;
-        if (id !== '') {
-        if (data) {
-          console.log(data)
-          setTextName(data.details.name)
-          setTextEmail(data.details.email)
-          setTextOutletName(data.details.outletName)
-          setDetailData(data)
-          }
-          
-        }
-      }
-       else {
+        const data: ISetting = response.data.data;
+        console.log(response.data.data)
+        if (data){
+          setSettingData(data)
+          setTextName(data.name)
+          setTextEmail(data.email)
+        } 
+
+        setSettingData(data);
+      } else {
         console.error('No token found in AsyncStorage');
       }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+
+
 
   
 
@@ -206,14 +204,48 @@ const Profile = () => {
         }
       };
 
-    const fetchData = async () => {
+      const onSave = async (data: IAccountForm) => {
         try {
-          const response = await axios.get('https://fakestoreapi.com/products?limit=12');
-          const data: Coffee[] = response.data;
-          setCoffeeData(data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
+          const token = await AsyncStorage.getItem('userData'); 
+          const url = ApiUrls.saveSettingsAccount
+          if (token) {
+          const authToken = JSON.parse(token).data.Token
+          const response = await axios.post(url, data, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });
+          if (response.status === 200) {
+            if (response.data.status) {
+              Alert.alert('Success', response.data.message);
+              navigation.goBack()
+            } else {
+              Alert.alert('Error', response.data.message);
+            }
+          } else {
+            Alert.alert('Error', response.data.message);
+          }
         }
+        } catch (error) {
+          console.error('Error during saving:', error);
+          Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
+        }
+    };
+
+      const handleSave = () => {
+        const updatedData: IAccountForm = {
+          id: '',
+          action: 'edit',
+          userName: textName,
+          password: textPassword,
+          salt: '',
+          ivssl: '',
+          tagssl:'',
+          fileName: form.fileName,
+          fileData: form.fileData,
+        };
+        console.log(updatedData)
+        onSave(updatedData);
       };
 
      
@@ -222,21 +254,15 @@ const Profile = () => {
 
 
     React.useEffect(() => {
-         fetchUser()
-        // if (userData){
-        // setTextName(userData.data.Name)
-        // setTextEmail(accountData.email)
-        // //setTextPassword(accountData.password)
-        // }
+         fetchSetting()
+         setTextPassword('')
+
       }, []);
 
   return (
     <CommonLayout>
       <View style={{}}>
       <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
-        {/* <TouchableOpacity onPress={()=> navigation.goBack()}>
-            <Text style={{fontSize:12, fontWeight:'bold', color:'black'}}>&lt;--</Text>
-        </TouchableOpacity> */}
       <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Account</Text>
       </View>
       <View style={{flexDirection:'row', gap:6}}>
@@ -245,7 +271,7 @@ const Profile = () => {
         <View style={{paddingLeft:8}}>
 
 
-          {form.fileData ? (
+          {/* {form.fileData ? (
             <Image
               source={{ uri: form.fileData }}
               style={{ width: 130, height: 100, borderRadius:7 }}
@@ -256,9 +282,36 @@ const Profile = () => {
               style={{ width: 130, height: 100, borderRadius:7 }}
             />
             
-            // <View style={{ width: 130, height: 100, borderWidth:0.5, borderColor:'grey', borderRadius:7 }}>
-
-            // </View>
+          )} */}
+          {settingData && settingData.accountImage ? (
+            <View style={{paddingLeft:8}}>
+                {form.fileData ? (
+                 <Image
+                 source={{ uri: form.fileData }}
+                 style={{ width: 130, height: 100, borderRadius:7 }}
+               />
+                ) : (
+              
+                  <Image
+                  source={{ uri: settingData.accountImage }}
+                  style={{ width: 130, height: 100, borderRadius:7 }}
+                />
+                )}
+              </View>
+              ):(
+                <View style={{paddingLeft:8}}>
+                  {form.fileData ? (
+                    <Image
+                      source={{ uri: form.fileData }}
+                      style={{ width: 130, height: 100, borderRadius:7 }}
+                    />
+                  ) : (
+                    <Image
+                    source={require('../../assets/img/no-image.png')}
+                    style={{ width: 130, height: 100, borderRadius:7 }}
+                />
+                )}
+              </View>
           )}
 
           <TouchableOpacity onPress={handleUpload} style={{justifyContent:'center',  width: 130, alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5, marginTop:7}}>
@@ -322,7 +375,33 @@ const Profile = () => {
                         />
                     </View>          
         </View>
+
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+                    <Text style={{marginBottom:5,  width:'20%'}}>Password</Text>
+        <View style={{
+         width: '80%',
+        //  height: 32,
+         borderWidth: 1,
+         marginBottom: 10,
+         borderColor: '#D2D2D2',
+         //padding: 5,
+         borderRadius:6,
+         alignSelf: 'center',
+      }}>
+      <TextInput
+        style={styles.inputPassword}
+        placeholder="Password"
+        value={textPassword}
+        secureTextEntry={!showPassword}
+        onChangeText={(text) => setTextPassword(text)}
+      />
+        <TouchableOpacity onPress={handleTogglePasswordVisibility} style={styles.eyeIcon}>
+          {showPassword ? <ViewSVG width='16' height='16' color="black" /> : <ViewSVG width='16' height='16' color="black" />}
+        </TouchableOpacity>
+      </View>
+
+      </View>
+        {/* <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{marginBottom:5,  width:'20%'}}>Password</Text>
                     <View
                         style={{
@@ -334,8 +413,7 @@ const Profile = () => {
                         }}>
                         <TextInput
                             editable
-                            // multiline
-                            // numberOfLines={4}
+
                             placeholder='Type here'
                             maxLength={40}
                             onChangeText={text => setTextPassword(text)}
@@ -343,10 +421,10 @@ const Profile = () => {
                             style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
                         />
                     </View>          
-        </View>
+        </View> */}
 
         <View style={{margin:10, width:'80%',  }}>
-                    <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
@@ -380,6 +458,18 @@ const styles = StyleSheet.create({
       shadowRadius: 4,  
       elevation: 4,
       margin: 5,
+    },
+    inputPassword: {
+      width: '100%',
+      paddingVertical: 0,
+      paddingHorizontal:10,
+      height:25
+      //lineHeight: 30,
+    },
+    eyeIcon: {
+      position: 'absolute',
+      right: 10,
+      top: 4,
     },
     scrollView: {
       flexDirection: 'row',
