@@ -9,6 +9,7 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ApiUrls } from '../../apiUrls/apiUrls'
+import { Outlet } from '../Setting/Setting'
 
 
 
@@ -38,27 +39,21 @@ export interface OutletForm {
   isPrimary?: string;
   address?: string;
   phoneNumber?: string
-  provinceID?: string
-  districtID?: string
-  subDistrictID?: string
+  province?: string
+  district?: string
+  subDistrict?: string
   postalCode?: string
 }
 
 
-  interface CategoryOption {
-    label: string;
-    value: string;
-  }
-
   type DetailScreenProps = {
-    route: { params: {  id: string } };
+    route: { params: {  data: Outlet } };
   };
 
 const OutletDetail = ({ route }: DetailScreenProps) => {
 
-  const  { id }  = route.params
+  const  { data }  = route.params
 
-    const [detailData, setDetailData] = React.useState<OutletDetailProps | null>(null);
     const [textName, setTextName] = React.useState('');
     const [textPhoneNumber, setTextPhoneNumber] = React.useState('');
     const [textDetailAddress, setTextDetailAddress] = React.useState('');
@@ -66,60 +61,14 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
     const [textDistrictID, setTextDistrictID] = React.useState('');
     const [textSubdistrictID, setTextSubdistrictID] = React.useState('');
     const [textPostalCode, setTextPostalCode] = React.useState('');
-
-
-
-
-    const [quantity, setQuantity] = React.useState(1);
-    const [form, setForm] = React.useState({
-      // Your other form fields
-      paymentConfirmationFileName: '',
-      paymentConfirmationFileData: '',
-    }); 
-
     const [isPrimary, setIsPrimary] = React.useState('');
 
     const handleCheckBoxToggle = () => {
-      setIsPrimary(isPrimary === 'T' ? 'F' : 'T'); // Toggle between 'T' and ''
+      setIsPrimary(isPrimary === 'T' ? 'F' : 'T'); 
     };
 
     const navigation = useNavigation();
 
-
-    const fetchData = async (id: string) => {
-      try {
-        const token = await AsyncStorage.getItem('userData'); 
-        const categoryDetailUrl = ApiUrls.getOutletDetail(id);    
-        if (token) {
-          const authToken = JSON.parse(token).data.Token
-          const response = await axios.get(categoryDetailUrl, {
-            headers: {
-              'Authorization': `Bearer ${authToken}`
-            }
-          });           
-          const data: OutletDetailProps = response.data.data;
-          if (id !== '') {
-          if (data) {
-            console.log(data)
-            setTextName(data.details.outletName)
-            setTextPhoneNumber(data.details.phoneNumber)
-            setTextDetailAddress(data.details.address)
-            setTextProvinceID(data.details.provinceID)
-            setTextDistrictID(data.details.districtID)
-            setTextSubdistrictID(data.details.subDistrictID)
-            setTextPostalCode(data.details.postalCode)
-            setDetailData(data)
-            }
-            
-          }
-        }
-         else {
-          console.error('No token found in AsyncStorage');
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
 
     const onSave = async (data: OutletForm) => {
       try {
@@ -133,13 +82,14 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
           }
         });
         if (response.status === 200) {
-          // Registration successful
-          Alert.alert('Success', 'Saved data successful!');
-          // fetchData(id)
-          navigation.navigate('Setting' as never)    
+          if (response.data.status) {
+            Alert.alert('Success', response.data.message);
+            navigation.goBack()
           } else {
-          // Registration failed
-          Alert.alert('Error', 'Saving data failed');
+            Alert.alert('Error', response.data.message);
+          }
+        } else {
+          Alert.alert('Error', response.data.message);
         }
       }
       } catch (error) {
@@ -150,54 +100,33 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
   
   const handleSave = () => {
     const updatedData:OutletForm = {
-      id: id !== '' ? id : '',
-      action: id !== '' ? 'edit' : 'add',
+      id: data.id !== '' ? data.id : '',
+      action: data.id !== '' ? 'edit' : 'add',
       name: textName,
       phoneNumber: textPhoneNumber,
       address: textDetailAddress,
+      postalCode: textPostalCode,
+      province: textProvinceID,
+      district: textDistrictID,
+      subDistrict: textSubdistrictID,
       isPrimary: ''
     };
     console.log(updatedData)
     onSave(updatedData);
   };
-
-      const categoryOptions: CategoryOption[] = [
-        { label: 'Category 1', value: 'category1' },
-        { label: 'Category 2', value: 'category2' },
-        { label: 'Category 3', value: 'category3' },
-        // Add more categories as needed
-      ];
-
-     
-      const handleUpload = async () => {
-        try {
-          const res = await DocumentPicker.pickSingle({
-            type: [DocumentPicker.types.images],
-          });
-    
-          const fs = await RNFS.readFile(res.uri, 'base64');
-    
-          setForm((prev) => ({
-            ...prev,
-            paymentConfirmationFileName: res.name || '',
-            paymentConfirmationFileData: `data:${res.type};base64,${fs}`,
-          }));
-        } catch (err) {
-          if (DocumentPicker.isCancel(err)) {
-            console.log('Document picking was cancelled.');
-          } else {
-            console.error('Error while picking document:', err);
-            // You can handle the error as per your application's requirements
-          }
-        }
-      };
     
 
 
     React.useEffect(() => {
-      if(id !== ''){
-        fetchData(id);
-      }
+      if (data) {
+        setTextName(data.outlet)
+        // setTextPhoneNumber(data.)
+        setTextDetailAddress(data.address)
+        setTextProvinceID(data.province)
+        setTextDistrictID(data.district)
+        setTextSubdistrictID(data.subDistrict)
+        setTextPostalCode(data.postalCode)
+        }
       }, []);
 
   return (
@@ -423,7 +352,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
         
 
         <View style={{margin:10, width:'80%', alignSelf:'center' }}>
-                    <TouchableOpacity style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{fontSize:10, color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 

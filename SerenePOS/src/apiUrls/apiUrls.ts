@@ -44,6 +44,16 @@ export const ApiUrls = {
   getDashboardSalesWeekly: `https://serenepos.temandigital.id/api/dashboard/getSalesWeekly`,
   getDashboardProfitAmount: `https://serenepos.temandigital.id/api/dashboard/getProfitAmount`,
 
+  getSettings: `https://serenepos.temandigital.id/api/setting/getSettings`,
+  getSettingsOutlet: `https://serenepos.temandigital.id/api/setting/getOutlet`,
+  saveSettings: `https://serenepos.temandigital.id/api/setting/doSaveSetting`,
+  saveSettingsOutlet: `https://serenepos.temandigital.id/api/setting/doSaveOutlet`,
+  saveSettingsAccount: `https://serenepos.temandigital.id/api/setting/doSaveAccount`,
+
+
+
+
+
 
 
 
