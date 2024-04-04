@@ -14,6 +14,8 @@ interface ISalesChartProps {
 const SalesChart = ({salesWeekly}: ISalesChartProps) => {
   const [selectedFilter, setSelectedFilter] = useState<'weekly' | 'monthly'>('weekly');
 
+  
+
   const data = {
     weekly: {
       labels: salesWeekly.map((x=>x.transactionDay)),
@@ -26,11 +28,13 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
   };
 
   const chartData = data[selectedFilter];
+
+  
   
   // Calculate dimensions
-  const width = 550; // Adjust the width as needed
-  const height = 300; // Adjust the height as needed
-  const margin = { top: 13, right: 20, bottom: 20, left: 50 }; // Adjust the margin as needed
+  const width = 400; // Adjust the width as needed
+  const height = 200; // Adjust the height as needed
+  const margin = { top: 13, right: 20, bottom: 20, left: 70 }; // Adjust the margin as needed
 
   const minDataValue = Math.min(...chartData.values); // Calculate the minimum value in data
 
@@ -39,6 +43,8 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
 
   const barWidth = (width - margin.left - margin.right) / chartData.labels.length - 4; // Adjust the width of bars and the gap between them
 
+
+  console.log(chartData, minDataValue, x(0), y(73795), barWidth)
   return (
     <View style={styles.container}>
       <View style={styles.pickerContainer}>

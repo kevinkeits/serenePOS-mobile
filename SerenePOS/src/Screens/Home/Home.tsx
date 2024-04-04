@@ -129,7 +129,6 @@ const Home = () => {
           }
         });           
         const data: ISalesWeekly[] = response.data.data;
-        console.log(data)
         setSalesWeekly(data)
 
       } else {
@@ -179,6 +178,8 @@ const Home = () => {
       <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>Dashboard</Text>
       </View>
 
+      <ScrollView>
+
       <View style={{flexDirection:"row", gap:10, marginHorizontal:"auto", justifyContent: 'center', alignItems: 'center'}}>
       <View style={{backgroundColor:"blue", width:'31%', height:120, justifyContent: 'flex-end', borderRadius:10, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3,  shadowRadius: 4,  elevation: 4}}>
         <View style={{ marginLeft:10, marginBottom:10}}>
@@ -204,7 +205,7 @@ const Home = () => {
       </View>
 
       <View style={{flexDirection:"row", gap:10, marginHorizontal:"auto", marginVertical:10, justifyContent: 'center', alignItems:'center'}}>
-      <View style={{ width:'30%', height:400, borderRadius:10, borderWidth:0.5, borderColor:'#D2D2D2'}}>
+      <View style={{ width:'30%', height:300, borderRadius:10, borderWidth:0.5, borderColor:'#D2D2D2'}}>
       <Text style={{fontWeight: "bold", color: "black", marginTop:10, marginLeft:20}}>Top Selling Product</Text>
       <ScrollView>
           {topSelling?.map((x, index) => (
@@ -227,10 +228,12 @@ const Home = () => {
         </ScrollView>
 
       </View>
-      <View style={{backgroundColor:"ffffff", borderWidth:0.5, borderColor:"#D2D2D2", width:'65%', height:400, borderRadius:10}}>
+      <View style={{backgroundColor:"ffffff", borderWidth:0.5, borderColor:"#D2D2D2", width:'65%', height:300, borderRadius:10}}>
         <SalesChart salesWeekly={salesWeekly}/>
       </View>
       </View>
+
+      </ScrollView>
 
       </View>
 

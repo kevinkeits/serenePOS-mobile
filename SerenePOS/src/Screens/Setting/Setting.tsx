@@ -9,6 +9,24 @@ import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ApiUrls } from '../../apiUrls/apiUrls'
 
+import {
+  requestMultiple,
+  PERMISSIONS,
+  RESULTS,
+  request,
+} from "react-native-permissions";
+
+import {
+  USBPrinter,
+  NetPrinter,
+  BLEPrinter,
+} from "react-native-thermal-receipt-printer";
+interface IBLEPrinter {
+  device_name: string;
+  inner_mac_address: string;
+  status?: string;
+}
+
 
   export interface Outlet {
     id: string;
@@ -47,6 +65,9 @@ import { ApiUrls } from '../../apiUrls/apiUrls'
 
 const Setting = () => {
 
+  let androidPermissions = [PERMISSIONS.ANDROID.BLUETOOTH_SCAN];
+
+      
     const isFocused = useIsFocused();
 
     const [outletData, setOutletData] = React.useState<Outlet[]>([]);
@@ -54,6 +75,9 @@ const Setting = () => {
     const [textName, setTextName] = React.useState('');
     const [textStoreName, setTextStoreName] = React.useState('');
     const [textPhoneNumber, setTextPhoneNumber] = React.useState('');
+
+    const [printers, setPrinters] = React.useState<IBLEPrinter[]>([]);
+    const [currentPrinter, setCurrentPrinter] = React.useState<IBLEPrinter>();
 
 
     const [form, setForm] = React.useState({
@@ -89,7 +113,14 @@ const Setting = () => {
     const fetchSetting = async () => {
       try {
         const token = await AsyncStorage.getItem('userData');     
+        const tempPrinter = await AsyncStorage.getItem('printerData');    
         if (token) {
+
+          if (tempPrinter) {
+            const printerData = JSON.parse(tempPrinter ?? '')
+            setCurrentPrinter(printerData)
+          }
+
           const authToken = JSON.parse(token).data.Token
           const response = await axios.get(ApiUrls.getSettings, {
             headers: {
@@ -126,7 +157,8 @@ const Setting = () => {
         if (response.status === 200) {
           if (response.data.status) {
             Alert.alert('Success', response.data.message);
-            navigation.goBack()
+            //navigation.goBack()
+            fetchSetting();
             fetchOutlet();
           } else {
             Alert.alert('Error', response.data.message);
@@ -182,6 +214,31 @@ const Setting = () => {
       };
     
 
+      const scanPrinter = () => {
+        requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]).then((statuses) => {
+          console.log('BlueTooth', statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]);
+
+          BLEPrinter.init().then(()=> {
+            BLEPrinter.getDeviceList().then((printers) => setPrinters(printers))
+          });
+        });
+      };
+
+      const connectPrinter = (printer: IBLEPrinter) => {
+        BLEPrinter.connectPrinter(printer.inner_mac_address).then(async () => {
+          setCurrentPrinter(printer)
+          setPrinters([])
+          await AsyncStorage.setItem('printerData', JSON.stringify(printer));
+        })
+      }
+
+      const printBillTest = () => {
+        if (currentPrinter) {
+          BLEPrinter.connectPrinter(currentPrinter.inner_mac_address).then(async () => {
+            BLEPrinter.printText("<C>sample text</C>\n");
+          })
+        }
+      }
 
     React.useEffect(() => {
       if (isFocused){
@@ -246,7 +303,7 @@ const Setting = () => {
             
             <View style={{backgroundColor:'#2563EB', justifyContent:'center', alignItems:'center',  width:'100%', borderRadius:5}}>
                 <TouchableOpacity onPress={handleUpload} style={{width:'100%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{ paddingVertical:7, color:'white', fontWeight:'bold', }}>Upload Image</Text>
+                    <Text style={{ justifyContent:'center', height: 32, alignItems:'center', padding: 4, color:'white', fontWeight:'bold', }}>Upload Image</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -271,7 +328,7 @@ const Setting = () => {
                               maxLength={40}
                               onChangeText={text => setTextStoreName(text)}
                               value={textStoreName}
-                              style={{paddingLeft: 10, paddingVertical:0,  width:'80%', height:25}}
+                              style={{paddingLeft: 10, paddingVertical:0,  width:'80%', height:32}}
                           />
                       </View>          
           </View>
@@ -320,7 +377,7 @@ const Setting = () => {
                               maxLength={40}
                               onChangeText={text => setTextName(text)}
                               value={textName}
-                              style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
+                              style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:32}}
                           />
                       </View>          
           </View>
@@ -343,7 +400,7 @@ const Setting = () => {
                               maxLength={40}
                               onChangeText={text => setTextPhoneNumber(text)}
                               value={textPhoneNumber}
-                              style={{paddingLeft: 10, paddingVertical:0,  width:'80%', height:25}}
+                              style={{paddingLeft: 10, paddingVertical:0,  width:'80%', height:32}}
                           />
                       </View>          
           </View>
@@ -401,24 +458,38 @@ const Setting = () => {
                       <View style={{flexDirection:'row', gap:6, width:'80%'}}>
                       <View
                           style={{
-                              width:'30%'
+                              width:'50%'
                           }}>
-                          <TouchableOpacity style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', paddingVertical:3, borderRadius:5}}>
-                              <Text style={{ color:'white', fontWeight:'500'}}>Add Printer</Text>
+                            <Text style={{ color: 'black' }}>{currentPrinter != null ? currentPrinter?.device_name : ''}</Text>
+
+                          <TouchableOpacity onPress={scanPrinter} style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', height: 32, padding:4, borderRadius:5, marginTop: 8}}>
+                              <Text style={{ color:'white', fontWeight:'500'}}>Connect Printer</Text>
                           </TouchableOpacity> 
+
+                          {printers.map((x) => (
+                            <TouchableOpacity key={x.inner_mac_address}>
+                               <Text style={{ paddingTop: 25}}>{x.device_name} ({x.inner_mac_address})</Text>
+                               <TouchableOpacity onPress={() => connectPrinter(x)} style={{justifyContent:'center', width:'30%', alignItems:'center', backgroundColor:'#2563EB', padding:4, height: 32, borderRadius:5, paddingHorizontal:5}}>
+                                  <Text style={{ color:'white', fontWeight:'500', textAlign:'center'}}>{x.inner_mac_address == currentPrinter?.inner_mac_address ? 'Connected' : ((x.status != '' && x.status != null ) ? x.status : 'Connect')}</Text>
+                              </TouchableOpacity> 
+                              </TouchableOpacity>
+                            ))}
                       </View> 
-                      <View
+                      {currentPrinter != null && (
+                        <View
                           style={{
                               width:'50%'
                           }}>
-                          <TouchableOpacity style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', paddingVertical:3, borderRadius:5, paddingHorizontal:5}}>
-                              <Text style={{ color:'white', fontWeight:'500', textAlign:'center'}}>Printer Sample Bills</Text>
+                          <TouchableOpacity onPress={printBillTest} style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', padding:4, height: 32, borderRadius:5, paddingHorizontal:5, marginTop: 28}}>
+                              <Text style={{ color:'white', fontWeight:'500', textAlign:'center'}}>Print Sample Bills</Text>
                           </TouchableOpacity> 
                       </View> 
+                      )}
+                      
                       </View>         
           </View>
 
-          
+{/*           
 
           <View style={{marginTop:10, marginHorizontal:10, marginBottom:5, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                       <Text style={{  marginBottom:5, width:'20%'}}>Back Up</Text>
@@ -435,7 +506,7 @@ const Setting = () => {
                           style={{
                               width:'30%'
                           }}>
-                          <TouchableOpacity style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', paddingVertical:3, borderRadius:5}}>
+                          <TouchableOpacity style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', padding:4, height: 32, borderRadius:5}}>
                               <Text style={{ color:'white', fontWeight:'500'}}>Back Up Now</Text>
                           </TouchableOpacity> 
                       </View> 
@@ -443,11 +514,11 @@ const Setting = () => {
                           style={{
                               width:'30%'
                           }}>
-                          <TouchableOpacity style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'red', paddingVertical:3, borderRadius:5}}>
+                          <TouchableOpacity style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'red', padding:4, height: 32, borderRadius:5}}>
                               <Text style={{ color:'white', fontWeight:'500'}}>Erase Data</Text>
                           </TouchableOpacity> 
                       </View> 
-            </View> 
+            </View>  */}
 
             <Text style={{ fontWeight:'bold', color:'black'}}>Outlet</Text>
             {outletData?.map((x, index) => (
@@ -455,7 +526,7 @@ const Setting = () => {
                   <View style={{flexDirection:'row', gap:5}}>
                     <Text style={{  color:'black', width:'50%', marginBottom:5}}>{x.outlet}</Text>
                   {x.isPrimary == 1 && (
-                    <View style={{width:60, height:13, backgroundColor:'blue', borderRadius:5, paddingVertical:2}}>
+                    <View style={{width:60, height:25, backgroundColor:'blue', borderRadius:5, padding:4}}>
                           <Text style={{ color:'white', fontWeight:'bold', textAlign:'center'}}>Primary</Text>
                     </View>
                    )}
@@ -485,11 +556,11 @@ const Setting = () => {
         
 
         <View style={{margin:10, width:'80%', alignSelf:'center' }}>
-                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, height: 32, borderRadius:5}}>
                         <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
-                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5, height: 32}}>
                         <Text style={{ color:'black', fontWeight:'500'}}>Cancel</Text>
                     </TouchableOpacity>       
         </View>
