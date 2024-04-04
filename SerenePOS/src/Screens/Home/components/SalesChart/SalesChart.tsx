@@ -18,8 +18,8 @@ const SalesChart = ({salesWeekly}: ISalesChartProps) => {
 
   const data = {
     weekly: {
-      labels: salesWeekly.map((x=>x.transactionDay)),
-      values: salesWeekly.map((x=> parseInt(x.paymentAmount))),
+      labels: salesWeekly ? salesWeekly.map((x=>x.transactionDay)) : [],
+      values: salesWeekly ? salesWeekly.map((x=> parseInt(x.paymentAmount))) : [],
     },
     monthly: {
       labels: [ 'Week 1', 'Week 2', 'Week 3', 'Week 4'],
