@@ -17,6 +17,14 @@ const Sidebar: React.FC = () => {
   const route = useRoute();
 
   const [userData, setUserData] = React.useState<any>(null);
+  const [userDataMinimal, setUserDataMinimal] = React.useState({
+    name:'',
+    accountImage:''
+  });
+
+
+  const dataMinimal =  AsyncStorage.getItem('userDataMinimal')
+
 
   const fetchUser = async () => {
     try {
@@ -24,6 +32,7 @@ const Sidebar: React.FC = () => {
       const jsonValue = await AsyncStorage.getItem('userData');
       if (jsonValue !== null) {
         setUserData(JSON.parse(jsonValue));
+        // console.log(JSON.parse(jsonValue))
       }
     } catch (error) {
       console.error('Error retrieving data from AsyncStorage:', error);
@@ -47,6 +56,8 @@ const Sidebar: React.FC = () => {
 
   React.useEffect(() => {
     fetchUser();
+    console.log(dataMinimal)
+
   }, []);
 
   return (

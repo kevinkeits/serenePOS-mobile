@@ -29,6 +29,7 @@ export interface IAccountForm {
   tagssl?: string;
   fileName?: string;
   fileData?: string;
+  phoneNumber?: string
 }
 
 
@@ -78,6 +79,8 @@ const Profile = () => {
 
     const [textProductSKU, setTextProductSKU] = React.useState('');
     const [textName, setTextName] = React.useState('');
+    const [textPhoneNumber, setTextPhoneNumber] = React.useState('');
+
     const [textEmail, setTextEmail] = React.useState('');
 
     const [textOutletName, setTextOutletName] = React.useState('');
@@ -129,6 +132,12 @@ const Profile = () => {
           setSettingData(data)
           setTextName(data.name)
           setTextEmail(data.email)
+          setTextPhoneNumber(data.phoneNumber)
+          const updatedData = {
+            Name: data.name, // Make sure the path matches the response structure
+            AccountImage: data.accountImage, // Make sure the path matches the response structure
+          };
+          await AsyncStorage.setItem('userDataMinimal', JSON.stringify(updatedData));
         } 
 
         setSettingData(data);
@@ -218,7 +227,8 @@ const Profile = () => {
           if (response.status === 200) {
             if (response.data.status) {
               Alert.alert('Success', response.data.message);
-              navigation.goBack()
+              fetchSetting()
+             
             } else {
               Alert.alert('Error', response.data.message);
             }
@@ -243,6 +253,7 @@ const Profile = () => {
           tagssl:'',
           fileName: form.fileName,
           fileData: form.fileData,
+          phoneNumber: textPhoneNumber
         };
         console.log(updatedData)
         onSave(updatedData);
@@ -401,6 +412,29 @@ const Profile = () => {
       </View>
 
       </View>
+
+       <View style={{marginHorizontal:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+                    <Text style={{ marginBottom:5, width:'20%'}}>Phone Number</Text>
+                    <View
+                        style={{
+                            backgroundColor: textPhoneNumber,
+                            borderColor: '#D2D2D2',
+                            borderWidth: 0.5,
+                            borderRadius:5,
+                            width:'80%'
+                        }}>
+                        <TextInput
+                            editable
+                            // multiline
+                            // numberOfLines={4}
+                            placeholder='Type here'
+                            maxLength={40}
+                            onChangeText={text => setTextPhoneNumber(text)}
+                            value={textPhoneNumber}
+                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
+                        />
+                    </View>          
+        </View>
         {/* <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{marginBottom:5,  width:'20%'}}>Password</Text>
                     <View

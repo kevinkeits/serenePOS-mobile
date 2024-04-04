@@ -254,7 +254,7 @@ const Setting = () => {
         <View style={{width:'100%'}}>
           <Text style={{ fontWeight:'bold',  marginBottom:5, color:'black'}}>Bussiness Information</Text>
           <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                      <Text style={{ marginBottom:5, color:'black', width:'20%'}}>Store Name</Text>
+                      <Text style={{ marginBottom:5, width:'20%'}}>Store Name</Text>
                       <View
                           style={{
                               backgroundColor: textStoreName,
@@ -302,7 +302,7 @@ const Setting = () => {
         <Text style={{ fontWeight:'bold',  marginBottom:5, color:'black'}}>Contact Information</Text>
           <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
 
-                      <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Name</Text>
+                      <Text style={{  marginBottom:5, width:'20%'}}>Name</Text>
                       <View
                           style={{
                               backgroundColor: '#D2D2D2',
@@ -326,7 +326,7 @@ const Setting = () => {
           </View>
           <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
 
-                      <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Phone Number</Text>
+                      <Text style={{  marginBottom:5, width:'20%'}}>Phone Number</Text>
                       <View
                           style={{
                               backgroundColor: '#D2D2D2',
@@ -397,7 +397,7 @@ const Setting = () => {
          */}
         <Text style={{ fontWeight:'bold',  marginBottom:5, color:'black'}}>Additional Setting</Text>
           <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                      <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Printer</Text>
+                      <Text style={{  marginBottom:5, width:'20%'}}>Printer</Text>
                       <View style={{flexDirection:'row', gap:6, width:'80%'}}>
                       <View
                           style={{
@@ -421,7 +421,7 @@ const Setting = () => {
           
 
           <View style={{marginTop:10, marginHorizontal:10, marginBottom:5, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                      <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Back Up</Text>
+                      <Text style={{  marginBottom:5, width:'20%'}}>Back Up</Text>
                       <View
                           style={{
                               width:'80%'
@@ -436,7 +436,7 @@ const Setting = () => {
                               width:'30%'
                           }}>
                           <TouchableOpacity style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', paddingVertical:3, borderRadius:5}}>
-                              <Text style={{ color:'white', fontWeight:'500'}}>Add Printer</Text>
+                              <Text style={{ color:'white', fontWeight:'500'}}>Back Up Now</Text>
                           </TouchableOpacity> 
                       </View> 
                       <View
