@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ApiUrls } from '../../apiUrls/apiUrls'
 import { ISetting } from '../Setting/Setting'
 import ViewSVG from '../../assets/svgs/ViewSVG'
+import { parse } from '@babel/core'
 
 
 
@@ -31,6 +32,8 @@ export interface IAccountForm {
   fileData?: string;
   phoneNumber?: string
 }
+
+
 
 
   export interface User {
@@ -70,6 +73,13 @@ export interface IAccountForm {
   export interface UserDetail {
     details: DetailUserItems
     outletDetails: DetailOutletUserItems
+  }
+
+  export interface IUserData{
+    AccountImage: string;
+    Email: string;
+    Name: string;
+    Token: string;
   }
 
 
@@ -127,18 +137,25 @@ const Profile = () => {
           }
         });           
         const data: ISetting = response.data.data;
-        console.log(response.data.data)
+        const jsonValue = await AsyncStorage.getItem('userData');
+        if (jsonValue !== null) {
+          const userData = JSON.parse(jsonValue);
+    
+          userData.data.Name = data.name;
+          userData.data.AccountImage = data.accountImage;
+    
+          // Save the updated userData back to AsyncStorage
+          await AsyncStorage.setItem('userData', JSON.stringify(userData));
+          console.log(userData);
+        }
+
         if (data){
           setSettingData(data)
           setTextName(data.name)
           setTextEmail(data.email)
           setTextPhoneNumber(data.phoneNumber)
-          const updatedData = {
-            Name: data.name, // Make sure the path matches the response structure
-            AccountImage: data.accountImage, // Make sure the path matches the response structure
-          };
-          await AsyncStorage.setItem('userDataMinimal', JSON.stringify(updatedData));
         } 
+      
 
         setSettingData(data);
       } else {

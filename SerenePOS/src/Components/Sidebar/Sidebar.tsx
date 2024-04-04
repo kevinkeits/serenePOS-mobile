@@ -1,7 +1,7 @@
 // Sidebar.tsx
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import SalesSVG from '../../assets/svgs/SalesSVG';
 import ProductSVG from '../../assets/svgs/ProductSVG';
 import DashboardSVG from '../../assets/svgs/DashboardSVG';
@@ -9,35 +9,48 @@ import CategoriesSVG from '../../assets/svgs/CategoriesSVG';
 import TransactionHistorySVG from '../../assets/svgs/TransactionHistorySVG';
 import VariantSVG from '../../assets/svgs/VariantSVG';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IUserData } from '../../Screens/Profile/Profile';
 
 // import { Ionicons } from '@expo/vector-icons';
 
 const Sidebar: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const isFocused = useIsFocused();
+
 
   const [userData, setUserData] = React.useState<any>(null);
-  const [userDataMinimal, setUserDataMinimal] = React.useState({
-    name:'',
-    accountImage:''
-  });
 
 
-  const dataMinimal =  AsyncStorage.getItem('userDataMinimal')
 
 
   const fetchUser = async () => {
     try {
-      // Retrieve userData from AsyncStorage
       const jsonValue = await AsyncStorage.getItem('userData');
       if (jsonValue !== null) {
         setUserData(JSON.parse(jsonValue));
         // console.log(JSON.parse(jsonValue))
       }
+      
     } catch (error) {
       console.error('Error retrieving data from AsyncStorage:', error);
     }
   };
+
+
+  // const fetchUserDataMinimal = async () => {
+  //   try {
+  //     const jsonValue = await AsyncStorage.getItem('userDataMinimal');
+  //     if (jsonValue !== null) {
+  //       const parsedData: IUserData = JSON.parse(jsonValue)
+  //       setUserDataMinimal(parsedData);
+  //       console.log(JSON.parse(jsonValue))
+  //     }
+  //   } catch (error) {
+  //     console.error('Error retrieving data from AsyncStorage:', error);
+  //   }
+  // };
+  
   
   const isActive = (screenName: string) => route.name === screenName;
 
@@ -55,10 +68,10 @@ const Sidebar: React.FC = () => {
   };
 
   React.useEffect(() => {
-    fetchUser();
-    console.log(dataMinimal)
+    if (isFocused) fetchUser();
 
-  }, []);
+
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -140,16 +153,28 @@ const Sidebar: React.FC = () => {
         onPress={() => navigateToScreen('Account')}
       >
         {userData && (
-        CircleAvatar(userData?.data.Name)
+        <View>
+          {userData.AccountImage !== '' ? (
+            <View style={{marginTop:'30%'}}>
+               <Image
+                  source={{ uri: userData.data.AccountImage }}
+                  style={{ width: 20, height: 20, borderRadius: 10 }}
+                />
+            </View>
+          ): (
+            CircleAvatar(userData?.data.Name)
+          )}
+        </View>
         )}
-        <Text style={styles.menuAccountItem}>{userData?.data.Name}</Text>
-      </TouchableOpacity>
+        <Text style={styles.menuAccountItem} numberOfLines={1} ellipsizeMode="tail">
+          {userData?.data.Name}
+          </Text>
+        </TouchableOpacity>
 
 
         <Text style={{marginBottom:10, fontSize:8, marginLeft:6}}>serenePOS v1.00</Text>
       </View>
 
-      {/* Add more menu items as needed */}
     </View>
   );
 };
@@ -166,7 +191,7 @@ const styles = StyleSheet.create({
   },
   menuItemContainer: {
     // backgroundColor: '#ffffff',
-    borderTopRightRadius: 10, // Border radius only on the top right
+    borderTopRightRadius: 10, 
     borderBottomRightRadius: 10, 
     // borderRadius: 5,
     marginBottom: 8,
@@ -196,7 +221,8 @@ const styles = StyleSheet.create({
   menuAccountItem: {
     color: 'black',
     paddingVertical: 6,
-    paddingHorizontal:8
+    paddingHorizontal:4,
+    maxWidth:'97%'
   },
   activeMenuItemText: {
     color: 'white',
@@ -207,8 +233,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
     padding:5,
     borderRadius: 20,
-    backgroundColor: '#E1F0DA', // Change this to your desired background color
-    color: 'black', // Change this to your desired text color
+    backgroundColor: '#E1F0DA',
+    color: 'black',
     textAlign: 'center',
     alignSelf:'center'
   },

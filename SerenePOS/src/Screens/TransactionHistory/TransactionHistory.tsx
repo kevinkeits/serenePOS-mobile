@@ -1,6 +1,6 @@
 // Import necessary modules
-import React, { useState } from 'react';
-import { View, Text, Button, TextInput, Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text,StyleSheet } from 'react-native';
 import CommonLayout from '../../Components/CommonLayout/CommonLayout';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -153,19 +153,27 @@ export interface GroupedTransactions {
 
     const renderTransactionByDate = () => {
       const groupedTransactions: GroupedTransactions = {};
+      const sumByDate: { [key: string]: number } = {};
+
   
       transactionData.forEach(transaction => {
         const date = new Date(transaction.transactionDate).toISOString().slice(0, 10);
+
         if (!groupedTransactions[date]) {
           groupedTransactions[date] = [];
+          sumByDate[date] = 0;
         }
         groupedTransactions[date].push(transaction);
+        if (transaction.isPaid === '1') { 
+          sumByDate[date] += parseInt(transaction.totalPayment);
+        }
       });
   
       return Object.keys(groupedTransactions).map(date => (
         <View key={date}>
           <View style={{ backgroundColor: '#E1E1E1', flexDirection: 'row', justifyContent: 'space-between', padding: 5, marginHorizontal: 10 }}>
             <Text style={{ fontSize: 10, color: 'black', fontWeight: 'bold' }}>{moment(date).format('dddd, D MMM YYYY')}</Text>
+            <Text style={{ fontSize: 10, color: 'black', fontWeight: 'bold' }}>Rp {sumByDate[date].toLocaleString()}</Text>
           </View>
           {groupedTransactions[date].map(transaction => (
             <TouchableOpacity onPress={() => onOpenDetail(transaction.id)} style={{ borderBottomWidth: 0.5, borderBottomColor: '#E1E1E1', gap: 5, paddingVertical: 10, paddingHorizontal: 5, marginHorizontal: 10 }} key={transaction.transactionNumber}>
@@ -219,29 +227,5 @@ export interface GroupedTransactions {
   );
 };
 
-const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderWidth: 0.5,
-        borderColor: 'grey',
-        borderRadius: 6,
-        color: 'black',
-        paddingRight: 30 // to ensure the text is never behind the icon
-    },
-    inputAndroid: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderWidth: 0.5,
-        borderColor: 'grey',
-        borderRadius: 6,
-        color: 'black',
-        paddingRight: 30 // to ensure the text is never behind the icon
-    },
-    iconContainer: {
-        top: 5,
-        right: 15,
-      },
-});
 
 export default TransactionHistory

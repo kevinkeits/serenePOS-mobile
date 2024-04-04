@@ -106,7 +106,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
       province: textProvinceID,
       district: textDistrictID,
       subDistrict: textSubdistrictID,
-      isPrimary: isPrimary == 'T' ? '1' : '0'
+      isPrimary: isPrimary == '' ? 'F' : isPrimary
     };
     console.log(updatedData)
     onSave(updatedData);
@@ -117,12 +117,13 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
     React.useEffect(() => {
       if (data) {
         setTextName(data.outlet)
-        // setTextPhoneNumber(data.)
+        setTextPhoneNumber(data.phoneNumber)
         setTextDetailAddress(data.address)
         setTextProvinceID(data.province)
         setTextDistrictID(data.district)
         setTextSubdistrictID(data.subDistrict)
         setTextPostalCode(data.postalCode)
+        setIsPrimary(data.isPrimary == 1 ? 'T' : 'F')
         }
       }, []);
 
@@ -144,12 +145,13 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
         <Text style={{ fontWeight:'bold',  marginBottom:5, color:'black'}}>Outlet Detail</Text>
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
 
-                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Outlet Name</Text>
+                    <Text style={{  marginBottom:5, width:'20%'}}>Outlet Name</Text>
                     <View
                         style={{
                             backgroundColor: textName,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
+                            height:32,
                             borderRadius:5,
                             width:'80%'
                         }}>
@@ -161,19 +163,20 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextName(text)}
                             value={textName}
-                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:3, width:'80%', height:'100%'}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Phone Number</Text>
+                    <Text style={{  marginBottom:5, width:'20%'}}>Phone Number</Text>
                     <View
                         style={{
                             backgroundColor: textPhoneNumber,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
+                            height:32,
                             width:'80%'
                         }}>
                         <TextInput
@@ -184,7 +187,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextPhoneNumber(text)}
                             value={textPhoneNumber}
-                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:3, width:'80%', height:'100%'}}
                         />
                     </View>          
         </View>
@@ -193,13 +196,14 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
 
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Detail Address</Text>
+                    <Text style={{  marginBottom:5, width:'20%'}}>Detail Address</Text>
                     <View
                         style={{
                             backgroundColor: textDetailAddress,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
+                            height:32,
                             width:'80%'
                         }}>
                         <TextInput
@@ -210,19 +214,20 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextDetailAddress(text)}
                             value={textDetailAddress}
-                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:3, width:'80%', height:'100%'}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Province</Text>
+                    <Text style={{  marginBottom:5, width:'20%'}}>Province</Text>
                     <View
                         style={{
                             backgroundColor: textProvinceID,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
+                            height:32,
                             width:'80%'
                         }}>
                         <TextInput
@@ -233,19 +238,20 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextProvinceID(text)}
                             value={textProvinceID}
-                            style={{paddingLeft: 10, paddingVertical:0,width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:3,width:'80%', height:'100%'}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{ marginBottom:5, color:'black', width:'20%'}}>District</Text>
+                    <Text style={{ marginBottom:5, width:'20%'}}>District</Text>
                     <View
                         style={{
                             backgroundColor: textDistrictID,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
+                            height:32,
                             width:'80%'
                         }}>
                         <TextInput
@@ -256,19 +262,20 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextDistrictID(text)}
                             value={textDistrictID}
-                            style={{paddingLeft: 10, paddingVertical:0,  width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:3,  width:'80%', height:'100%'}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{ marginBottom:5, color:'black', width:'20%'}}>SubDistrict</Text>
+                    <Text style={{ marginBottom:5, width:'20%'}}>SubDistrict</Text>
                     <View
                         style={{
                             backgroundColor: textSubdistrictID,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
+                            height:32,
                             width:'80%'
                         }}>
                         <TextInput
@@ -279,19 +286,20 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextSubdistrictID(text)}
                             value={textSubdistrictID}
-                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:3, width:'80%', height:'100%'}}
                         />
                     </View>          
         </View>
 
         <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{  marginBottom:5, color:'black', width:'20%'}}>Postal Code</Text>
+                    <Text style={{  marginBottom:5, width:'20%'}}>Postal Code</Text>
                     <View
                         style={{
                             backgroundColor: textPostalCode,
                             borderColor: '#D2D2D2',
                             borderWidth: 0.5,
                             borderRadius:5,
+                            height:32,
                             width:'80%'
                         }}>
                         <TextInput
@@ -302,7 +310,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
                             maxLength={40}
                             onChangeText={text => setTextPostalCode(text)}
                             value={textPostalCode}
-                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:25}}
+                            style={{paddingLeft: 10, paddingVertical:3, width:'80%', height:'100%'}}
                         />
                     </View>          
         </View>
@@ -313,7 +321,7 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
           width: 25,
           height: 25,
           borderWidth: 1,
-          padding:3,
+          padding:0,
           borderRadius: 4,
           borderColor: '#D2D2D2',
           justifyContent: 'center',
@@ -331,11 +339,11 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
         
 
         <View style={{margin:10, width:'80%', alignSelf:'center' }}>
-                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5,height:32,}}>
                         <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     
 
-                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
+                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginVertical:10,height:32, justifyContent:'center', alignItems:'center', borderWidth:0.5, borderColor: '#D2D2D2', padding:4, borderRadius:5}}>
                         <Text style={{color:'black', fontWeight:'500'}}>Cancel</Text>
                     </TouchableOpacity>       
         </View>
