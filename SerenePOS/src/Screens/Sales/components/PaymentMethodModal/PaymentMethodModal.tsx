@@ -23,7 +23,7 @@ interface Props {
   data: Payment[]
 
 
-  // paymentID?: string
+  transactionID?: string
   customerName?: string
   subtotal?: string
   discount?: string
@@ -104,6 +104,7 @@ const PaymentMethodModal: React.FC<Props> = ({
   variantOptionID,
   variantLabel,
   variantPrice,
+  transactionID,
 }) => {
 
     const [isOpenCash, setIsOpenCash] = React.useState(false);
@@ -271,6 +272,7 @@ const PaymentMethodModal: React.FC<Props> = ({
         variantOptionID={variantOptionID}
         variantLabel={variantLabel}
         variantPrice={variantPrice}
+        transactionID={transactionID}
       />
 
       <OtherPaymentModal isVisible={isOpenOtherPayment} totalPrice={totalPrice} onClose={onCloseOtherPayment}/>

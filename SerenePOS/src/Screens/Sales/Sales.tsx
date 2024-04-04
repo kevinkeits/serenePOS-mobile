@@ -845,6 +845,7 @@ React.useEffect(() => {
     onClose={onClosePayment} 
     discountOverall={discountOverall} 
     data={paymentData}
+    transactionID={selectedTransactionID}
     
     isOpenReceived={isOpenReceived}
     onOpenReceived={onOpenReceived}

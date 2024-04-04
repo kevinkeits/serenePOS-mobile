@@ -19,7 +19,7 @@ interface Props {
   discount?: string
   tax?: string
   totalPayment?: string
-  // paymentAmount?: string
+  transactionID?: string
   // changes?: string
   // isPaid?: string
   // notes?: string
@@ -58,7 +58,8 @@ const ReceivedCashModal: React.FC<Props> = ({
    transactionProductIDVariant,
    variantOptionID,
    variantLabel,
-   variantPrice, 
+   variantPrice,
+   transactionID 
   }) => {
 
 
@@ -82,8 +83,8 @@ const ReceivedCashModal: React.FC<Props> = ({
     const handleSave = () => {
       if (textReceived != '') {
         const updatedData: TransactionForm = {
-          id: '',
-          action: 'add',
+          id: transactionID != '' ? transactionID ?? '' : '',
+          action: transactionID != '' ? 'edit':'add',
           paymentID: paymentID,
           customerName: customerName,
           subtotal: subtotal,
@@ -105,7 +106,7 @@ const ReceivedCashModal: React.FC<Props> = ({
           variantLabel: variantLabel,
           variantPrice: variantPrice,
         };
-        //console.log(updatedData)
+        console.log(updatedData)
         onSave(updatedData);
       } else {
         Alert.alert('Please input amount received')
