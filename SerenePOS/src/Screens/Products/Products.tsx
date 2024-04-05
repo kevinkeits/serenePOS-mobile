@@ -140,9 +140,10 @@ const Products = () => {
             }
           });           
           let data: Categories[] = response.data.data;
-          data = data.filter((x) => parseInt(x.totalItem) > 0)
+          console.log(response.data.data)
+          data = data?.filter((x) => parseInt(x.totalItem) > 0)
           setCategoriesData(data);
-          if (data.length > 0) fetchData(data[0].id)
+          if (data?.length > 0) fetchData(data[0].id)
         } else {
           console.error('No token found in AsyncStorage');
         }
@@ -157,7 +158,7 @@ const Products = () => {
         setSelectedItems((prevSelectedItems) => {
           if (prevSelectedItems.includes(itemId)) {
             // If the item is already selected, remove it from the list
-            return prevSelectedItems.filter((id) => id !== itemId);
+            return prevSelectedItems?.filter((id) => id !== itemId);
           } else {
             // If the item is not selected, add it to the list
             return [...prevSelectedItems, itemId];
@@ -243,7 +244,7 @@ const Products = () => {
             </View>
       )} */}
           <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
-        {categoriesData.map((x, index) => (
+        {categoriesData?.map((x, index) => (
             <TouchableOpacity key={index} 
             onPress={() => fetchData(x.id)}
             style={[
@@ -307,9 +308,9 @@ const Products = () => {
     
       
       {deleteMode && (
-        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:(dimensions.window.height < 400 ? (productData.length < 7 ? 29 : 90) : (productData.length < 25 ? (productData.length < 6 ? -156 : -60) : 100)) }}>
-        <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:32, justifyContent:'center', alignItems:'center' }}>
-          <Text style={{ color: '#fff' }}>Delete ({selectedItems.length}) item{selectedItems.length > 1 ? 's' : ''}</Text>
+        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:(dimensions.window.height < 400 ? (productData?.length < 7 ? 29 : 90) : (productData?.length < 25 ? (productData?.length < 6 ? -156 : -60) : 100)) }}>
+        <TouchableOpacity onPress={()=> selectedItems?.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems?.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:32, justifyContent:'center', alignItems:'center' }}>
+          <Text style={{ color: '#fff' }}>Delete ({selectedItems?.length}) item{selectedItems?.length > 1 ? 's' : ''}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleCancelPress} style={{ borderWidth:0.5, borderColor:'#dfdfdf', backgroundColor:'white', borderRadius: 5, width:'45%', height:32, justifyContent:'center', alignItems:'center' }}>
           <Text style={{ color: 'black' }}>Cancel</Text>

@@ -46,20 +46,27 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
     const [textName, setTextName] = React.useState('');
     const [textDescription, setTextDescription] = React.useState('');
     const [textPrice, setTextPrice] = React.useState('');
+    const [textQty, setTextQty] = React.useState('');
     const [quantity, setQuantity] = React.useState(1);
     const [arrCategoryPicker, setArrCategoryPicker] =  React.useState<CategoryOptions[]>([]);
     const [ selCategory, setSelCategory ] = React.useState("");
-
     const [isOpenConfirmation, setIsOpenConfirmation] = React.useState(false);
-
-  const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
-  const [variantInputValues, setVariantInputValues] = React.useState<string[]>([]); 
-  const [variantIds, setVariantIds] = React.useState<string[]>([]); 
-  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
-  const [isSelectedOptions, setIsSelectedOptions] = React.useState<string[]>([]);
+    const [selectedVariantIds, setSelectedVariantIds] = React.useState<string[]>([]);
+    const [variantInputValues, setVariantInputValues] = React.useState<string[]>([]); 
+    const [variantIds, setVariantIds] = React.useState<string[]>([]); 
+    const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
+    const [isSelectedOptions, setIsSelectedOptions] = React.useState<string[]>([]);
 
   const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
   const [groupedVariants, setGroupedVariants] = React.useState({});
+
+  const [errorProductSKU, setErrorProductSKU] = React.useState('');
+const [errorName, setErrorName] = React.useState('');
+const [errorPrice, setErrorPrice] = React.useState('');
+const [errorQty, setErrorQty] = React.useState('');
+const [errorDescription, setErrorDescription] = React.useState('');
+const [errorCategory, setErrorCategory] = React.useState('');
+
 
 
 
@@ -185,7 +192,70 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
     }
 };
 
+// const handleSave = () => {
+//   const updatedData: ProductForm = {
+//     id: id !== '' ? id : '',
+//     action: id !== '' ? 'edit' : 'add',
+//     name: textName,
+//     notes: textDescription,
+//     qty: quantity,
+//     price: parseInt(textPrice),
+//     categoryID: selCategory,
+//     productSKU: textProductSKU,
+//     fileName: form.fileName,
+//     fileData: form.fileData,
+//     variantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.variantOptionID).join(',') : '',
+//     isSelected: isSelectedOptions.join(','),
+//     productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.productVariantOptionID).join(',') : '',
+//   };
+//   onSave(updatedData);
+// };
+
 const handleSave = () => {
+  let isValid = true;
+  setErrorProductSKU('');
+  setErrorName('');
+  setErrorPrice('');
+  setErrorCategory('');
+  setErrorQty('');
+  // setErrorDescription('');
+
+  if (!textProductSKU.trim()) {
+    setErrorProductSKU('Product SKU cannot be empty.');
+    isValid = false;
+  }
+
+  if (!textName.trim()) {
+    setErrorName('Name cannot be empty.');
+    isValid = false;
+  }
+
+  if (!textPrice || parseInt(textPrice) === 0) {
+    setErrorPrice('Price cannot be empty.');
+    isValid = false;
+  }
+
+  if (!textQty || parseInt(textQty) === 0) {
+    setErrorQty('Qty cannot be empty.');
+    isValid = false;
+  }
+
+  if (!selCategory) {
+    setErrorCategory('Please select a category.');
+    isValid = false;
+  }
+
+  
+
+  // if (!textDescription.trim()) {
+  //   setErrorDescription('Description cannot be empty.');
+  //   isValid = false;
+  // }
+
+  if (!isValid) {
+    return;
+  }
+
   const updatedData: ProductForm = {
     id: id !== '' ? id : '',
     action: id !== '' ? 'edit' : 'add',
@@ -201,8 +271,11 @@ const handleSave = () => {
     isSelected: isSelectedOptions.join(','),
     productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.productVariantOptionID).join(',') : '',
   };
-  onSave(updatedData);
+
+  console.log(updatedData)
+  // onSave(updatedData); 
 };
+
 
 const renderTransactionByName = () => {
   const groupedVariants: GroupedVariant = {};
@@ -271,10 +344,18 @@ const renderTransactionByName = () => {
       };
 
       const onChangePrice = (text: string) => {
-        // Only allow numeric values
         const numericValue = text.replace(/[^0-9]/g, '');
         setTextPrice(numericValue);
+        setErrorPrice('');
       };
+
+      const onChangeQty = (text: string) => {
+        const numericValue = text.replace(/[^0-9]/g, '');
+        setTextQty(numericValue);
+        setErrorQty('');
+      };
+
+
   
 
     const incrementQuantity = () => {
@@ -386,12 +467,6 @@ const renderTransactionByName = () => {
       <Text style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'#D2D2D2'}}>&gt;</Text>
       <Text   style={{fontWeight:"bold", marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Product</Text>
       </View>
-      {/* <View style={{flexDirection: 'row', gap:10,  marginLeft:10, marginRight:30, marginVertical:10, alignItems:'center'}}>
-        <TouchableOpacity onPress={()=> navigation.goBack()}>
-            <Text style={{fontSize:10, fontWeight:'bold', color:'black'}}>&lt;--</Text>
-        </TouchableOpacity>
-      <Text style={{fontWeight:"bold", fontSize:12, marginVertical: "auto", justifyContent: 'center', alignItems: 'center', textAlign:'center', color:'black'}}>{id !== '' ? 'Edit' : ' Add'} Product</Text>
-      </View> */}
       <View style={{flexDirection:'row', gap:6}}>
         <View style={{width:'25%',  alignItems:'center'}}>
           {detailData && detailData.product.imgUrl ? (
@@ -436,76 +511,79 @@ const renderTransactionByName = () => {
 
 
         </View>
-        <View style={{width:'85%',}}>
-        <View style={{marginHorizontal:10, marginBottom:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        <View style={{width:'85%'}}>
+        <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{ marginBottom:5, width:'20%'}}>Product SKU</Text>
                     <View
                         style={{
                             backgroundColor: textProductSKU,
-                            borderColor: '#D2D2D2',
-                            borderWidth: 0.5,
-                            borderRadius:5,
                             width:'80%'
                         }}>
                         <TextInput
-                            editable={true}
-                            // multiline
-                            // numberOfLines={4}
-                            maxLength={40}
-                            onChangeText={text => setTextProductSKU(text)}
+                            editable
+                            placeholder='Type here'
+                            maxLength={50}
+                            onChangeText={text => {
+                              setTextProductSKU(text);
+                              setErrorProductSKU('');
+                            }}
                             value={textProductSKU}
-                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:32}}
+                            style={{paddingLeft: 10, paddingVertical:2, width:'100%', height:32, borderColor: '#D2D2D2', borderWidth: 0.5,borderRadius:5,
+                          }}
                         />
+                        {errorProductSKU.length > 0 && <Text style={{ color: 'red' }}>{errorProductSKU}</Text>}
                     </View>          
         </View>
+
         <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{ marginBottom:5, width:'20%'}}>Name</Text>
                     <View
                         style={{
                             backgroundColor: textName,
-                            borderColor: '#D2D2D2',
-                            borderWidth: 0.5,
-                            borderRadius:5,
                             width:'80%'
                         }}>
                         <TextInput
                             editable
-                            // multiline
-                            // numberOfLines={4}
                             placeholder='Type here'
-                            maxLength={40}
-                            onChangeText={text => setTextName(text)}
+                            maxLength={50}
+                            onChangeText={text => {
+                              setTextName(text);
+                              setErrorName('');
+                            }}
                             value={textName}
-                            style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:32}}
+                            style={{paddingLeft: 10, paddingVertical:2, width:'100%', height:32, borderColor: '#D2D2D2', borderWidth: 0.5,borderRadius:5,
+                          }}
                         />
+                        {errorName.length > 0 && <Text style={{ color: 'red' }}>{errorName}</Text>}
                     </View>          
         </View>
 
         <View style={{ marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{marginBottom:5, width:'20%'}}>Category</Text>
-            <View style={{flex: 1,
-            justifyContent: 'center',
-            height:32,
-            width:'100%',
+            <Text style={{marginBottom:5, width:'20%'}}>Category</Text>
+            <View style={{
+              flex: 1,
+              justifyContent: 'center',
+              height: 32,
+              width: '100%',
             }}>
-
-            <RNPickerSelect
-                onValueChange={(x) => setSelCategory(x)}
+              <RNPickerSelect
+                onValueChange={(value) => {
+                  setSelCategory(value);
+                  setErrorCategory(''); // Clear error when a category is selected
+                }}
                 items={arrCategoryPicker}
                 useNativeAndroidPickerStyle={false}
                 value={selCategory}
                 Icon={() => {
-                  return <View style={{marginTop:2}}><DropdownSVG width='11' height='11' color='black' /></View>;
+                  return <View style={{marginTop: 6}}><DropdownSVG width='11' height='11' color='black' /></View>;
                 }}
-             style={pickerSelectStyles}
-            
-            />
-
-
-            </View>        
+                style={pickerSelectStyles}
+              />
+              {errorCategory.length > 0 && <Text style={{ color: 'red', marginTop: 5 }}>{errorCategory}</Text>}
+            </View>
         </View>
 
-        <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        {/* <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{marginBottom:5, width:'20%'}}>Qty</Text>
                 <View style={{flexDirection: 'row', justifyContent:'space-between', }}>
 
@@ -522,9 +600,32 @@ const renderTransactionByName = () => {
             </View>
 
           </View>         
+        </View> */}
+
+    <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+                    <Text style={{ marginBottom:5, width:'20%'}}>Qty</Text>
+                    <View
+                        style={{
+                            backgroundColor: textQty,
+                            width:'80%'
+                        }}>
+                        <TextInput
+                            editable
+                            placeholder='Type here'
+                            // maxLength={40}
+                            keyboardType="numeric"
+                            onChangeText={
+                              onChangeQty
+                            }
+                            value={textQty != '0' ? textQty : ''}
+                            style={{paddingLeft: 10, paddingVertical:2, width:'100%', height:32, borderColor: '#D2D2D2', borderWidth: 0.5,borderRadius:5,
+                          }}
+                        />
+                        {errorQty.length > 0 && <Text style={{ color: 'red' }}>{errorQty}</Text>}
+                    </View>          
         </View>
 
-        <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        {/* <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{marginBottom:5, width:'20%'}}>Price</Text>
                     <View
                         style={{
@@ -536,8 +637,6 @@ const renderTransactionByName = () => {
                         }}>
                         <TextInput
                             editable
-                            // multiline
-                            // numberOfLines={4}
                             placeholder='Type here'
                             maxLength={40}
                             keyboardType="numeric"
@@ -545,6 +644,29 @@ const renderTransactionByName = () => {
                             value={textPrice != '0' ? textPrice : ''}
                             style={{paddingLeft: 10, paddingVertical:0, width:'80%', height:32}}
                         />
+                    </View>          
+        </View> */}
+
+        <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+                    <Text style={{ marginBottom:5, width:'20%'}}>Price</Text>
+                    <View
+                        style={{
+                            backgroundColor: textPrice,
+                            width:'80%'
+                        }}>
+                        <TextInput
+                            editable
+                            placeholder='Type here'
+                            // maxLength={40}
+                            keyboardType="numeric"
+                            onChangeText={
+                              onChangePrice
+                            }
+                            value={textPrice != '0' ? textPrice : ''}
+                            style={{paddingLeft: 10, paddingVertical:2, width:'100%', height:32, borderColor: '#D2D2D2', borderWidth: 0.5,borderRadius:5,
+                          }}
+                        />
+                        {errorPrice.length > 0 && <Text style={{ color: 'red' }}>{errorPrice}</Text>}
                     </View>          
         </View>
 
@@ -563,7 +685,7 @@ const renderTransactionByName = () => {
                             multiline
                             numberOfLines={6}
                             placeholder='Type here'
-                            // maxLength={40}
+                            maxLength={100}
                             onChangeText={text => setTextDescription(text)}
                             value={textDescription}
                             style={{paddingLeft: 10, paddingVertical:3, width:'80%', textAlignVertical: 'top',}}
