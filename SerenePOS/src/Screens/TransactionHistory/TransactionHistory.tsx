@@ -1,6 +1,6 @@
 // Import necessary modules
 import React from 'react';
-import { View, Text,StyleSheet } from 'react-native';
+import { View, Text,StyleSheet, Alert } from 'react-native';
 import CommonLayout from '../../Components/CommonLayout/CommonLayout';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -13,6 +13,7 @@ import moment from 'moment';
 
 import ThermalPrinterModule from 'react-native-thermal-printer';
 import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
+import { parse } from 'react-native-svg';
 ThermalPrinterModule.defaultConfig = {
   ...ThermalPrinterModule.defaultConfig,
   ip: '',
@@ -52,6 +53,8 @@ export interface TransactionDetail {
 
 export interface DetailsTransaction {
   transactionID: string;
+  clientImage: string;
+  clientName: string;
   transactionNumber: string;
   transactionDate: string;
   userIn: string;
@@ -113,14 +116,80 @@ export interface GroupedTransactions {
     const [detailData, setDetailData] = React.useState<TransactionDetail | null>(null);
 
     const printReceipt = async () => {
-      if (currentPrinter) {
+      if (currentPrinter && detailData) {
         if (currentPrinter.macAddress != '') {
           requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]).then(async (statuses) => {
             if (statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT] == 'granted') {
               console.log("[Transaction] Printing Receipt", detailData)
+
+              let text = '';
+              if (detailData.details.clientImage != '') text = '[L]<img>' + detailData.details.clientImage + '</img>\n';
+
+              text +=   "[L]<font size='big'>" + detailData.details.clientName + "</font>\n" +
+                          '[L]\n' +
+                          "[L]Order: <u>" + detailData.details.transactionNumber + "</u>\n" +
+                          '[L]' + detailData?.details.transactionDate +
+                          '[L]\n' +
+                          '[C]================================\n';
+                          
+
+                          if (detailData.details.isPaid == '0') {
+                            text += '[C]UNPAID BILL\n' + '[C]================================\n';
+                          }
+
+                          text += '[L]\n';
+
+                          if (detailData?.detailsProduct) {
+                            for (let index = 0; index < detailData?.detailsProduct.length; index++) {
+                              text += '[L]<b>' + detailData?.detailsProduct[index].productName + ' x ' + detailData?.detailsProduct[index].qty +  '</b>[R]' + ' Rp' + parseInt(detailData?.detailsProduct[index].unitPrice).toLocaleString() + '\n';
+                              if (parseInt(detailData.detailsProduct[index].discount) > 0) {
+                                text += '[L] Discount : -Rp' + parseInt(detailData.detailsProduct[index].discount).toLocaleString() + '\n';
+                              }
+                              if (detailData?.detailsVariant) {
+                                const listVariant = detailData?.detailsVariant.filter(variant => variant.transactionProductID === detailData?.detailsProduct[index].transactionProductID)
+                                for (let x = 0; x < listVariant.length; x++) {
+                                  text += '[L] ' + listVariant[x].name + ' : ' + listVariant[x].label + '(+ Rp' +parseInt(listVariant[x].price).toLocaleString()+ ')' + '\n';
+                                }
+                              }
+                              text += '[L] Notes: ' + detailData.detailsProduct[index].notes + '\n';
+                              text += '[L]\n';
+                            }
+                          }
+
+                      text += '[C]--------------------------------\n' +
+                          '[R]TOTAL :[R] Rp' + parseInt(detailData.details.totalPayment).toLocaleString() + '\n';
+
+                          if (parseInt(detailData.details.discount) > 0) {
+                            text += '[R]DISCOUNT :[R] -Rp' + parseInt(detailData.details.discount).toLocaleString() + '\n';
+                          }
+                          if (detailData.details.isPaid == '1') {
+                            text += '[R]PAYMENT METHOD :[R] ' + detailData.details.payment + '\n' +
+                            '[R]PAID :[R] Rp' + parseInt(detailData.details.paymentAmount).toLocaleString() + '\n' +
+                            '[R]CHANGES :[R] Rp' + parseInt(detailData.details.changes).toLocaleString() + '\n' +
+                            //'[R]TAX :[R]4.23e\n' +
+                            '[L]\n' +
+                            '[C]================================\n' +
+                            '[C]THANK YOU\n' +
+                            '[L]\n' +
+                            //"[L]<font size='tall'>Customer :</font>\n" +
+                            //'[L]GUEST\n' +
+                            //'[L]\n' +
+                            //"[C]<barcode type='ean13' height='10'>831254784551</barcode>\n" +
+                            //"[C]<qrcode size='20'>http://www.developpeur-web.dantsu.com/</qrcode>\n" +
+                            // '[L]\n' +
+                            // '[L]\n' +
+                            // '[L]\n' +
+                            // '[L]\n' +
+                            '[L]\n';
+                          } else {
+                            text += '[C]================================\n' +
+                            '[C]UNPAID BILL\n';
+                          }
+                          
+                          
               await ThermalPrinterModule.printBluetooth({
-                payload: 'hello world',
-                printerNbrCharactersPerLine: 38,
+                payload: text,
+                printerNbrCharactersPerLine: 10,
               });
             }
           });

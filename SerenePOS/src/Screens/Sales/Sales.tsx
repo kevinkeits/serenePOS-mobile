@@ -230,20 +230,20 @@ const Sales = ({ route }: ScreenProps) => {
           setSelectedTransactionID(data.details.transactionID)
           setTransactionDetailData(data);
 
-          const totalDiscount = data.detailsProduct.reduce((acc, detail) => {
-            const discount = parseFloat(detail.discount);
-            acc += isNaN(discount) ? 0 : discount;
-            return acc;
-        }, 0);
+        //   const totalDiscount = data.detailsProduct.reduce((acc, detail) => {
+        //     const discount = parseFloat(detail.discount);
+        //     acc += isNaN(discount) ? 0 : discount;
+        //     return acc;
+        // }, 0);
 
-        const discountOverall = parseInt(data.details.discount) - totalDiscount
+        // const discountOverall = parseInt(data.details.discount) - totalDiscount
 
-        setDiscountOverall({
-          isDiscount:'2',
-          discountType:'2',
-          discountValue: discountOverall.toLocaleString(),
-          discountDesc:''
-        })
+        // setDiscountOverall({
+        //   isDiscount:'2',
+        //   discountType:'2',
+        //   discountValue: discountOverall.toLocaleString(),
+        //   discountDesc:''
+        // })
 
 
           const productDetails: ProductDetail[] = data.detailsProduct.map(detail => {
@@ -276,8 +276,8 @@ const Sales = ({ route }: ScreenProps) => {
                     imgUrl: '',
                     mimeType: '',
                     selectedQty: detail.qty.toString(),
-                    selectedDiscountValue: detail.discount,
-                    selectedDiscountType: detail.discount !== '' ? '1' : '0',
+                    selectedDiscountValue: parseInt(detail.discount).toString(),
+                    selectedDiscountType: parseInt(detail.discount) > 0 ? '2' : '',
                     selectedNotes: detail.notes
                 },
                 variant: variants,
@@ -453,23 +453,83 @@ const Sales = ({ route }: ScreenProps) => {
               // setDeleteMode(false)
               // fetchData(selectedCategory)
 
-              if (currentPrinter) {
-                if (currentPrinter.macAddress != '') {
-                  requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]).then(async (statuses) => {
-                    if (statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT] == 'granted') {
-                      console.log("[Sales] Printing Receipt")
-                      await ThermalPrinterModule.printBluetooth({
-                        payload: 'hello world',
-                        printerNbrCharactersPerLine: 38,
-                      });
-                    }
-                  });
+              if (data.isPaid == 'T') {
+                if (currentPrinter) {
+                  if (currentPrinter.macAddress != '') {
+                    requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]).then(async (statuses) => {
+                      if (statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT] == 'granted') {
+
+                        const transactionDetailUrl = ApiUrls.getTransactionDetail(response.data.data);    
+                        const responseFetch = await axios.get(transactionDetailUrl, {
+                          headers: {
+                            'Authorization': `Bearer ${authToken}`
+                          }
+                        });           
+                        const dataTransaction: TransactionDetail = responseFetch.data.data;
+                        if (dataTransaction) {
+                          let text = '';
+                          if (dataTransaction.details.clientImage != '') text = '[L]<img>' + dataTransaction.details.clientImage + '</img>\n';
+
+                            text +=   "[L]<font size='big'>" + dataTransaction.details.clientName + "</font>\n" +
+                                        '[L]\n' +
+                                        "[L]Order: <u>" + dataTransaction.details.transactionNumber + "</u>\n" +
+                                        '[L]' + dataTransaction.details.transactionDate +
+                                        '[L]\n' +
+                                        '[C]================================\n' +
+                                        '[L]\n';
+
+                            if (dataTransaction.detailsProduct) {
+                              for (let index = 0; index < dataTransaction.detailsProduct.length; index++) {
+                                text += '[L]<b>' + dataTransaction.detailsProduct[index].productName + ' x ' + dataTransaction.detailsProduct[index].qty +  '</b>[R]' + ' Rp' + parseInt(dataTransaction.detailsProduct[index].unitPrice).toLocaleString() + '\n';
+                                if (parseInt(dataTransaction.detailsProduct[index].discount) > 0) {
+                                  text += '[L] Discount : -Rp' + parseInt(dataTransaction.detailsProduct[index].discount).toLocaleString() + '\n';
+                                }
+                                if (dataTransaction.detailsVariant) {
+                                  const listVariant = dataTransaction.detailsVariant.filter(variant => variant.transactionProductID === dataTransaction.detailsProduct[index].transactionProductID)
+                                  for (let x = 0; x < listVariant.length; x++) {
+                                    text += '[L] ' + listVariant[x].name + ' : ' + listVariant[x].label + '(+ Rp' +parseInt(listVariant[x].price).toLocaleString()+ ')' + '\n';
+                                  }
+                                }
+                                text += '[L] Notes: ' + dataTransaction.detailsProduct[index].notes + '\n';
+                                text += '[L]\n';
+                              }
+                            }
+
+                        text += '[C]--------------------------------\n' +
+                            '[R]TOTAL :[R] Rp' + parseInt(dataTransaction.details.totalPayment).toLocaleString() + '\n';
+
+                            if (parseInt(dataTransaction.details.discount) > 0) {
+                              text += '[R]DISCOUNT :[R] -Rp' + parseInt(dataTransaction.details.discount).toLocaleString() + '\n';
+                            }
+                            if (dataTransaction.details.isPaid == '1') {
+                              text += '[R]PAYMENT METHOD :[R] ' + dataTransaction.details.payment + '\n' +
+                              '[R]PAID :[R] Rp' + parseInt(dataTransaction.details.paymentAmount).toLocaleString() + '\n' +
+                              '[R]CHANGES :[R] Rp' + parseInt(dataTransaction.details.changes).toLocaleString() + '\n' +
+                              '[L]\n' +
+                              '[C]================================\n' +
+                              '[C]THANK YOU\n' +
+                              '[L]\n' +
+                              '[L]\n';
+                            } else {
+                              text += '[C]================================\n' +
+                              '[C]UNPAID BILL\n';
+                            }
+                          await ThermalPrinterModule.printBluetooth({
+                            payload: text,
+                            printerNbrCharactersPerLine: 10,
+                          });
+                        }
+                        
+                      }
+                    });
+                  } else {
+                    Alert.alert('Error', 'Printer is not connected, please connect to any Printer to Print Receipt');
+                  }
                 } else {
                   Alert.alert('Error', 'Printer is not connected, please connect to any Printer to Print Receipt');
                 }
-              } else {
-                Alert.alert('Error', 'Printer is not connected, please connect to any Printer to Print Receipt');
               }
+              
               
             } else {
               Alert.alert('Error', response.data.message);
@@ -564,10 +624,24 @@ const Sales = ({ route }: ScreenProps) => {
           };
         }, { subtotal: 0, discount: 0 });
       
+        {/* {discountOverall.isDiscount == '2' && (
+              <View style={styles.totalPriceContainer}>
+                <Text style={styles.totalPriceText}>Discount Overall</Text>
+                <Text style={styles.totalPriceAmount}>{discountOverall.discountType == '2' ? `Rp ${discountOverall.discountValue}` : `${discountOverall.discountValue}%`}</Text>
+              </View>
+              )} */}
+
         const taxRate = 0.1;
         //const tax = (subtotal - discount) * taxRate;
         const tax = 0;
-        const discountAll = discount + parseInt(discountOverall.discountValue)
+        let calcDiscountOverall = 0;
+        if (discountOverall.isDiscount == '2') {
+          if (discountOverall.discountType == '2') calcDiscountOverall = parseInt(discountOverall.discountValue);
+          else {
+            calcDiscountOverall = parseInt(((parseFloat(subtotal.toString()) * parseFloat(discountOverall.discountValue)) / parseFloat('100')).toString());
+          }
+        }
+        const discountAll = discount + calcDiscountOverall;
         const totalPrice = (subtotal - discountAll) + tax;
 
       
@@ -626,13 +700,13 @@ const Sales = ({ route }: ScreenProps) => {
 
 
 
-      const addDiscountOverall = (isDiscount: string, type: string, value: string, desc: string) => {
+      const addDiscountOverall = (isDiscount: string, type: string, value: string) => {
         setDiscountOverall((prevDiscountOverall) => ({
           ...prevDiscountOverall,
           isDiscount: isDiscount,
           discountType: type,
           discountValue: value,
-          discountDesc: desc
+          //discountDesc: desc
         }));
         onCloseDiscount()
       }
@@ -737,11 +811,12 @@ React.useEffect(() => {
                       <SaveSVG width='25' height='25' color='#828282' />
                     </TouchableOpacity>
 
-            <TouchableOpacity onPress={()=> onOpenDiscount()}>
+            {/* <TouchableOpacity onPress={()=> onOpenDiscount()}>
               <View style={{ marginRight:4}} >
                 <DiscountSVG width='24' heigth='24'/>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            
           </View>
 
           <ScrollView style={{maxHeight:(dimensions.window.height / 3)}}>
@@ -753,7 +828,7 @@ React.useEffect(() => {
             <Text style={{ fontSize: 10, marginLeft: 5 }}>Rp {parseInt(item.product.price ?? '0').toLocaleString()}</Text>
             
           </View>
-          { item.product.selectedTotalDiscount != '0' && (
+          { parseInt(item.product.selectedTotalDiscount ?? '0') > 0 && (
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
               <Text style={{ fontSize: 8,  maxWidth: 150  }}>Discount</Text>
               <Text style={{ fontSize: 8, marginLeft: 5 }}>-Rp {parseInt(item.product.selectedTotalDiscount ?? '0').toLocaleString()}</Text>
@@ -762,7 +837,7 @@ React.useEffect(() => {
           {
             item.variant.filter((x) => selectedProductVariantOptionIds.includes(x.productVariantOptionID)).map((x, index)=>(
               <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
-                <Text style={{fontSize: 9}}>{x.label}</Text>
+                <Text style={{fontSize: 9}}>{x.name}: {x.label}</Text>
                 <Text style={{ fontSize: 9, marginLeft: 5 }}>{parseInt(x.price) == 0 ? 'Free' : ('Rp' + parseInt(x.price).toLocaleString())} </Text>
               </View>
             ))
@@ -799,18 +874,18 @@ React.useEffect(() => {
                 <Text style={styles.totalPriceText}>Tax (10%)</Text>
                 <Text style={styles.totalPriceAmount}>Rp {calculateTotalPrice().tax.toLocaleString()}</Text>
           </View>*/}
-              { calculateTotalPrice().discount > 0 && (
+              { calculateTotalPrice().discountAll > 0 && (
                 <View style={styles.totalPriceContainer}>
                   <Text style={styles.totalPriceText}>Discount</Text>
-                  <Text style={styles.totalPriceAmount}>-Rp {calculateTotalPrice().discount.toLocaleString()}</Text>
+                  <Text style={styles.totalPriceAmount}>-Rp {calculateTotalPrice().discountAll.toLocaleString()}</Text>
                 </View>
               ) }
-            {discountOverall.isDiscount == '2' && (
+            {/* {discountOverall.isDiscount == '2' && (
               <View style={styles.totalPriceContainer}>
                 <Text style={styles.totalPriceText}>Discount Overall</Text>
-                <Text style={styles.totalPriceAmount}>{discountOverall.discountType == '1' ? `Rp ${discountOverall.discountValue}` : `${discountOverall.discountValue}%`}</Text>
+                <Text style={styles.totalPriceAmount}>{discountOverall.discountType == '2' ? `Rp ${discountOverall.discountValue}` : `${discountOverall.discountValue}%`}</Text>
               </View>
-              )}
+              )} */}
               
               <View style={styles.dottedUnderline} />
               <View style={styles.totalPriceContainer}>
@@ -899,9 +974,9 @@ React.useEffect(() => {
     tax={calculateTotalPrice().tax.toString()}
     totalPayment={calculateTotalPrice().totalPrice.toString()}
     productID={selectedItems.map(x => x.product.id).join(',')}
-    qty={selectedItems.map(x => x.product.qty).join(',')}
+    qty={selectedItems.map(x => x.product.selectedQty).join(',')}
     unitPrice={selectedItems.map(x => parseInt(x.product.price).toString()).join(',')}
-    discountProduct={selectedItems.map(x => x.product.selectedDiscountValue).join(',')}
+    discountProduct={selectedItems.map(x => x.product.selectedTotalDiscount).join(',')}
     notesProduct={selectedItems.map(x => x.product.selectedNotes).join(',')}
     // transactionProductID={selectedItems.map(x => x.product.id).join(',')}
     transactionProductIDVariant={selectedProductVariantOptionIds.join(',')}

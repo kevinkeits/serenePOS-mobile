@@ -109,7 +109,7 @@ const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedData, onSave
       .map((variant, variantIndex) => (
         <View key={variantIndex} >
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={{ fontSize: 8, color: 'grey' }}>{variant.label} </Text>
+          <Text style={{ fontSize: 8, color: 'grey' }}>{variant.name} : {variant.label} </Text>
           <Text style={{ fontSize: 8, color: 'grey' }}> Rp {parseInt(variant.price).toLocaleString()} </Text>
         </View>
 
@@ -177,20 +177,21 @@ const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedData, onSave
             justifyContent: 'center', 
             alignItems:'center', 
             alignSelf:'center', 
-            borderRadius:5
+            borderRadius:5,
+            height: 32,
             }}>
             <TouchableOpacity 
             style={{width:'100%', alignItems:'center'}}
             onPress={()=>handleNavigate(selectedData.details.transactionID)}
             >
-                <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Pay Now</Text>
+                <Text style={{fontWeight:'bold', color: 'white'}}>Pay Now</Text>
             </TouchableOpacity>          
           </View>
           )}
 
         <TouchableOpacity style={{width:'100%', alignItems:'center'}} onPress={onPrint}>
           <View style={{width:'90%', marginBottom:20, backgroundColor: '#2563EB', padding:4, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
-                <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Print Receipt</Text>
+                <Text style={{fontWeight:'bold', color: 'white'}}>Print Receipt</Text>
           </View>
           </TouchableOpacity>        
           </ScrollView>

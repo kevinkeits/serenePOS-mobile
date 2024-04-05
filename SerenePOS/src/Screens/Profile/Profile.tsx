@@ -143,6 +143,8 @@ const Profile = () => {
     
           userData.data.Name = data.name;
           userData.data.AccountImage = data.accountImage;
+          userData.data.ClientImage = data.clientImage;
+          userData.data.ClientName = data.storeName;
     
           // Save the updated userData back to AsyncStorage
           await AsyncStorage.setItem('userData', JSON.stringify(userData));

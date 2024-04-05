@@ -170,10 +170,12 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
 
       React.useEffect(() => {
         if (isVisible && selectedItem) {
+          console.log(selectedItem?.product.selectedDiscountType)
+          
           setQuantity(parseInt(selectedItem?.product.selectedQty ?? '1'));          
           setNotes(selectedItem?.product.selectedNotes ?? '');
           setDiscTypeValue(selectedItem?.product.selectedDiscountType ?? '0')
-          setDiscValue(selectedItem?.product.selectedDiscountValue ?? '')
+          setDiscValue(selectedItem?.product.selectedDiscountValue ?? '0')
           if (selectedItem?.product.selectedDiscountType) {
             if (selectedItem?.product.selectedDiscountType != '0') setSelectedDiscount('2')
           } else setSelectedDiscount('1')
@@ -300,7 +302,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
                     placeholder='Type here'
                     maxLength={100}
                     onChangeText={text => 
-                        setNotes(text)
+                        setNotes(text.split(',').join(' '))
                     }
                     value={notes}
                     style={{paddingLeft: 5, paddingVertical:2, textAlignVertical: 'top'}}

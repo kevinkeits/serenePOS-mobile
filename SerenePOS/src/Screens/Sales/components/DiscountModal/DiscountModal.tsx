@@ -9,7 +9,7 @@ interface Props {
   onClose: () => void;
   selectedIDs: string[]
   onSave?: (ids: string[]) => void;
-  onAdd?: (isDiscount: string, type: string, value: string, des: string) => void
+  onAdd?: (isDiscount: string, type: string, value: string) => void
   discountOverallValue?: discountOverallProps;
 }
 
@@ -39,9 +39,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
 
 
     const [textDisc, setTextDisc] = React.useState('');
-    const [textDesc, setTextDesc] = React.useState('');
     const [radioValue, setRadioValue] = React.useState('1');
-    const [radioTypeValue, setRadioTypeValue] = React.useState('1');
     const [discTypeValue, setDiscTypeValue] = React.useState('');
 
 
@@ -68,27 +66,25 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
 
 
       const handleAddDiscount = () => {
-        if (onAdd) onAdd(radioValue, discTypeValue,  textDisc, textDesc )
+        if (onAdd) onAdd(radioValue, discTypeValue,  textDisc )
       }
 
       const handleClose = () => {
         setDiscTypeValue('')
-        setRadioTypeValue('')
-        setRadioValue('')
+        setRadioValue('1')
         setTextDisc('')
-        setTextDesc('')
         onClose()
       }
 
       const onOpen = () => {
-        setRadioValue('1')
+        
 
         if (discountOverallValue) {
-        setDiscTypeValue(discountOverallValue.discountType)
-        setRadioTypeValue('')
-        setRadioValue(discountOverallValue.isDiscount)
-        setTextDisc(discountOverallValue.discountValue)
-        setTextDesc(discountOverallValue.discountDesc)
+          setDiscTypeValue('2')
+          setRadioValue('2')
+          setTextDisc(discountOverallValue.discountValue)
+        } else {
+          setRadioValue('1')
         }
       }
 
@@ -126,7 +122,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                         <View style={{ flexDirection:'row', gap:10,  alignItems:'center', borderBottomColor:'grey', borderStyle:'dotted'}}>
                             <View
                                 style={{
-                                    backgroundColor: textDisc,
+                                    //backgroundColor: textDisc,
                                     borderColor: '#D2D2D2',
                                     borderWidth: 0.5,
                                     borderRadius:5,
@@ -138,7 +134,7 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                                     // multiline
                                     // numberOfLines={4}
                                     placeholder='Type here'
-                                    maxLength={40}
+                                    //maxLength={40}
                                     onChangeText={text => 
                                         setTextDisc(text)
                                     }
@@ -201,11 +197,13 @@ const DiscountModal: React.FC<Props> = ({ isVisible, onClose, selectedIDs, onSav
                 )}
             </View>
 
-          <View style={{width:'90%', marginTop:5, marginBottom:20, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
             <TouchableOpacity style={{width:'100%', alignItems:'center'}} onPress={handleAddDiscount}>
-                <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Save</Text>
-            </TouchableOpacity>
+          <View style={{width:'90%', marginTop:5, marginBottom:20, backgroundColor: '#2563EB', padding:6, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
+            
+                <Text style={{fontWeight:'bold', color: 'white'}}>Save</Text>
+           
           </View>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => handleClose()} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>x</Text>
           </TouchableOpacity>
