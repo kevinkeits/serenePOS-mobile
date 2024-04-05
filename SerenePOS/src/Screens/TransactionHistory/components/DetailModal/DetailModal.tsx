@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TransactionDetail } from '../../TransactionHistory';
 
 
@@ -9,16 +9,16 @@ interface Props {
   onClose: () => void;
   selectedID: string
   selectedData: TransactionDetail | null
+  onPrint?: () => void;
   onSave?: (ids: string[]) => void;
 }
-const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedData, onSave }) => {
-
+const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedData, onSave, onPrint}) => {
+  
     const navigation = useNavigation();
 
     const handleNavigate = ( selectedId: string) => {
       navigation.navigate('Sales' as never, {id: selectedId} as never)
     };
-
 
   return (
     <Modal
@@ -188,11 +188,11 @@ const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedData, onSave
           </View>
           )}
 
-          <View style={{width:'90%', marginBottom:20, backgroundColor: '#2563EB', padding:4, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5}}>
-            <TouchableOpacity style={{width:'100%', alignItems:'center'}}>
+        <TouchableOpacity style={{width:'100%', alignItems:'center'}} onPress={onPrint}>
+          <View style={{width:'90%', marginBottom:20, backgroundColor: '#2563EB', padding:4, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
                 <Text style={{fontSize:10, fontWeight:'bold', color: 'white'}}>Print Receipt</Text>
-            </TouchableOpacity>          
           </View>
+          </TouchableOpacity>        
           </ScrollView>
 
 

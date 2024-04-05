@@ -106,7 +106,7 @@ const ReceivedCashModal: React.FC<Props> = ({
           variantLabel: variantLabel,
           variantPrice: variantPrice,
         };
-        console.log(updatedData)
+        //console.log(updatedData)
         onSave(updatedData);
       } else {
         Alert.alert('Please input amount received')
