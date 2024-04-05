@@ -22,6 +22,21 @@ import { ApiUrls } from '../../apiUrls/apiUrls';
 import { Transaction, TransactionDetail } from '../TransactionHistory/TransactionHistory';
 import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal';
 
+import ThermalPrinterModule from 'react-native-thermal-printer';
+import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
+ThermalPrinterModule.defaultConfig = {
+  ...ThermalPrinterModule.defaultConfig,
+  ip: '',
+  port: 9100,
+  autoCut: false,
+  timeout: 30000, // in milliseconds (version >= 2.2.0)
+};
+interface IBLEPrinter {
+  deviceName: string;
+  macAddress: string;
+  status?: string;
+}
+
 
 const windowDimensions = Dimensions.get('window');
 const screenDimensions = Dimensions.get('screen');
@@ -49,7 +64,8 @@ const Sales = ({ route }: ScreenProps) => {
   });
 
   const isFocused = useIsFocused();
-  
+    const [currentPrinter, setCurrentPrinter] = React.useState<IBLEPrinter>();
+
     //const [coffeeData, setCoffeeData] = React.useState<Coffee[]>([]);
     const [productData, setProductData] = React.useState<Product[]>([]);
     const [categoriesData, setCategoriesData] = React.useState<Categories[]>([]);
@@ -307,8 +323,14 @@ const Sales = ({ route }: ScreenProps) => {
 
     const fetchCategories = async () => {
       try {
-        const token = await AsyncStorage.getItem('userData');     
+        const token = await AsyncStorage.getItem('userData');    
+        const tempPrinter = await AsyncStorage.getItem('printerData'); 
         if (token) {
+          if (tempPrinter) {
+            const printerData = JSON.parse(tempPrinter ?? '')
+            setCurrentPrinter(printerData)
+          }
+
           const authToken = JSON.parse(token).data.Token
           const response = await axios.get(ApiUrls.getCategory, {
             headers: {
@@ -430,6 +452,25 @@ const Sales = ({ route }: ScreenProps) => {
               // onCloseConfirmation()
               // setDeleteMode(false)
               // fetchData(selectedCategory)
+
+              if (currentPrinter) {
+                if (currentPrinter.macAddress != '') {
+                  requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]).then(async (statuses) => {
+                    if (statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT] == 'granted') {
+                      console.log("[Sales] Printing Receipt")
+                      await ThermalPrinterModule.printBluetooth({
+                        payload: 'hello world',
+                        printerNbrCharactersPerLine: 38,
+                      });
+                    }
+                  });
+                } else {
+                  Alert.alert('Error', 'Printer is not connected, please connect to any Printer to Print Receipt');
+                }
+              } else {
+                Alert.alert('Error', 'Printer is not connected, please connect to any Printer to Print Receipt');
+              }
+              
             } else {
               Alert.alert('Error', response.data.message);
               setLoadingSave(false)

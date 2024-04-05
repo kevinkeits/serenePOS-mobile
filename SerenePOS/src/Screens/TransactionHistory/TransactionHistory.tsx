@@ -11,6 +11,22 @@ import { ApiUrls } from '../../apiUrls/apiUrls';
 import moment from 'moment';
 
 
+import ThermalPrinterModule from 'react-native-thermal-printer';
+import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
+ThermalPrinterModule.defaultConfig = {
+  ...ThermalPrinterModule.defaultConfig,
+  ip: '',
+  port: 9100,
+  autoCut: false,
+  timeout: 30000, // in milliseconds (version >= 2.2.0)
+};
+interface IBLEPrinter {
+  deviceName: string;
+  macAddress: string;
+  status?: string;
+}
+
+
 
 
 export interface Transaction {
@@ -90,16 +106,44 @@ export interface GroupedTransactions {
     const navigation = useNavigation();
     const isFocused = useIsFocused();
 
+    const [currentPrinter, setCurrentPrinter] = React.useState<IBLEPrinter>();
     const [isOpenDetail, setIsOpenDetail] = React.useState(false);
     const [selectedID, setSelectedID] = React.useState('');
     const [transactionData, setTransactionData] = React.useState<Transaction[]>([]);
     const [detailData, setDetailData] = React.useState<TransactionDetail | null>(null);
 
+    const printReceipt = async () => {
+      if (currentPrinter) {
+        if (currentPrinter.macAddress != '') {
+          requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]).then(async (statuses) => {
+            if (statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT] == 'granted') {
+              console.log("[Transaction] Printing Receipt", detailData)
+              await ThermalPrinterModule.printBluetooth({
+                payload: 'hello world',
+                printerNbrCharactersPerLine: 38,
+              });
+            }
+          });
+        } else {
+          Alert.alert('Error', 'Printer is not connected, please connect to any Printer to Print Receipt');
+        }
+      } else {
+        Alert.alert('Error', 'Printer is not connected, please connect to any Printer to Print Receipt');
+      }
+    }
+
     const fetchData = async () => {
       console.log('[Transaction History] fetching data')
       try {
         const token = await AsyncStorage.getItem('userData');     
+        const tempPrinter = await AsyncStorage.getItem('printerData'); 
+
         if (token) {
+          if (tempPrinter) {
+            const printerData = JSON.parse(tempPrinter ?? '')
+            setCurrentPrinter(printerData)
+          }
+
           const authToken = JSON.parse(token).data.Token
           const response = await axios.get(ApiUrls.getTransaction, {
             headers: {
@@ -128,7 +172,6 @@ export interface GroupedTransactions {
             }
           });           
           const data: TransactionDetail = response.data.data;
-          console.log(data.detailsProduct)
           if (id !== '') {
           
           setDetailData(data);
@@ -176,7 +219,7 @@ export interface GroupedTransactions {
             <Text style={{ fontSize: 10, color: 'black', fontWeight: 'bold' }}>Rp {sumByDate[date].toLocaleString()}</Text>
           </View>
           {groupedTransactions[date].map(transaction => (
-            <TouchableOpacity onPress={() => onOpenDetail(transaction.id)} style={{ borderBottomWidth: 0.5, borderBottomColor: '#E1E1E1', gap: 5, paddingVertical: 10, paddingHorizontal: 5, marginHorizontal: 10 }} key={transaction.transactionNumber}>
+            <TouchableOpacity onPress={() => onOpenDetail(transaction.id)} style={{ borderBottomWidth: 0.5, borderBottomColor: '#E1E1E1', gap: 5, paddingVertical: 10, paddingHorizontal: 5, marginHorizontal: 10 }} key={transaction.id}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', gap: 5 }}>
                   <Text style={{ fontSize: 10, color: 'black' }}>{transaction.transactionNumber}</Text>
@@ -222,7 +265,7 @@ export interface GroupedTransactions {
       )}
         </ScrollView>
 
-        <DetailModal isVisible={isOpenDetail} selectedID={selectedID} onClose={onCloseDetail} selectedData={detailData} />
+        <DetailModal isVisible={isOpenDetail} selectedID={selectedID} onClose={onCloseDetail} selectedData={detailData} onPrint={printReceipt} />
     </CommonLayout>
   );
 };

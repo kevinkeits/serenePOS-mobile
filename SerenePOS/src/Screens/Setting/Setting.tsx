@@ -16,14 +16,18 @@ import {
   request,
 } from "react-native-permissions";
 
-import {
-  USBPrinter,
-  NetPrinter,
-  BLEPrinter,
-} from "react-native-thermal-receipt-printer";
+import ThermalPrinterModule from 'react-native-thermal-printer';
+ThermalPrinterModule.defaultConfig = {
+  ...ThermalPrinterModule.defaultConfig,
+  ip: '',
+  port: 9100,
+  autoCut: false,
+  timeout: 30000, // in milliseconds (version >= 2.2.0)
+};
+
 interface IBLEPrinter {
-  device_name: string;
-  inner_mac_address: string;
+  deviceName: string;
+  macAddress: string;
   status?: string;
 }
 
@@ -64,9 +68,6 @@ interface IBLEPrinter {
   }
 
 const Setting = () => {
-
-  let androidPermissions = [PERMISSIONS.ANDROID.BLUETOOTH_SCAN];
-
       
     const isFocused = useIsFocused();
 
@@ -97,9 +98,8 @@ const Setting = () => {
             headers: {
               'Authorization': `Bearer ${authToken}`
             }
-          });           
+          });
           const data: Outlet[] = response.data.data;
-          console.log(response.data.data)
           setOutletData(data);
         } else {
           console.error('No token found in AsyncStorage');
@@ -215,28 +215,43 @@ const Setting = () => {
     
 
       const scanPrinter = () => {
-        requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]).then((statuses) => {
+        requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]).then(async (statuses) => {
           console.log('BlueTooth', statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]);
-
-          BLEPrinter.init().then(()=> {
-            BLEPrinter.getDeviceList().then((printers) => setPrinters(printers))
-          });
+          if (statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT] == 'granted') {
+            await ThermalPrinterModule.getBluetoothDeviceList().then((printers) => setPrinters(printers))
+          }
+          // BLEPrinter.init().then(()=> {
+          //   BLEPrinter.getDeviceList().then((printers) => setPrinters(printers))
+          // });
         });
       };
 
-      const connectPrinter = (printer: IBLEPrinter) => {
-        BLEPrinter.connectPrinter(printer.inner_mac_address).then(async () => {
-          setCurrentPrinter(printer)
-          setPrinters([])
-          await AsyncStorage.setItem('printerData', JSON.stringify(printer));
-        })
+      const connectPrinter = async (printer: IBLEPrinter) => {
+        // BLEPrinter.connectPrinter(printer.inner_mac_address).then(async () => {
+        //   setCurrentPrinter(printer)
+        //   setPrinters([])
+        //   await AsyncStorage.setItem('printerData', JSON.stringify(printer));
+        // })
+        setCurrentPrinter(printer)
+        setPrinters([])
+        await AsyncStorage.setItem('printerData', JSON.stringify(printer));
+
       }
 
-      const printBillTest = () => {
-        if (currentPrinter) {
-          BLEPrinter.connectPrinter(currentPrinter.inner_mac_address).then(async () => {
-            BLEPrinter.printText("<C>sample text</C>\n");
-          })
+      const printBillTest = async () => {
+        // if (currentPrinter) {
+        //   BLEPrinter.connectPrinter(currentPrinter.inner_mac_address).then(async () => {
+        //     BLEPrinter.printText("<C>sample text</C>\n");
+        //   })
+        // }
+        try {
+          await ThermalPrinterModule.printBluetooth({
+            payload: 'hello world',
+            printerNbrCharactersPerLine: 38,
+          });
+        } catch (err) {
+          //error handling
+          //console.log(err.message);
         }
       }
 
@@ -460,17 +475,17 @@ const Setting = () => {
                           style={{
                               width:'50%'
                           }}>
-                            <Text style={{ color: 'black' }}>{currentPrinter != null ? currentPrinter?.device_name : ''}</Text>
+                            <Text style={{ color: 'black' }}>{currentPrinter != null ? currentPrinter?.deviceName + ' (' + currentPrinter?.macAddress + ')' : ''}</Text>
 
                           <TouchableOpacity onPress={scanPrinter} style={{justifyContent:'center', width:'100%', alignItems:'center', backgroundColor:'#2563EB', height: 32, padding:4, borderRadius:5, marginTop: 8}}>
                               <Text style={{ color:'white', fontWeight:'500'}}>Connect Printer</Text>
                           </TouchableOpacity> 
 
                           {printers.map((x) => (
-                            <TouchableOpacity key={x.inner_mac_address}>
-                               <Text style={{ paddingTop: 25}}>{x.device_name} ({x.inner_mac_address})</Text>
+                            <TouchableOpacity key={x.macAddress}>
+                               <Text style={{ paddingTop: 25}}>{x.deviceName} ({x.macAddress})</Text>
                                <TouchableOpacity onPress={() => connectPrinter(x)} style={{justifyContent:'center', width:'30%', alignItems:'center', backgroundColor:'#2563EB', padding:4, height: 32, borderRadius:5, paddingHorizontal:5}}>
-                                  <Text style={{ color:'white', fontWeight:'500', textAlign:'center'}}>{x.inner_mac_address == currentPrinter?.inner_mac_address ? 'Connected' : ((x.status != '' && x.status != null ) ? x.status : 'Connect')}</Text>
+                                  <Text style={{ color:'white', fontWeight:'500', textAlign:'center'}}>{x.macAddress == currentPrinter?.macAddress ? 'Connected' : ((x.status != '' && x.status != null ) ? x.status : 'Connect')}</Text>
                               </TouchableOpacity> 
                               </TouchableOpacity>
                             ))}

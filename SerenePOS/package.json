@@ -36,7 +36,7 @@
     "react-native-screens": "^3.29.0",
     "react-native-svg": "^14.1.0",
     "react-native-table-component": "^1.2.2",
-    "react-native-thermal-receipt-printer": "^1.2.0-rc.2",
+    "react-native-thermal-printer": "^2.3.6",
     "uuid": "^9.0.1",
     "yup": "^1.4.0"
   },

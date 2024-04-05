@@ -184,6 +184,7 @@ const Profile = () => {
         if (response.status === 200) {
           Alert.alert('Success', 'Logout successful!');
           await AsyncStorage.removeItem('userData');
+          await AsyncStorage.removeItem('printerData');
           navigation.navigate('Login' as never);
         } else {
           Alert.alert('Error', 'Logout failed');
