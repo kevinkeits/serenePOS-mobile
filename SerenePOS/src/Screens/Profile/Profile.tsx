@@ -477,7 +477,7 @@ const Profile = () => {
                     </View>          
         </View> */}
 
-        <View style={{margin:10, width:'80%',  }}>
+        <View style={{paddingTop: 32, margin:10, width:'80%',  }}>
                     <TouchableOpacity onPress={handleSave} style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:4, borderRadius:5}}>
                         <Text style={{color:'white', fontWeight:'500'}}>Save</Text>
                     </TouchableOpacity>     

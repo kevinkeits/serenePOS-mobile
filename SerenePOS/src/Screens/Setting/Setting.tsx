@@ -157,7 +157,7 @@ const Setting = () => {
         if (response.status === 200) {
           if (response.data.status) {
             Alert.alert('Success', response.data.message);
-            //navigation.goBack()
+            navigation.goBack()
             fetchSetting();
             fetchOutlet();
           } else {

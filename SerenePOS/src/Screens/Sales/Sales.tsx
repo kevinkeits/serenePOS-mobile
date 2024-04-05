@@ -482,38 +482,34 @@ const Sales = ({ route }: ScreenProps) => {
                               for (let index = 0; index < dataTransaction.detailsProduct.length; index++) {
                                 text += '[L]<b>' + dataTransaction.detailsProduct[index].productName + ' x ' + dataTransaction.detailsProduct[index].qty +  '</b>[R]' + ' Rp' + parseInt(dataTransaction.detailsProduct[index].unitPrice).toLocaleString() + '\n';
                                 if (parseInt(dataTransaction.detailsProduct[index].discount) > 0) {
-                                  text += '[L] Discount : -Rp' + parseInt(dataTransaction.detailsProduct[index].discount).toLocaleString() + '\n';
+                                  text += '[L] Discount: -Rp' + parseInt(dataTransaction.detailsProduct[index].discount).toLocaleString() + '\n';
                                 }
                                 if (dataTransaction.detailsVariant) {
                                   const listVariant = dataTransaction.detailsVariant.filter(variant => variant.transactionProductID === dataTransaction.detailsProduct[index].transactionProductID)
                                   for (let x = 0; x < listVariant.length; x++) {
-                                    text += '[L] ' + listVariant[x].name + ' : ' + listVariant[x].label + '(+ Rp' +parseInt(listVariant[x].price).toLocaleString()+ ')' + '\n';
+                                    text += '[L] ' + listVariant[x].name + ': ' + listVariant[x].label + '(+Rp' +parseInt(listVariant[x].price).toLocaleString()+ ')' + '\n';
                                   }
                                 }
-                                text += '[L] Notes: ' + dataTransaction.detailsProduct[index].notes + '\n';
+                                if (dataTransaction.detailsProduct[index].notes != '') text += '[L] Notes: ' + dataTransaction.detailsProduct[index].notes + '\n';
                                 text += '[L]\n';
                               }
                             }
 
                         text += '[C]--------------------------------\n' +
-                            '[R]TOTAL :[R] Rp' + parseInt(dataTransaction.details.totalPayment).toLocaleString() + '\n';
-
+                            '[R]SUBTOTAL:[R] Rp' + parseInt(dataTransaction.details.subTotal).toLocaleString() + '\n';
+                           
                             if (parseInt(dataTransaction.details.discount) > 0) {
-                              text += '[R]DISCOUNT :[R] -Rp' + parseInt(dataTransaction.details.discount).toLocaleString() + '\n';
+                              text += '[R]DISCOUNT:[R] -Rp' + parseInt(dataTransaction.details.discount).toLocaleString() + '\n';
                             }
-                            if (dataTransaction.details.isPaid == '1') {
-                              text += '[R]PAYMENT METHOD :[R] ' + dataTransaction.details.payment + '\n' +
-                              '[R]PAID :[R] Rp' + parseInt(dataTransaction.details.paymentAmount).toLocaleString() + '\n' +
-                              '[R]CHANGES :[R] Rp' + parseInt(dataTransaction.details.changes).toLocaleString() + '\n' +
-                              '[L]\n' +
-                              '[C]================================\n' +
-                              '[C]THANK YOU\n' +
-                              '[L]\n' +
-                              '[L]\n';
-                            } else {
-                              text += '[C]================================\n' +
-                              '[C]UNPAID BILL\n';
-                            }
+                            text += '[R]TOTAL:[R] Rp' + parseInt(dataTransaction.details.totalPayment).toLocaleString() + '\n';
+                            text += '[R]PAYMENT METHOD:[R] ' + dataTransaction.details.payment + '\n' +
+                            '[R]PAID:[R] Rp' + parseInt(dataTransaction.details.paymentAmount).toLocaleString() + '\n' +
+                            '[R]CHANGES:[R] Rp' + parseInt(dataTransaction.details.changes).toLocaleString() + '\n' +
+                            '[L]\n' +
+                            '[C]================================\n' +
+                            '[C]THANK YOU\n' +
+                            '[L]\n' +
+                            '[L]\n';
                           await ThermalPrinterModule.printBluetooth({
                             payload: text,
                             printerNbrCharactersPerLine: 10,
