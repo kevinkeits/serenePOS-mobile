@@ -154,7 +154,7 @@ const Sidebar: React.FC = () => {
       >
         {userData && (
         <View>
-          {userData.AccountImage !== '' ? (
+          {userData.data.AccountImage !== '' && userData.data.AccountImage !== null ? (
             <View style={{marginTop:'30%'}}>
                <Image
                   source={{ uri: userData.data.AccountImage }}
@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
     height: 20,
     fontSize: 10,
     padding:5,
+    marginTop: 4,
     borderRadius: 20,
     backgroundColor: '#E1F0DA',
     color: 'black',

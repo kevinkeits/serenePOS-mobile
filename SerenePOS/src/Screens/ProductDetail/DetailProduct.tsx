@@ -46,7 +46,7 @@ const DetailProduct = ({ route }: DetailScreenProps) => {
     const [textName, setTextName] = React.useState('');
     const [textDescription, setTextDescription] = React.useState('');
     const [textPrice, setTextPrice] = React.useState('');
-    const [textQty, setTextQty] = React.useState('');
+    const [textQty, setTextQty] = React.useState(1);
     const [quantity, setQuantity] = React.useState(1);
     const [arrCategoryPicker, setArrCategoryPicker] =  React.useState<CategoryOptions[]>([]);
     const [ selCategory, setSelCategory ] = React.useState("");
@@ -113,6 +113,7 @@ const [errorCategory, setErrorCategory] = React.useState('');
             setTextPrice(parseInt(data.product.price).toString())
             setSelCategory(data.product.categoryID)
             setQuantity(data.product.qty)
+            setTextQty(data.product.qty)
             setTextDescription(data.product.notes)
             if (data.variant) {
               const variantOptionIDs = data.variant.map((x) => x.variantOptionID);
@@ -166,6 +167,7 @@ const [errorCategory, setErrorCategory] = React.useState('');
 
   const onSave = async (data: ProductForm) => {
     try {
+      setIsSubmitting(true)
       const token = await AsyncStorage.getItem('userData'); 
       const url = ApiUrls.saveProduct
       if (token) {
@@ -177,16 +179,20 @@ const [errorCategory, setErrorCategory] = React.useState('');
       });
       if (response.status === 200) {
         if (response.data.status) {
+          setIsSubmitting(false)
           onCloseConfirmation()
           navigation.goBack()
         } else {
+          setIsSubmitting(false)
           Alert.alert('Error', response.data.message);
         }
       } else {
+        setIsSubmitting(false)
         Alert.alert('Error', response.data.message);
       }
     }
     } catch (error) {
+      setIsSubmitting(false)
       console.error('Error during saving:', error);
       Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
     }
@@ -220,10 +226,10 @@ const handleSave = () => {
   setErrorQty('');
   // setErrorDescription('');
 
-  if (!textProductSKU.trim()) {
-    setErrorProductSKU('Product SKU cannot be empty.');
-    isValid = false;
-  }
+  // if (!textProductSKU.trim()) {
+  //   setErrorProductSKU('Product SKU cannot be empty.');
+  //   isValid = false;
+  // }
 
   if (!textName.trim()) {
     setErrorName('Name cannot be empty.');
@@ -235,7 +241,7 @@ const handleSave = () => {
     isValid = false;
   }
 
-  if (!textQty || parseInt(textQty) === 0) {
+  if (!textQty || textQty === 0) {
     setErrorQty('Qty cannot be empty.');
     isValid = false;
   }
@@ -261,7 +267,7 @@ const handleSave = () => {
     action: id !== '' ? 'edit' : 'add',
     name: textName,
     notes: textDescription,
-    qty: quantity,
+    qty: textQty,
     price: parseInt(textPrice),
     categoryID: selCategory,
     productSKU: textProductSKU,
@@ -272,8 +278,8 @@ const handleSave = () => {
     productVariantOptionID: id !== '' ? detailData?.variant.map((x: any)=> x.productVariantOptionID).join(',') : '',
   };
 
-  console.log(updatedData)
-  // onSave(updatedData); 
+  //console.log(updatedData)
+  if (!isSubmitting) onSave(updatedData); 
 };
 
 
@@ -351,7 +357,7 @@ const renderTransactionByName = () => {
 
       const onChangeQty = (text: string) => {
         const numericValue = text.replace(/[^0-9]/g, '');
-        setTextQty(numericValue);
+        setTextQty(parseInt(numericValue));
         setErrorQty('');
       };
 
@@ -512,7 +518,7 @@ const renderTransactionByName = () => {
 
         </View>
         <View style={{width:'85%'}}>
-        <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+        {/* <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{ marginBottom:5, width:'20%'}}>Product SKU</Text>
                     <View
                         style={{
@@ -533,7 +539,7 @@ const renderTransactionByName = () => {
                         />
                         {errorProductSKU.length > 0 && <Text style={{ color: 'red' }}>{errorProductSKU}</Text>}
                     </View>          
-        </View>
+        </View> */}
 
         <View style={{marginHorizontal:10, marginVertical:8, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                     <Text style={{ marginBottom:5, width:'20%'}}>Name</Text>
@@ -606,7 +612,7 @@ const renderTransactionByName = () => {
                     <Text style={{ marginBottom:5, width:'20%'}}>Qty</Text>
                     <View
                         style={{
-                            backgroundColor: textQty,
+                            backgroundColor: '#fff',
                             width:'80%'
                         }}>
                         <TextInput
@@ -617,7 +623,7 @@ const renderTransactionByName = () => {
                             onChangeText={
                               onChangeQty
                             }
-                            value={textQty != '0' ? textQty : ''}
+                            value={textQty.toString()}
                             style={{paddingLeft: 10, paddingVertical:2, width:'100%', height:32, borderColor: '#D2D2D2', borderWidth: 0.5,borderRadius:5,
                           }}
                         />

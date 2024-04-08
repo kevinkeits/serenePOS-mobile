@@ -128,8 +128,7 @@ export interface GroupedTransactions {
               text +=   "[L]<font size='big'>" + detailData.details.clientName + "</font>\n" +
                           '[L]\n' +
                           "[L]Order: <u>" + detailData.details.transactionNumber + "</u>\n" +
-                          '[L]' + detailData?.details.transactionDate +
-                          '[L]\n' +
+                          '[L]' + detailData?.details.transactionDate + "\n" +
                           '[C]================================\n';
                           
 
@@ -141,37 +140,35 @@ export interface GroupedTransactions {
 
                           if (detailData?.detailsProduct) {
                             for (let index = 0; index < detailData?.detailsProduct.length; index++) {
-                              text += '[L]<b>' + detailData?.detailsProduct[index].productName + ' x ' + detailData?.detailsProduct[index].qty +  '</b>[R]' + ' Rp' + parseInt(detailData?.detailsProduct[index].unitPrice).toLocaleString() + '\n';
+                              text += '[L]<b>' + detailData?.detailsProduct[index].productName + ' x' + detailData?.detailsProduct[index].qty +  '</b>[R]' + ' Rp' + parseInt(detailData?.detailsProduct[index].unitPrice).toLocaleString() + '\n';
                               if (parseInt(detailData.detailsProduct[index].discount) > 0) {
-                                text += '[L] Discount: -Rp' + parseInt(detailData.detailsProduct[index].discount).toLocaleString() + '\n';
+                                text += '[L]Discount: [R]-Rp' + parseInt(detailData.detailsProduct[index].discount).toLocaleString() + '\n';
                               }
                               if (detailData?.detailsVariant) {
                                 const listVariant = detailData?.detailsVariant.filter(variant => variant.transactionProductID === detailData?.detailsProduct[index].transactionProductID)
                                 for (let x = 0; x < listVariant.length; x++) {
-                                  text += '[L] ' + listVariant[x].name + ': ' + listVariant[x].label + '(+Rp' +parseInt(listVariant[x].price).toLocaleString()+ ')' + '\n';
+                                  text += '[L]' + listVariant[x].name + ': ' + listVariant[x].label + '[R]+Rp' +parseInt(listVariant[x].price).toLocaleString()+ '' + '\n';
                                 }
                               }
                               if (detailData.detailsProduct[index].notes != '') text += '[L] Notes: ' + detailData.detailsProduct[index].notes + '\n';
-                              text += '[L]\n';
                             }
                           }
 
                       text += '[C]--------------------------------\n' +
-                          '[R]SUBTOTAL:[R] Rp' + parseInt(detailData.details.subTotal).toLocaleString() + '\n';
+                          '[L]SUBTOTAL: [R]Rp' + parseInt(detailData.details.subTotal).toLocaleString() + '\n';
 
                           if (parseInt(detailData.details.discount) > 0) {
-                            text += '[R]DISCOUNT:[R] -Rp' + parseInt(detailData.details.discount).toLocaleString() + '\n';
+                            text += '[L]DISCOUNT: [R]-Rp' + parseInt(detailData.details.discount).toLocaleString() + '\n';
                           }
-                          text += '[R]TOTAL:[R] Rp' + parseInt(detailData.details.totalPayment).toLocaleString() + '\n';
+                          text += '[L]TOTAL: [R]Rp' + parseInt(detailData.details.totalPayment).toLocaleString() + '\n';
                           if (detailData.details.isPaid == '1') {
-                            text += '[R]PAYMENT METHOD:[R] ' + detailData.details.payment + '\n' +
-                            '[R]PAID:[R] Rp' + parseInt(detailData.details.paymentAmount).toLocaleString() + '\n' +
-                            '[R]CHANGES:[R] Rp' + parseInt(detailData.details.changes).toLocaleString() + '\n' +
+                            text += '[L]PAYMENT: [R]' + detailData.details.payment + '\n' +
+                            '[L]PAID: [R]Rp' + parseInt(detailData.details.paymentAmount).toLocaleString() + '\n' +
+                            '[L]CHANGES: [R]Rp' + parseInt(detailData.details.changes).toLocaleString() + '\n' +
                             //'[R]TAX :[R]4.23e\n' +
                             '[L]\n' +
                             '[C]================================\n' +
-                            '[C]THANK YOU\n' +
-                            '[L]\n' +
+                            '[C]THANK YOU\n' ;
                             //"[L]<font size='tall'>Customer :</font>\n" +
                             //'[L]GUEST\n' +
                             //'[L]\n' +
@@ -181,7 +178,6 @@ export interface GroupedTransactions {
                             // '[L]\n' +
                             // '[L]\n' +
                             // '[L]\n' +
-                            '[L]\n';
                           } else {
                             text += '[C]================================\n' +
                             '[C]UNPAID BILL\n';
