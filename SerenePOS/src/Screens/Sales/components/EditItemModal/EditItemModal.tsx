@@ -67,7 +67,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ isNewOpen, isVisible, onC
               if (discTypeValue == '2') {
                 item.product.selectedTotalDiscount = discValue
               } else {
-                item.product.selectedTotalDiscount = (((parseInt(discValue) * parseInt(item.product.price)) / 100) * parseInt(quantity.toString())).toString()
+                item.product.selectedTotalDiscount = (((parseInt(discValue) * parseInt(item.product.price)) / 100)).toString()
               }
             } else {
               item.product.selectedDiscountType = '0'

@@ -499,13 +499,13 @@ const Sales = ({ route }: ScreenProps) => {
                             if (parseInt(dataTransaction.details.discount) > 0) {
                               text += '[L]DISCOUNT: [R]-Rp' + parseInt(dataTransaction.details.discount).toLocaleString() + '\n';
                             }
-                            text += '[L]TOTAL: [R]Rp' + parseInt(dataTransaction.details.totalPayment).toLocaleString() + '\n';
-                            text += '[L]PAYMENT: [R]' + dataTransaction.details.payment + '\n' +
+                            text += '[L]TOTAL: [R]Rp' + parseInt(dataTransaction.details.totalPayment).toLocaleString() + '\n' +
+                            '[L]PAYMENT: [R]' + dataTransaction.details.payment + '\n' +
                             '[L]PAID: [R]Rp' + parseInt(dataTransaction.details.paymentAmount).toLocaleString() + '\n' +
                             '[L]CHANGES: [R]Rp' + parseInt(dataTransaction.details.changes).toLocaleString() + '\n' +
                             '[L]\n' +
                             '[C]================================\n' +
-                            '[C]THANK YOU\n' +
+                            '[C]THANK YOU\n' ;
                           await ThermalPrinterModule.printBluetooth({
                             payload: text,
                             printerNbrCharactersPerLine: 10,

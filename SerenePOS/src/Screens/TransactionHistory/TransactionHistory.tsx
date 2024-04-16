@@ -165,10 +165,10 @@ export interface GroupedTransactions {
                             text += '[L]PAYMENT: [R]' + detailData.details.payment + '\n' +
                             '[L]PAID: [R]Rp' + parseInt(detailData.details.paymentAmount).toLocaleString() + '\n' +
                             '[L]CHANGES: [R]Rp' + parseInt(detailData.details.changes).toLocaleString() + '\n' +
-                            //'[R]TAX :[R]4.23e\n' +
                             '[L]\n' +
                             '[C]================================\n' +
                             '[C]THANK YOU\n' ;
+
                             //"[L]<font size='tall'>Customer :</font>\n" +
                             //'[L]GUEST\n' +
                             //'[L]\n' +
@@ -178,6 +178,7 @@ export interface GroupedTransactions {
                             // '[L]\n' +
                             // '[L]\n' +
                             // '[L]\n' +
+                            
                           } else {
                             text += '[C]================================\n' +
                             '[C]UNPAID BILL\n';
