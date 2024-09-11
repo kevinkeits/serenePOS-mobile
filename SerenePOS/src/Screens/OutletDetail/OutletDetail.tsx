@@ -334,6 +334,17 @@ const OutletDetail = ({ route }: DetailScreenProps) => {
       <Text style={{color:'black'}}>Primary Address</Text>
     </View>
 
+    <View style={{width:'100%', marginTop:20}}>
+        <Text style={{ fontWeight:'bold',  marginBottom:5, color:'black'}}>Table Management</Text>
+        <View style={{margin:10, flexDirection:'row', width:'80%',  alignItems:'center'}}>
+
+                    <Text style={{  marginBottom:5, width:'20%'}}>Table</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('TableManagement' as never)}  style={{justifyContent:'center', alignItems:'center', backgroundColor:'#2563EB', padding:6, borderRadius:5,height:32,}}>
+                        <Text style={{color:'white', fontWeight:'500'}}>Update Table</Text>
+                    </TouchableOpacity>  
+        </View>
+        </View>
+
        
 
         

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -28,7 +28,13 @@ const Splash: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={{fontWeight:'bold', color:'white', fontSize:35}}>serenePOS</Text>
+      <View>
+        <Image
+        source={require('../../assets/img/SereneLogo.png')}
+        style={{width: 150, height: 150, resizeMode: 'cover', }}
+          />
+        </View>
+      <Text style={{fontWeight:'bold', color:'white', fontSize:35, marginTop:50}}>serenePOS</Text>
     </View>
   );
 };
@@ -38,6 +44,8 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      flexDirection:'row',
+      gap:10,
       backgroundColor: '#2563EB',
     },
   });

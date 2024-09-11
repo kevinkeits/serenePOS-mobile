@@ -20,6 +20,7 @@ import OutletDetail from '../../Screens/OutletDetail/OutletDetail';
 import TransactionHistoryDetail from '../../Screens/TransactionHistoryDetail/TransactionHistoryDetail';
 import SignUp from '../../Screens/SignUp/SignUp';
 import Search from '../../Screens/Search/Search';
+import TableManagement from '../../Screens/TableManagement/TableManagement';
 
 
 
@@ -52,6 +53,8 @@ const AppNavigator= () => {
         <Stack.Screen name="Search" component={Search} options={{ headerShown: false }}  />
         <Stack.Screen name="PaymentMethod" component={PaymentMethodSetting} options={{ headerShown: false }}  />
         <Stack.Screen name="BussinessInformation" component={BussinessInfoSetting} options={{ headerShown: false }}  />
+        <Stack.Screen name="TableManagement" component={TableManagement} options={{ headerShown: false }}  />
+
 
 
       </Stack.Navigator>

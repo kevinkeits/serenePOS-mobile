@@ -142,7 +142,7 @@ const Home = () => {
   const fetchProfitAmount = async () => {
     try {
       console.log('[Dashboard] fetching total income')
-      const token = await AsyncStorage.getItem('userData');     
+      const token = await AsyncStorage.getItem('userData'); 
       if (token) {
         const authToken = JSON.parse(token).data.Token
         const response = await axios.get(ApiUrls.getDashboardProfitAmount, {
@@ -161,7 +161,7 @@ const Home = () => {
     }
   };
 
-  React.useEffect(() => {
+  React.useEffect(() => {    
     if (isFocused) { 
       fetchTodayIncome()
       fetchTotalIncome()
