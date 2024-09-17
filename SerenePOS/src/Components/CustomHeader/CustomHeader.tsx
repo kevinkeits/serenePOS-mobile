@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import SearchSVG from '../../assets/svgs/SearchSVG';
 
@@ -28,8 +28,16 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ title }) => {
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={navigation.goBack}>
-        <Text style={styles.title}>serenePOS</Text>
+      <TouchableOpacity onPress={navigation.goBack} style={{marginLeft:10}}>
+        <View style={{flexDirection:'row', alignItems:'center'}}>
+          <View>
+            <Image
+            source={require('../../assets/img/logoSerenePOS.png')}
+            style={{width: 30, height: 30, resizeMode: 'cover', }}
+              />
+          </View>
+          <Text style={styles.title}>serenePOS</Text>
+          </View>
       </TouchableOpacity>
       <View style={styles.searchContainer}>
         <TextInput 

@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Image, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { ApiUrls } from '../../apiUrls/apiUrls';
 import TrashSVG from '../../assets/svgs/TrashSVG';
 import ViewSVG from '../../assets/svgs/ViewSVG';
@@ -162,7 +162,15 @@ const SignUp = () => {
     <View style={styles.container}>
         <View style={{width:'50%'}}>
             <View style={{justifyContent:'center', alignItems:'center'}}>
+              <View style={{justifyContent:'center', alignItems:'center', flexDirection:'row', marginBottom:10}}>
+                <View style={{marginRight:5}}>
+                  <Image
+                  source={require('../../assets/img/SereneLogo.png')}
+                  style={{width: 80, height: 80, resizeMode: 'cover', }}
+                    />
+                  </View>
               <Text style={styles.header}>serenePOS</Text>
+              </View>
               <View style={{borderBottomWidth: 0.5,
         borderBottomColor: 'white',
             width: '80%',
@@ -276,8 +284,10 @@ const SignUp = () => {
   </View>
 
   <View style={{ marginBottom: 16, marginTop:16 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 30, }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 30, marginTop:10 }}>
+        <View>
         <CustomCheckbox checked={agreeTerms} onChange={handleAgreeTermsChange} />
+        </View>
 
         <View style={styles.signupContainer}>
         <Text style={styles.signupText}> I agree to the </Text>
@@ -365,7 +375,6 @@ const styles = StyleSheet.create({
   signupContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 16,
     alignSelf:'center'
   },
   signupText: {
