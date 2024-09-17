@@ -504,7 +504,7 @@ const Setting = () => {
                       </View>         
           </View>
 
-{/*           
+          
 
           <View style={{marginTop:10, marginHorizontal:10, marginBottom:5, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                       <Text style={{  marginBottom:5, width:'20%'}}>Back Up</Text>
@@ -533,7 +533,7 @@ const Setting = () => {
                               <Text style={{ color:'white', fontWeight:'500'}}>Erase Data</Text>
                           </TouchableOpacity> 
                       </View> 
-            </View>  */}
+            </View> 
 
             <Text style={{ fontWeight:'bold', color:'black'}}>Outlet</Text>
             {outletData?.map((x, index) => (

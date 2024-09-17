@@ -12,114 +12,22 @@ import DetailModal from './components/DetailModal/DetailModal'
 import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal'
 
 
-
-export interface OutletDetailProps {
-  details: detailsOutletProps
-}
-
-export interface detailsOutletProps {
-  id: string;
-  outletName: string;
-  isPrimary: number;
-  address: string;
-  provinceID: string
-  districtID: string
-  subDistrictID: string
-  postalCode: string
-  phoneNumber: string
-}
-
-
-
-export interface OutletForm {
-  id: string;
-  action?: string
-  name?: string;
-  isPrimary?: string;
-  address?: string;
-  phoneNumber?: string
-  province?: string
-  district?: string
-  subDistrict?: string
-  postalCode?: string
-}
-
-
 export interface Table {
   id: string;
-  name: string;
-  qtyAlert: string;
-  totalItem: string;
-  bgColor?: string;
-  isOccupied: string
+  tableName: string;
+  clientID: string;
+  outletID: string;
+  capacity: string;
+  status: string
+  qrUrl: string
 }
 
 export interface TableForm {
   id: string;
   action: string
-  name?: string;
-  qtyAlert?: string;
-  bgColor?: string;
+  tableName?: string;
+  capacity?: string;
 }
-
-const dataDummy: Table[] = [
-  {
-  id: '1',
-  name: 'Coffee',
-  qtyAlert: '3',
-  totalItem: '1',
-  bgColor: '#7653DA',
-  isOccupied: 'T'
-},
-{
-  id: '2',
-  name: 'Non Coffee',
-  qtyAlert: '5',
-  totalItem: '2',
-  bgColor: '#2925EB',
-  isOccupied: 'F'
-},
-{
-  id: '3',
-  name: 'Food',
-  qtyAlert: '10',
-  totalItem: '3',
-  bgColor: '#2563EB',
-  isOccupied: 'F'
-},
-{
-  id: '4',
-  name: 'Main Course',
-  qtyAlert: '8',
-  bgColor: '#4AB8E8',
-  totalItem: '4',
-  isOccupied: 'T'
-},
-{
-  id: '5',
-  name: 'Signature',
-  qtyAlert: '8',
-  bgColor: '#E88C4A',
-  totalItem: '1',
-  isOccupied: 'T'
-},
-{
-  id: '6',
-  name: 'Dessert',
-  qtyAlert: '9',
-  bgColor: '#E84AD8',
-  totalItem: '1',
-  isOccupied: 'T'
-},
-{
-  id: '7',
-  name: 'Etc',
-  qtyAlert: '6',
-  bgColor: '#E84A4A',
-  totalItem: '1',
-  isOccupied: 'T'
-},
-];
 
 
 const TableManagement = () => {
@@ -132,7 +40,7 @@ const TableManagement = () => {
   });
 
 
-    const [tablesData, setTablesData] = React.useState<Table[]>(dataDummy);
+    const [tablesData, setTablesData] = React.useState<Table[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [deleteMode, setDeleteMode] = React.useState(false);
     const [isOpenDetail, setIsOpenDetail] = React.useState(false);
@@ -167,12 +75,12 @@ const TableManagement = () => {
   };
 
   const fetchData = async () => {
-    console.log('[Category] fetching data')
+    console.log('[Table] fetching data')
     try {
       const token = await AsyncStorage.getItem('userData');     
       if (token) {
         const authToken = JSON.parse(token).data.Token
-        const response = await axios.get(ApiUrls.getCategory, {
+        const response = await axios.get(ApiUrls.getTable, {
           headers: {
             'Authorization': `Bearer ${authToken}`
           }
@@ -190,7 +98,8 @@ const TableManagement = () => {
   const onSave = async (data: TableForm) => {
     try {
       const token = await AsyncStorage.getItem('userData'); 
-      const url = ApiUrls.saveCategory
+
+      const url = ApiUrls.saveTable
       if (token) {
       const authToken = JSON.parse(token).data.Token
       const response = await axios.post(url, data, {
@@ -243,7 +152,7 @@ const TableManagement = () => {
 
 
     React.useEffect(() => {
-
+      fetchData()
       }, []);
 
   return (
@@ -276,9 +185,11 @@ const TableManagement = () => {
         )}
       
       </View>
-      <View>
 
-    <ScrollView style={{marginBottom:70, }}>
+
+      <View style={{}}>
+
+    <ScrollView style={{marginBottom:deleteMode ? 170 : 200}}>
       <View style={{flexDirection:'row',  flexWrap:'wrap',  alignItems:'center', marginVertical:3, marginLeft:15}}>
         {tablesData?.map((x, index)=>(
           <View key={index} style={{flexDirection:'row', padding:0,  justifyContent:'center', alignItems:'center'}}>
@@ -292,16 +203,16 @@ const TableManagement = () => {
                   </TouchableOpacity>
                 )}
             <TouchableOpacity 
-            disabled={x.isOccupied == 'T'}
+            disabled={x.status == '0'}
             onPress={() => deleteMode ? handleCheckboxPress(x.id) : onOpenDetail(x)}  key={index} 
             style={[
               styles.firstRowItem,
-              {backgroundColor: x.isOccupied == 'T'? '#dfdfdf' : 'white'}
+              {backgroundColor: x.status == '0'? '#dfdfdf' : 'white'}
               ]}>
-            <View style={{marginBottom:10, marginLeft: 10, justifyContent:'center', alignItems:'center'}}>
-            <Text style={{fontWeight: "bold", color: "black"}}>{x.name}</Text>
-            <Text style={{ color: "black", fontSize: 10, marginBottom:5}}>Capacity {x.totalItem}</Text>
-            {x.isOccupied == 'T' && (
+            <View style={{marginBottom:10, justifyContent:'center', alignItems:'center'}}>
+            <Text style={{fontWeight: "bold", color: "black", textAlign:'center'}}>{x.tableName}</Text>
+            <Text style={{ color: "black", fontSize: 10, marginBottom:5}}>Capacity {x.capacity}</Text>
+            {x.status == '0' && (
             <Text style={{ color: "white", fontSize: 10, backgroundColor:'red', textAlign:'center', padding:4, borderRadius:10}}>Occupied</Text>
             )}
 
@@ -311,10 +222,8 @@ const TableManagement = () => {
         ))}
       </View>
 
-
-    </ScrollView>
-    {deleteMode && (
-        <View style={{  flexDirection: 'row', gap:10, width: '100%', padding: 4, justifyContent:'center',position:'absolute', bottom:(dimensions.window.height < 400 ? (50) : (tablesData.length < 20 ? -40 : 50)) }}>
+      {deleteMode && (
+        <View style={{  flexDirection: 'row', gap:10, width: '100%',  justifyContent:'center', bottom:(dimensions.window.height < 400 ? (0) : (tablesData.length < 20 ? -40 : 50)) }}>
         <TouchableOpacity onPress={()=> selectedItems.length > 0 ? onOpenConfirmation() : ''}  style={{ backgroundColor: (selectedItems.length > 0 ? '#EF4444' : '#E0B9B9'), borderRadius: 5, width:'45%', height:32, justifyContent:'center', alignItems:'center' }}>
           <Text style={{ color: '#fff' }}>Delete ({selectedItems.length}) item{selectedItems.length > 1 ? 's' : ''}</Text>
         </TouchableOpacity>
@@ -323,6 +232,10 @@ const TableManagement = () => {
         </TouchableOpacity>
       </View>
     )}
+    </ScrollView>
+
+ 
+
     
       </View>
       </View>
@@ -340,7 +253,7 @@ const styles = StyleSheet.create({
     firstRowItem: {
       backgroundColor:"blue",
       justifyContent: 'center',
-      width:140, 
+      width:120, 
       height:150, 
       borderRadius:10, 
       shadowColor: '#000', 

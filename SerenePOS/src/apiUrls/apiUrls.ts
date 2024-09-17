@@ -50,12 +50,8 @@ export const ApiUrls = {
   saveSettingsOutlet: `https://serenepos.temandigital.id/api/setting/doSaveOutlet`,
   saveSettingsAccount: `https://serenepos.temandigital.id/api/setting/doSaveAccount`,
 
-
-
-
-
-
-
-
+  getTable: `https://serenepos.temandigital.id/api/tableManagement/get`,
+  getTableDetail: (id: string) => `https://serenepos.temandigital.id/api/tableManagement/get?ID=${id}`,
+  saveTable: `https://serenepos.temandigital.id/api/tableManagement/doSave`,
 
 };
