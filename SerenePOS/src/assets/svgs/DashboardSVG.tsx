@@ -11,16 +11,18 @@ interface Props {
 const DashboardSVG = ({ width, height, color = 'white' }: Props) => {
   return (
     <View style={styles.container}>
-      <Svg viewBox="0 0 34 24" width={width} height={height} fill="none">
+      <Svg viewBox="0 0 24 24" width={width} height={height} fill="none">
+        {/* Adjust the round head to be more proportional and centered */}
         <Path
-          d="M22 11C24.2091 11 26 9.20914 26 7C26 4.79086 24.2091 3 22 3C19.7909 3 18 4.79086 18 7C18 9.20914 19.7909 11 22 11Z"
+          d="M12 9C13.6569 9 15 7.65685 15 6C15 4.34315 13.6569 3 12 3C10.3431 3 9 4.34315 9 6C9 7.65685 10.3431 9 12 9Z"
           stroke={color}
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
+        {/* Adjusted the body and position */}
         <Path
-          d="M30 21V19C30 17.9391 29.5786 16.9217 28.8284 16.1716C28.0783 15.4214 27.0609 15 26 15H18C16.9391 15 15.9217 15.4214 15.1716 16.1716C14.4214 16.9217 14 17.9391 14 19V21"
+          d="M20 20V18C20 16.6739 19.4732 15.4021 18.5355 14.4645C17.5979 13.5268 16.3261 13 15 13H9C7.67392 13 6.40215 13.5268 5.46447 14.4645C4.52678 15.4021 4 16.6739 4 18V20"
           stroke={color}
           strokeWidth={2}
           strokeLinecap="round"
