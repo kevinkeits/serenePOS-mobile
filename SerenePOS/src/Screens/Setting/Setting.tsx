@@ -17,6 +17,8 @@ import {
 } from "react-native-permissions";
 
 import ThermalPrinterModule from 'react-native-thermal-printer';
+import { fetchLocalData, fetchLocalDataObject, insertData } from '../../helpers/sqliteFunctions'
+import { checkNetworkStatus } from '../../helpers/sqliteHelper'
 ThermalPrinterModule.defaultConfig = {
   ...ThermalPrinterModule.defaultConfig,
   ip: '',
@@ -90,6 +92,21 @@ const Setting = () => {
 
 
     const fetchOutlet = async () => {
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        Alert.alert('Outlet', 'local storage offline.');
+  
+        // Fetch data from SQLite when offline
+        const data = await fetchLocalData<Outlet>('MsOutlet');
+        if (data.length > 0) {
+          setOutletData(data);
+          Alert.alert('Offline Mode', `Fetched ${data.length} outlets from local storage.`);
+        } else {
+          Alert.alert('Offline Mode', 'No outlets available in local storage.');
+        }
+        return;
+      }
+
       try {
         const token = await AsyncStorage.getItem('userData');     
         if (token) {
@@ -101,6 +118,36 @@ const Setting = () => {
           });
           const data: Outlet[] = response.data.data;
           setOutletData(data);
+
+          data.forEach(outlet => {
+            const outletColumns = [
+              'id', 
+              'outlet', 
+              'isPrimary', 
+              'address', 
+              'province', 
+              'district', 
+              'phoneNumber', 
+              'subDistrict', 
+              'postalCode'
+            ];
+      
+            const outletValues = [
+              outlet.id,
+              outlet.outlet,
+              outlet.isPrimary,
+              outlet.address,
+              outlet.province,
+              outlet.district,
+              outlet.phoneNumber,
+              outlet.subDistrict,
+              outlet.postalCode
+            ];
+      
+            // Insert data into MsOutlet table
+            insertData('MsOutlet', outletColumns, outletValues);
+          });
+          
         } else {
           console.error('No token found in AsyncStorage');
         }
@@ -111,6 +158,28 @@ const Setting = () => {
 
 
     const fetchSetting = async () => {
+
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        Alert.alert('Category', 'local storage offline.');
+        
+        // Fetch data from SQLite when offline
+        const data = await fetchLocalDataObject<ISetting>('MsSetting');
+        
+        if (data) {
+          setSettingData(data);
+          setTextName(data.name);
+          setTextPhoneNumber(data.phoneNumber);
+          setTextStoreName(data.storeName);
+        } else {
+          // Handle case where no data is found
+          console.warn('No settings data found in local storage.');
+          setSettingData(null); // or handle accordingly
+        }
+    
+        return;
+      }
+
       try {
         const token = await AsyncStorage.getItem('userData');     
         const tempPrinter = await AsyncStorage.getItem('printerData');    
@@ -135,6 +204,35 @@ const Setting = () => {
           } 
 
           setSettingData(data);
+
+            const settingColumns = [
+              'id', 
+              'storeName', 
+              'name', 
+              'phoneNumber', 
+              'email', 
+              'outletID', 
+              'outletName', 
+              'accountImage', 
+              'clientImage'
+            ];
+      
+            const settingValues = [
+              data.id,
+              data.storeName,
+              data.name,
+              data.phoneNumber,
+              data.email,
+              data.outletID,
+              data.outletName,
+              data.accountImage,
+              data.clientImage
+            ];
+      
+            // Insert data into MsSetting table
+            insertData('MsSetting', settingColumns, settingValues);
+
+
         } else {
           console.error('No token found in AsyncStorage');
         }

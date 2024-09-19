@@ -7,6 +7,8 @@ import { ApiUrls } from '../../apiUrls/apiUrls'
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
+import { fetchLocalData } from '../../helpers/sqliteFunctions'
+import { checkNetworkStatus } from '../../helpers/sqliteHelper'
 import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal'
 import DetailModal from './components/DetailModal/DetailModal'
 
@@ -77,6 +79,21 @@ const Categories = () => {
 
       const fetchData = async () => {
         console.log('[Category] fetching data')
+        const isOnline = await checkNetworkStatus();
+        if (!isOnline) {
+          Alert.alert('Category', 'local storage offline.');
+    
+          // Fetch data from SQLite when offline
+          const categories = await fetchLocalData<Categories>('MsCategory');
+          if (categories.length > 0) {
+            setCategoriesData(categories);
+            Alert.alert('Offline Mode', `Fetched ${categories.length} categories from local storage.`);
+          } else {
+            Alert.alert('Offline Mode', 'No categories available in local storage.');
+          }
+          return;
+        }
+
         try {
           const token = await AsyncStorage.getItem('userData');     
           if (token) {

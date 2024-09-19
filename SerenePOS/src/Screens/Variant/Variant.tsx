@@ -7,6 +7,8 @@ import { ApiUrls } from '../../apiUrls/apiUrls'
 import TrashSVG from '../../assets/svgs/TrashSVG'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
+import { fetchLocalData, insertData } from '../../helpers/sqliteFunctions'
+import { checkNetworkStatus } from '../../helpers/sqliteHelper'
 import ConfirmationModal from './ConfirmationModal/ConfirmationModal'
 
 
@@ -88,6 +90,20 @@ const Variant = () => {
 
       const fetchData = async () => {
         console.log('[Variant] fetching data')
+        const isOnline = await checkNetworkStatus();
+        if (!isOnline) {
+          Alert.alert('Variant', 'local storage offline.');
+    
+          // Fetch data from SQLite when offline
+          const variants = await fetchLocalData<Variant>('MsVariant');
+          if (variants.length > 0) {
+            setVariantsData(variants);
+            Alert.alert('Offline Mode', `Fetched ${variants.length} variants from local storage.`);
+          } else {
+            Alert.alert('Offline Mode', 'No variants available in local storage.');
+          }
+          return;
+        }
         try {
           const token = await AsyncStorage.getItem('userData');     
           if (token) {
@@ -99,6 +115,28 @@ const Variant = () => {
             });           
             const data: Variant[] = response.data.data;
             setVariantsData(data);
+
+            data.forEach(variant => {
+              const variantColumns = [
+                'id', 
+                'name', 
+                'type', 
+                'count', 
+                'listLabel'
+              ];
+        
+              const variantValues = [
+                variant.id,
+                variant.name,
+                variant.type,
+                variant.count,
+                variant.listLabel ?? '' // Handle optional listLabel
+              ];
+        
+              // Insert data into MsVariant table
+              insertData('MsVariant', variantColumns, variantValues);
+            });
+            
           } else {
             console.error('No token found in AsyncStorage');
           }

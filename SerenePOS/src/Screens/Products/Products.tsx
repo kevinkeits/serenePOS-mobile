@@ -9,6 +9,10 @@ import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
 import { Categories } from '../Categories/Categories'
 import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal'
+import NetInfo from '@react-native-community/netinfo';
+import SQLite from 'react-native-sqlite-storage';
+import { checkNetworkStatus } from '../../helpers/sqliteHelper'
+import { createTable, fetchLocalData, insertData } from '../../helpers/sqliteFunctions'
 
 
 const windowDimensions = Dimensions.get('window');
@@ -104,32 +108,119 @@ const Products = () => {
     };
 
 
-    const fetchData = async (categoryID: string) => {
-      try {
-        console.log('[Product] fetching data')
-        setSelectedCategory(categoryID)
-        const token = await AsyncStorage.getItem('userData'); 
-        const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
-        if (token) {
-          const authToken = JSON.parse(token).data.Token
-          const response = await axios.get(categoryDetailUrl, {
-            headers: {
-              'Authorization': `Bearer ${authToken}`
-            }
-          });           
-          const data: Product[] = response.data.data;
-          setProductData(data);
-          setLoading(false)
-        } else {
-          console.error('No token found in AsyncStorage');
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
+    const fetchLocalProducts = (categoryID: string): Promise<Product[]> => {
+      const condition = 'categoryID = ?'; // Assuming the categoryID field exists in the MsProduct table
+      const params = [categoryID]; // categoryID passed as a parameter
+      return fetchLocalData<Product>('MsProduct', condition, params);
     };
 
+
+    const fetchLocalCategories = (): Promise<Categories[]> => {
+      return fetchLocalData<Categories>('MsCategory');
+    };
+
+    // Function to fetch data
+    const fetchData = async (categoryID: string) => {
+      console.log('[Product] fetching data');
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        Alert.alert('Products', 'local storage offline.');
+  
+        // Fetch data from SQLite when offline
+        const products = await fetchLocalProducts(categoryID);
+        if (products.length > 0) {
+          setProductData(products);
+          setLoading(false);
+          Alert.alert('Offline Mode', `Fetched ${products.length} products from local storage.`);
+        } else {
+          Alert.alert('Offline Mode', 'No products available in local storage.');
+        }
+        return;
+      }
+  
+  try {
+        setSelectedCategory(categoryID);
+    const token = await AsyncStorage.getItem('userData'); 
+    const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
+
+    if (token) {
+      const authToken = JSON.parse(token).data.Token;
+      const response = await axios.get(categoryDetailUrl, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });           
+      const data: Product[] = response.data.data;
+      setProductData(data);
+      setLoading(false);
+      
+      
+      data.forEach(product => {
+        const productColumns = ['id', 'name', 'price', 'notes', 'imgUrl', 'qty'];
+        const productValues = [product.id, product.name, product.price, product.notes, product.imgUrl, product.qty];
+        insertData('MsProduct', productColumns, productValues);
+      });
+      
+ 
+
+      // Alert the number of data items fetched
+      Alert.alert('Data Fetched', `Fetched ${data.length} items.`);
+      
+    } else {
+      console.error('No token found in AsyncStorage');
+      Alert.alert('Error', 'No token found in AsyncStorage.');
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    Alert.alert('Error', 'An error occurred while fetching product data.');
+  }
+};
+
+
+
+    // const fetchData = async (categoryID: string) => {
+    //   try {
+    //     console.log('[Product] fetching data')
+    //     setSelectedCategory(categoryID)
+    //     const token = await AsyncStorage.getItem('userData'); 
+    //     const categoryDetailUrl = ApiUrls.getProduct(categoryID);    
+    //     if (token) {
+    //       const authToken = JSON.parse(token).data.Token
+    //       const response = await axios.get(categoryDetailUrl, {
+    //         headers: {
+    //           'Authorization': `Bearer ${authToken}`
+    //         }
+    //       });           
+    //       const data: Product[] = response.data.data;
+    //       console.log(data)
+    //       setProductData(data);
+    //       setLoading(false)
+    //     } else {
+    //       console.error('No token found in AsyncStorage');
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching data:', error);
+    //   }
+    // };
+
     const fetchCategories = async () => {
-      try {
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        Alert.alert('Category', 'local storage offline.');
+  
+        // Fetch data from SQLite when offline
+        const categories = await fetchLocalCategories();
+        if (categories.length > 0) {
+          setCategoriesData(categories);
+          setLoading(false);
+          fetchData(categories[0].id)
+          Alert.alert('Offline Mode', `Fetched ${categories.length} categories from local storage.`);
+        } else {
+          Alert.alert('Offline Mode', 'No categories available in local storage.');
+        }
+        return;
+      }
+   try {
         console.log('[Product] fetching category')
         const token = await AsyncStorage.getItem('userData');     
         if (token) {
@@ -140,10 +231,16 @@ const Products = () => {
             }
           });           
           let data: Categories[] = response.data.data;
-          console.log(response.data.data)
           data = data?.filter((x) => parseInt(x.totalItem) > 0)
           setCategoriesData(data);
           if (data?.length > 0) fetchData(data[0].id)
+             
+          // Insert fetched data into SQLite
+          data.forEach(category => {
+            const categoryColumns = ['id', 'name', 'qtyAlert', 'totalItem', 'bgColor'];
+            const categoryValues = [category.id, category.name, category.qtyAlert, category.totalItem, category.bgColor ?? ''];
+            insertData('MsCategory', categoryColumns, categoryValues);          });
+
         } else {
           console.error('No token found in AsyncStorage');
         }
@@ -151,6 +248,30 @@ const Products = () => {
         console.error('Error fetching data:', error);
       }
     };
+
+    // const fetchCategories = async () => {
+    //   try {
+    //     console.log('[Product] fetching category')
+    //     const token = await AsyncStorage.getItem('userData');     
+    //     if (token) {
+    //       const authToken = JSON.parse(token).data.Token
+    //       const response = await axios.get(ApiUrls.getCategory, {
+    //         headers: {
+    //           'Authorization': `Bearer ${authToken}`
+    //         }
+    //       });           
+    //       let data: Categories[] = response.data.data;
+    //       console.log(response.data.data)
+    //       data = data?.filter((x) => parseInt(x.totalItem) > 0)
+    //       setCategoriesData(data);
+    //       if (data?.length > 0) fetchData(data[0].id)
+    //     } else {
+    //       console.error('No token found in AsyncStorage');
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching data:', error);
+    //   }
+    // };
 
     
       const handleCheckboxPress = (itemId: string) => {
@@ -168,27 +289,37 @@ const Products = () => {
 
       const onSave = async (data: ProductForm) => {
         try {
-          const token = await AsyncStorage.getItem('userData'); 
-          const url = ApiUrls.saveProduct
-          if (token) {
-          const authToken = JSON.parse(token).data.Token
-          const response = await axios.post(url, data, {
-            headers: {
-              'Authorization': `Bearer ${authToken}`
-            }
-          });
-          if (response.status === 200) {
-            if (response.data.status) {
-              onCloseConfirmation()
-              setDeleteMode(false)
-              fetchData(data.categoryID ?? '')
+
+          
+          const isOnline = await checkNetworkStatus();
+          
+          if (isOnline){
+            const token = await AsyncStorage.getItem('userData'); 
+            const url = ApiUrls.saveProduct
+            if (token) {
+            const authToken = JSON.parse(token).data.Token
+            const response = await axios.post(url, data, {
+              headers: {
+                'Authorization': `Bearer ${authToken}`
+              }
+            });
+            if (response.status === 200) {
+              if (response.data.status) {
+                onCloseConfirmation()
+                setDeleteMode(false)
+                fetchData(data.categoryID ?? '')
+              } else {
+                Alert.alert('Error', response.data.message);
+              }
             } else {
-              Alert.alert('Error', response.data.message);
+              Alert.alert('Error', 'Saving data failed');
             }
-          } else {
-            Alert.alert('Error', 'Saving data failed');
           }
+          
+        } else {
+          Alert.alert('Error', 'Saving data for sqlite ');
         }
+
         } catch (error) {
           console.error('Error during saving:', error);
           Alert.alert('Error', 'Something went wrong during saving data. Please try again.');
@@ -212,9 +343,14 @@ const Products = () => {
         navigation.navigate('ProductDetail' as never, {id: selectedId} as never)
       };
 
-    React.useEffect(() => {
-      if (isFocused) fetchCategories();
-    }, [isFocused]);
+
+
+
+React.useEffect(() => {
+
+  if (isFocused) fetchCategories();
+
+}, [isFocused]);
 
   return (
     <CommonLayout>

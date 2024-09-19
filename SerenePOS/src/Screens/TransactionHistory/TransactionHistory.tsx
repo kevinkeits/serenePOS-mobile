@@ -14,6 +14,8 @@ import moment from 'moment';
 import ThermalPrinterModule from 'react-native-thermal-printer';
 import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
 import { parse } from 'react-native-svg';
+import { checkNetworkStatus } from '../../helpers/sqliteHelper';
+import { fetchLocalData, insertData } from '../../helpers/sqliteFunctions';
 ThermalPrinterModule.defaultConfig = {
   ...ThermalPrinterModule.defaultConfig,
   ip: '',
@@ -201,6 +203,20 @@ export interface GroupedTransactions {
 
     const fetchData = async () => {
       console.log('[Transaction History] fetching data')
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        Alert.alert('Transaction History', 'local storage offline.');
+  
+        // Fetch data from SQLite when offline
+        const transactions = await fetchLocalData<Transaction>('MsTransaction');
+        if (transactions.length > 0) {
+          setTransactionData(transactions);
+          Alert.alert('Offline Mode', `Fetched ${transactions.length} transactions from local storage.`);
+        } else {
+          Alert.alert('Offline Mode', 'No transactions available in local storage.');
+        }
+        return;
+      }
       try {
         const token = await AsyncStorage.getItem('userData');     
         const tempPrinter = await AsyncStorage.getItem('printerData'); 
@@ -219,6 +235,42 @@ export interface GroupedTransactions {
           });           
           const data: Transaction[] = response.data.data;
           setTransactionData(data);
+
+          data.forEach(transaction => {
+            const transactionColumns = [
+              'id', 
+              'transactionNumber', 
+              'transactionDate', 
+              'paidDate', 
+              'customerName', 
+              'paymentID', 
+              'payment', 
+              'description', 
+              'isActive', 
+              'status', 
+              'totalPayment', 
+              'isPaid'
+            ];
+      
+            const transactionValues = [
+              transaction.id,
+              transaction.transactionNumber,
+              transaction.transactionDate,
+              transaction.paidDate ?? '',          // Handle optional paidDate
+              transaction.customerName,
+              transaction.paymentID,
+              transaction.payment,
+              transaction.description ?? '',       // Handle optional description
+              transaction.isActive ?? 0,           // Default isActive to 0 if null
+              transaction.status,
+              transaction.totalPayment,
+              transaction.isPaid ?? '0'            // Default isPaid to '0' if null
+            ];
+      
+            // Insert data into MsTransaction table
+            insertData('MsTransaction', transactionColumns, transactionValues);
+          });
+          
         } else {
           console.error('No token found in AsyncStorage');
         }
