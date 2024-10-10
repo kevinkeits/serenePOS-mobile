@@ -24,8 +24,6 @@ import ConfirmationModal from './components/ConfirmationModal/ConfirmationModal'
 
 import ThermalPrinterModule from 'react-native-thermal-printer';
 import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
-import { checkNetworkStatus } from '../../helpers/sqliteHelper';
-import { fetchLocalData, insertData } from '../../helpers/sqliteFunctions';
 ThermalPrinterModule.defaultConfig = {
   ...ThermalPrinterModule.defaultConfig,
   ip: '',
@@ -128,29 +126,8 @@ const Sales = ({ route }: ScreenProps) => {
       return currentDate.toLocaleDateString(undefined, options);
     };
 
-    const fetchLocalProducts = (categoryID: string): Promise<Product[]> => {
-      const condition = 'categoryID = ?'; // Assuming the categoryID field exists in the MsProduct table
-      const params = [categoryID]; // categoryID passed as a parameter
-      return fetchLocalData<Product>('MsProduct', condition, params);
-    };
-
    
     const fetchData = async (categoryID: string) => {
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
-        Alert.alert('Products', 'local storage offline.');
-  
-        // Fetch data from SQLite when offline
-        const products = await fetchLocalProducts(categoryID);
-        if (products.length > 0) {
-          setProductData(products);
-          setLoading(false);
-          Alert.alert('Offline Mode', `Fetched ${products.length} products from local storage.`);
-        } else {
-          Alert.alert('Offline Mode', 'No products available in local storage.');
-        }
-        return;
-      }
       try {
         console.log('[Sales] fetching product')
         const token = await AsyncStorage.getItem('userData'); 
@@ -216,21 +193,6 @@ const Sales = ({ route }: ScreenProps) => {
 
     const fetchTransactionHistory = async () => {
       console.log('[Transaction History] fetching data')
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
-        Alert.alert('Transaction History', 'local storage offline.');
-  
-        // Fetch data from SQLite when offline
-        const transactions = await fetchLocalData<Transaction>('MsTransaction');
-        if (transactions.length > 0) {
-          setTransactionData(transactions);
-          Alert.alert('Offline Mode', `Fetched ${transactions.length} transactions from local storage.`);
-        } else {
-          Alert.alert('Offline Mode', 'No transactions available in local storage.');
-        }
-        return;
-      }
-      
       try {
         const token = await AsyncStorage.getItem('userData');     
         if (token) {
@@ -242,42 +204,6 @@ const Sales = ({ route }: ScreenProps) => {
           });           
           const data: Transaction[] = response.data.data;
           setTransactionData(data);
-
-          data.forEach(transaction => {
-            const transactionColumns = [
-              'id', 
-              'transactionNumber', 
-              'transactionDate', 
-              'paidDate', 
-              'customerName', 
-              'paymentID', 
-              'payment', 
-              'description', 
-              'isActive', 
-              'status', 
-              'totalPayment', 
-              'isPaid'
-            ];
-      
-            const transactionValues = [
-              transaction.id,
-              transaction.transactionNumber,
-              transaction.transactionDate,
-              transaction.paidDate ?? '',          // Handle optional paidDate
-              transaction.customerName,
-              transaction.paymentID,
-              transaction.payment,
-              transaction.description ?? '',       // Handle optional description
-              transaction.isActive ?? 0,           // Default isActive to 0 if null
-              transaction.status,
-              transaction.totalPayment,
-              transaction.isPaid ?? '0'            // Default isPaid to '0' if null
-            ];
-      
-            // Insert data into MsTransaction table
-            insertData('MsTransaction', transactionColumns, transactionValues);
-          });
-          
         } else {
           console.error('No token found in AsyncStorage');
         }
@@ -375,21 +301,6 @@ const Sales = ({ route }: ScreenProps) => {
     };
 
     const fetchPayment = async () => {
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
-        Alert.alert('Payment', 'local storage offline.');
-  
-        // Fetch data from SQLite when offline
-        const payments = await fetchLocalData<Payment>('MsPayment');
-        if (payments.length > 0) {
-          setPaymentData(payments);
-          Alert.alert('Offline Mode', `Fetched ${payments.length} payments from local storage.`);
-        } else {
-          Alert.alert('Offline Mode', 'No payments available in local storage.');
-        }
-        return;
-      }
-
       try {
         const token = await AsyncStorage.getItem('userData'); 
         const Url = ApiUrls.getPayment;    
@@ -402,21 +313,6 @@ const Sales = ({ route }: ScreenProps) => {
           });           
           const data: Payment[] = response.data.data;
           setPaymentData(data);
-
-          data.forEach(payment => {
-            const paymentColumns = ['id', 'clientID', 'name', 'description', 'isActive'];
-            const paymentValues = [
-              payment.id,
-              payment.clientID,
-              payment.name,
-              payment.description ?? '', // Handle optional description
-              payment.isActive ?? '0'     // Handle isActive, defaulting to '0'
-            ];
-      
-            // Insert data into MsPayment table
-            insertData('MsPayment', paymentColumns, paymentValues);
-          });
-          
         } else {
           console.error('No token found in AsyncStorage');
         }
@@ -426,24 +322,6 @@ const Sales = ({ route }: ScreenProps) => {
     };
 
     const fetchCategories = async () => {
-
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
-        Alert.alert('Category', 'local storage offline.');
-  
-        // Fetch data from SQLite when offline
-        const categories = await fetchLocalData<Categories>('MsCategory');
-        if (categories.length > 0) {
-          setCategoriesData(categories);
-          setLoading(false);
-          fetchData(categories[0].id)
-          Alert.alert('Offline Mode', `Fetched ${categories.length} categories from local storage.`);
-        } else {
-          Alert.alert('Offline Mode', 'No categories available in local storage.');
-        }
-        return;
-      }
-
       try {
         const token = await AsyncStorage.getItem('userData');    
         const tempPrinter = await AsyncStorage.getItem('printerData'); 

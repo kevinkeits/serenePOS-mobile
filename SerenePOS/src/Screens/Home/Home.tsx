@@ -3,12 +3,10 @@ import { useIsFocused } from '@react-navigation/native'
 import axios from 'axios'
 import moment from 'moment'
 import React from 'react'
-import { Text, View, Image, ScrollView, Dimensions, Alert } from 'react-native'
+import { Text, View, Image, ScrollView, Dimensions } from 'react-native'
 import { ApiUrls } from '../../apiUrls/apiUrls'
 import CommonLayout from '../../Components/CommonLayout/CommonLayout'
 import Sidebar from '../../Components/Sidebar/Sidebar'
-import { fetchLocalData } from '../../helpers/sqliteFunctions'
-import { checkNetworkStatus } from '../../helpers/sqliteHelper'
 import SalesChart from './components/SalesChart/SalesChart'
 
 export interface IProfitAmount {
@@ -53,63 +51,7 @@ const Home = () => {
 
   const currentMonthAndYear = moment().format('MMMM YYYY');
 
-  const fetchTodayIncomeFromSQLite = async (): Promise<string> => {
-    const query = `
-      SELECT SUM(totalPayment) AS todayIncome
-      FROM MsTransaction
-      WHERE isActive = 1 AND status = 1 AND strftime('%Y-%m-%d', transactionDate) = strftime('%Y-%m-%d', 'now')
-    `;
-    
-    try {
-      const result = await fetchLocalData<{ todayIncome: string }>('MsTransaction', query);
-  
-      if (result.length > 0 && result[0].todayIncome) {
-        return result[0].todayIncome; // Return the fetched value
-      }
-      
-      return '0'; // Return '0' if no income data is found
-    } catch (error) {
-      console.error('Error fetching from SQLite:', error);
-      return '0'; // Return '0' if there's an error
-    }
-  };
-
-  // Function to fetch monthly income from SQLite
-const fetchTotalIncomeFromSQLite = async (): Promise<string> => {
-  const query = `
-    SELECT SUM(totalPayment) AS monthlyIncome
-    FROM MsTransaction
-    WHERE isActive = 1 AND status = 1 AND strftime('%Y-%m', transactionDate) = strftime('%Y-%m', 'now')
-  `;
-  
-  try {
-    const result = await fetchLocalData<{ monthlyIncome: string }>('MsTransaction', query);
-
-    if (result.length > 0 && result[0].monthlyIncome) {
-      return result[0].monthlyIncome; // Return the fetched value
-    }
-    
-    return '0'; // Return '0' if no income data is found
-  } catch (error) {
-    console.error('Error fetching from SQLite:', error);
-    return '0'; // Return '0' if there's an error
-  }
-};
-
   const fetchTodayIncome = async () => {
-
-    const isOnline = await checkNetworkStatus();
-
-    if (!isOnline) {
-      // Fetch data from SQLite when offline
-      const todayIncome = await fetchTodayIncomeFromSQLite();
-      setTodayIncome(todayIncome);
-      if (todayIncome) {
-        Alert.alert('Offline Mode', `Fetched today's income from local storage: ${todayIncome}`);
-      } else {
-        Alert.alert('Offline Mode', 'No data available in local storage.');
-      }
-    }
     try {
       console.log('[Dashboard] fetching today income')
       const token = await AsyncStorage.getItem('userData');     
@@ -132,19 +74,6 @@ const fetchTotalIncomeFromSQLite = async (): Promise<string> => {
   };
 
   const fetchTotalIncome = async () => {
-    const isOnline = await checkNetworkStatus();
-
-    if (!isOnline) {
-      // Fetch data from SQLite when offline
-      const totalIncome = await fetchTotalIncomeFromSQLite();
-      setTotalIncome(totalIncome);
-      if (totalIncome) {
-        Alert.alert('Offline Mode', `Fetched monthly income from local storage: ${totalIncome}`);
-      } else {
-        Alert.alert('Offline Mode', 'No data available in local storage.');
-      }
-    }
-
     try {
       console.log('[Dashboard] fetching total income')
       const token = await AsyncStorage.getItem('userData');     

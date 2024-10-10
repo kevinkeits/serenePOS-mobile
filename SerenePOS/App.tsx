@@ -1,94 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import SQLite from 'react-native-sqlite-storage';
+import React, { useEffect } from 'react';
+import { LogBox } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
+import Realm from 'realm';
 import AppNavigator from './src/Routes/AppNavigator/AppNavigator';
-import {  Alert } from 'react-native'
-import { createTable } from './src/helpers/sqliteFunctions';
+
+LogBox.ignoreLogs(['EventEmitter.removeListener']); // Ignore warnings from NetInfo
+
+// Define the User schema
+const UserSchema: Realm.ObjectSchema = {
+  name: 'User',
+  properties: {
+    id: 'int',
+    name: 'string',
+    email: 'string',
+    synced: { type: 'bool', default: false },  // 'bool' type with a default value
+  },
+  primaryKey: 'id',
+};
+
+// Create a new Realm instance
+const realm = new Realm({
+  schema: [UserSchema],
+});
 
 const App = () => {
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        console.log('Online');
+        // Sync data here if necessary
+      } else {
+        console.log('Offline');
+        // Handle offline mode
+      }
+    });
 
-  React.useEffect(() => {
+    // Initial check
+    NetInfo.fetch().then(state => {
+      console.log(state.isConnected ? 'Online' : 'Offline');
+    });
 
-    const productColumns = `
-    id TEXT PRIMARY KEY, 
-    name TEXT, 
-    price TEXT, 
-    notes TEXT, 
-    imgUrl TEXT, 
-    qty INTEGER
-  `;
-  createTable('MsProduct', productColumns);
-
-  const categoryColumns = `
-  id TEXT PRIMARY KEY, 
-  name TEXT, 
-  qtyAlert TEXT, 
-  totalItem TEXT, 
-  bgColor TEXT
-`;
-  createTable('MsCategory', categoryColumns);
-
-  const transactionColumns = `
-  id TEXT PRIMARY KEY, 
-  transactionNumber TEXT, 
-  transactionDate TEXT, 
-  paidDate TEXT, 
-  customerName TEXT, 
-  paymentID TEXT, 
-  payment TEXT, 
-  description TEXT, 
-  isActive INTEGER, 
-  status TEXT, 
-  totalPayment TEXT, 
-  isPaid TEXT
-`;
-createTable('MsTransaction', transactionColumns);
-
-const paymentColumns = `
-  id TEXT PRIMARY KEY, 
-  clientID TEXT, 
-  name TEXT, 
-  description TEXT, 
-  isActive TEXT
-`;
-createTable('MsPayment', paymentColumns);
- 
-const variantColumns = `
-  id TEXT PRIMARY KEY, 
-  name TEXT, 
-  type TEXT, 
-  count INTEGER, 
-  listLabel TEXT
-`;
-createTable('MsVariant', variantColumns);
-
-  const outletColumns = `
-    id TEXT PRIMARY KEY, 
-    outlet TEXT, 
-    isPrimary INTEGER, 
-    address TEXT, 
-    province TEXT, 
-    district TEXT, 
-    phoneNumber TEXT, 
-    subDistrict TEXT, 
-    postalCode TEXT
-  `;
-  createTable('MsOutlet', outletColumns);
-
-  const settingColumns = `
-    id TEXT PRIMARY KEY, 
-    storeName TEXT, 
-    name TEXT, 
-    phoneNumber TEXT, 
-    email TEXT, 
-    outletID TEXT, 
-    outletName TEXT, 
-    accountImage TEXT, 
-    clientImage TEXT
-  `;
-  createTable('MsSetting', settingColumns);
-
-  
+    return () => unsubscribe();
   }, []);
 
   return <AppNavigator />;
