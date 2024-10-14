@@ -9,6 +9,11 @@ import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ApiUrls } from '../../apiUrls/apiUrls'
 
+import RNPickerSelect from "react-native-picker-select";
+import DropdownSVG from '../../assets/svgs/DropdownSVG'
+
+
+
 import {
   requestMultiple,
   PERMISSIONS,
@@ -80,6 +85,53 @@ const Setting = () => {
     const [printers, setPrinters] = React.useState<IBLEPrinter[]>([]);
     const [currentPrinter, setCurrentPrinter] = React.useState<IBLEPrinter>();
 
+    const [useTax, setUseTax] = React.useState('F');
+    const [textTax, setTextTax] = React.useState('0');
+
+    const [useServiceCharge, setUseServiceCharge] = React.useState('F');
+    const [textServiceCharge, setTextServiceCharge] = React.useState('0');
+
+    const [ selBillTemplate, setSelBillTemplate ] = React.useState('01');
+    const [arrTemplatePicker, setArrTemplatePicker] =  React.useState<generalOptions[]>([]);
+    const [billTemplate, setBillTemplate] = React.useState<IBillTemplate>();
+
+    interface generalOptions {
+      label: string;
+      value: string;
+    }
+
+    const dummyDataTemplate: generalOptions[] = [
+      { label: "Template #01", value: "01" },
+      { label: "Template #02", value: "02" },
+      { label: "Template #03", value: "03" },
+      { label: "Template #04", value: "04" },
+      { label: "Template #05", value: "05" },
+      { label: "Template #06", value: "06" },
+      { label: "Template #07", value: "07" },
+      { label: "Template #08", value: "08" },
+      { label: "Template #09", value: "09" },
+      { label: "Template #10", value: "10" }
+    ];
+
+    interface IBillTemplate {
+      useTax: string;
+      taxValue: string;
+      useServiceCharge: string;
+      serviceChargeValue: string;
+      templateStyle: string;
+    }
+
+    const handleUseTax = () => {
+      setUseTax(useTax === 'T' ? 'F' : 'T'); 
+      setTextTax(useTax === 'T' ? '0' : '10'); 
+    };
+    const handleUseServiceCharge = () => {
+      setUseServiceCharge(useServiceCharge === 'T' ? 'F' : 'T'); 
+      setTextServiceCharge(useServiceCharge === 'T' ? '0' : '5'); 
+    };
+
+    
+
 
     const [form, setForm] = React.useState({
       paymentConfirmationFileName: '',
@@ -114,11 +166,23 @@ const Setting = () => {
       try {
         const token = await AsyncStorage.getItem('userData');     
         const tempPrinter = await AsyncStorage.getItem('printerData');    
+        const tempTemplate = await AsyncStorage.getItem('billTemplateData');  
+        setArrTemplatePicker(dummyDataTemplate);
         if (token) {
 
           if (tempPrinter) {
             const printerData = JSON.parse(tempPrinter ?? '')
             setCurrentPrinter(printerData)
+          }
+
+          if (tempTemplate) {
+            const templateData = JSON.parse(tempTemplate ?? '')
+            setBillTemplate(templateData)
+            setUseTax(templateData.useTax)
+            setTextTax(templateData.taxValue)
+            setUseServiceCharge(templateData.useServiceCharge)
+            setTextServiceCharge(templateData.serviceChargeValue)
+            setSelBillTemplate(templateData.templateStyle)
           }
 
           const authToken = JSON.parse(token).data.Token
@@ -173,7 +237,7 @@ const Setting = () => {
       }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const updatedData: ISettingForm = {
       id: '',
       action: 'edit',
@@ -183,6 +247,16 @@ const Setting = () => {
       fileData: form.paymentConfirmationFileData,
     };
     onSave(updatedData);
+    
+    const updatedTemplate: IBillTemplate = {
+      useTax: useTax,
+      taxValue: textTax,
+      useServiceCharge: useServiceCharge,
+      serviceChargeValue: textServiceCharge,
+      templateStyle: selBillTemplate
+    };
+    await AsyncStorage.setItem('billTemplateData', JSON.stringify(updatedTemplate));
+    
   };
 
      
@@ -468,6 +542,29 @@ const Setting = () => {
         </View>
          */}
         <Text style={{ fontWeight:'bold',  marginBottom:5, color:'black'}}>Additional Setting</Text>
+
+        <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+            <Text style={{marginBottom:5, width:'20%'}}>Bill Template</Text>
+            <View style={{
+              flex: 1,
+              justifyContent: 'center',
+              height: 32,
+            }}>
+              <RNPickerSelect
+                onValueChange={(value) => {
+                  setSelBillTemplate(value);
+                }}
+                items={arrTemplatePicker}
+                useNativeAndroidPickerStyle={false}
+                value={selBillTemplate}
+                Icon={() => {
+                  return <View style={{marginTop: 6}}><DropdownSVG width='11' height='11' color='black' /></View>;
+                }}
+                style={pickerSelectStyles}
+              />
+            </View>
+        </View>
+
           <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                       <Text style={{  marginBottom:5, width:'20%'}}>Printer</Text>
                       <View style={{flexDirection:'row', gap:6, width:'80%'}}>
@@ -504,9 +601,90 @@ const Setting = () => {
                       </View>         
           </View>
 
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft:10, marginBottom:useTax == 'T' ? 0 : 20}}>
+            <TouchableOpacity onPress={handleUseTax} style={{ marginRight: 10 }}>
+              <View style={{
+                width: 25,
+                height: 25,
+                borderWidth: 1,
+                padding:0,
+                borderRadius: 4,
+                borderColor: '#D2D2D2',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: useTax === 'T' ? '#2563EB' : 'transparent',
+              }}>
+                {useTax === 'T' && <Text style={{ color: 'white' }}>✓</Text>}
+              </View>
+            </TouchableOpacity>
+            <Text>Use Tax</Text>
+          </View>
+          {useTax == 'T' && (
+            <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+                      <View
+                          style={{
+                              borderColor: '#D2D2D2',
+                              borderWidth: 0.5,
+                              borderRadius:5,
+                              width:'100%'
+                          }}>
+                          <TextInput
+                              editable
+                              placeholder='Type here'
+                              maxLength={2}
+                              onChangeText={text => setTextTax(text)}
+                              value={textTax}
+                              style={{paddingLeft: 10, paddingVertical:0,  width:'80%', height:32}}
+                          />
+                      </View>          
+            </View>
+          )}
+
+
           
 
-          <View style={{marginTop:10, marginHorizontal:10, marginBottom:5, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft:10, marginBottom:useServiceCharge == 'T' ? 0 : 20 }}>
+            <TouchableOpacity onPress={handleUseServiceCharge} style={{ marginRight: 10 }}>
+              <View style={{
+                width: 25,
+                height: 25,
+                borderWidth: 1,
+                padding:0,
+                borderRadius: 4,
+                borderColor: '#D2D2D2',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: useServiceCharge === 'T' ? '#2563EB' : 'transparent',
+              }}>
+                {useServiceCharge === 'T' && <Text style={{ color: 'white' }}>✓</Text>}
+              </View>
+            </TouchableOpacity>
+            <Text>Use Service Charge</Text>
+          </View>
+          {useServiceCharge == 'T' && (
+            <View style={{margin:10, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
+                      <View
+                          style={{
+                              borderColor: '#D2D2D2',
+                              borderWidth: 0.5,
+                              borderRadius:5,
+                              width:'100%'
+                          }}>
+                          <TextInput
+                              editable
+                              placeholder='Type here'
+                              maxLength={2}
+                              onChangeText={text => setTextServiceCharge(text)}
+                              value={textServiceCharge}
+                              style={{paddingLeft: 10, paddingVertical:0,  width:'80%', height:32}}
+                          />
+                      </View>          
+            </View>
+          )}
+
+          
+
+          {/* <View style={{marginTop:10, marginHorizontal:10, marginBottom:5, flexDirection:'row', width:'80%', justifyContent:'center', alignItems:'center'}}>
                       <Text style={{  marginBottom:5, width:'20%'}}>Back Up</Text>
                       <View
                           style={{
@@ -533,7 +711,7 @@ const Setting = () => {
                               <Text style={{ color:'white', fontWeight:'500'}}>Erase Data</Text>
                           </TouchableOpacity> 
                       </View> 
-            </View> 
+            </View>  */}
 
             <Text style={{ fontWeight:'bold', color:'black'}}>Outlet</Text>
             {outletData?.map((x, index) => (

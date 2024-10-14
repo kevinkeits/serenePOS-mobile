@@ -9,7 +9,7 @@ interface Props {
   onClose: () => void;
   selectedID: string
   selectedData: TransactionDetail | null
-  onPrint?: () => void;
+  onPrint: (templateID: string) => void;
   onSave?: (ids: string[]) => void;
 }
 const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedData, onSave, onPrint}) => {
@@ -189,11 +189,24 @@ const DetailModal: React.FC<Props> = ({ isVisible, onClose, selectedData, onSave
           </View>
           )}
 
-        <TouchableOpacity style={{width:'100%', alignItems:'center'}} onPress={onPrint}>
-          <View style={{width:'90%', marginBottom:20, backgroundColor: '#2563EB', padding:4, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
-                <Text style={{fontWeight:'bold', color: 'white'}}>Print Receipt</Text>
+        <TouchableOpacity style={{width:'100%', alignItems:'center'}} onPress={() => onPrint('01')}>
+          <View style={{width:'90%', marginBottom:30, backgroundColor: '#2563EB', padding:4, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
+            <Text style={{fontWeight:'bold', color: 'white'}}>Print Receipt</Text>
           </View>
-          </TouchableOpacity>        
+        </TouchableOpacity>  
+
+        <TouchableOpacity style={{width:'100%', alignItems:'center'}} onPress={() => onPrint('02')}>
+          <View style={{width:'90%', marginBottom:5, backgroundColor: '#2563EB', padding:4, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
+            <Text style={{fontWeight:'bold', color: 'white'}}>Print Receipt (BUSABA)</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={{width:'100%', alignItems:'center'}} onPress={() => onPrint('03')}>
+          <View style={{width:'90%', marginBottom:20, backgroundColor: '#2563EB', padding:4, justifyContent: 'center', alignItems:'center', alignSelf:'center', borderRadius:5, height: 32}}>
+            <Text style={{fontWeight:'bold', color: 'white'}}>Print Receipt (KADO)</Text>
+          </View>
+        </TouchableOpacity>
+          
+          
           </ScrollView>
 
 

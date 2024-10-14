@@ -39,7 +39,6 @@
     "react-native-svg": "^14.1.0",
     "react-native-table-component": "^1.2.2",
     "react-native-thermal-printer": "^2.3.6",
-    "realm": "^12.13.1",
     "uuid": "^9.0.1",
     "yup": "^1.4.0"
   },

@@ -468,7 +468,7 @@ const Sales = ({ route }: ScreenProps) => {
                         const dataTransaction: TransactionDetail = responseFetch.data.data;
                         if (dataTransaction) {
                           let text = '';
-                          if (dataTransaction.details.clientImage != '') text = '[L]<img>' + dataTransaction.details.clientImage + '</img>\n';
+                          if (dataTransaction.details.clientImage != '' && dataTransaction.details.clientImage != null) text = '[L]<img>' + dataTransaction.details.clientImage + '</img>\n';
 
                             text +=   "[L]<font size='big'>" + dataTransaction.details.clientName + "</font>\n" +
                                         '[L]\n' +
